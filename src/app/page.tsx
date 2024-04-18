@@ -77,7 +77,6 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <button onClick={onClickUploadButton}>등록테스트</button>
-
       <form>
         <div>
           <label>이메일 : </label>
