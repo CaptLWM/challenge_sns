@@ -1,34 +1,44 @@
-import { create } from "zustand";
+import create from "zustand";
+import { User } from "firebase/auth";
+import {
+  checkAuthState,
+  loginWithEmailAndPassword,
+  logout,
+} from "@/firebase/firebaseAuth";
 
-// interface ModalState {
-//     mode: "new" | "comment";
-//     data: Post | null;
-//     setMode(mode: "new" | "comment"): void;
-//     setData(data: Post): void;
-//     reset(): void;
-//   }
+interface AuthStoreState {
+  user: User | null;
+  initializing: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  doLogout: () => void;
+}
 
-const useStore = create((set) => ({
-  //  상태관리 할 함수, 변수들 저장
-  //   data: null, // 초기값
-  //   setMode(mode) {
-  //     // 모드 변경
-  //     set({ mode });
-  //   },
-  //   setData(data) {
-  //     // 데이터 변경
-  //     set({ data });
-  //   },
-  //   reset() {
-  //     // 초기화
-  //     set({
-  //       mode: "new",
-  //       data: null,
-  //     });
-  //   },
-  //   bears: 0,
-  //   increasePopulation: () =>
-  //     set((state: { bears: number }) => ({ bears: state.bears + 1 })),
-  //   removeAllBears: () => set({ bears: 0 }),
-  //   updateBears: (newBears: any) => set({ bears: newBears }),
+const useAuthStore = create<AuthStoreState>((set) => ({
+  user: null,
+  initializing: true,
+  login: async (email, password) => {
+    const user = await loginWithEmailAndPassword(email, password); // 인증 함수를 호출합니다.
+    if (user) {
+      set({ user });
+      localStorage.setItem("token", await user.getIdToken());
+    }
+  },
+  doLogout: () => {
+    logout(); // 로그아웃 함수를 호출합니다.
+    set({ user: null });
+    localStorage.removeItem("token");
+  },
 }));
+
+export const initAuthState = () => {
+  checkAuthState((user) => {
+    // 인증 상태 확인 함수를 호출합니다.
+    if (user) {
+      useAuthStore.setState({ user, initializing: true });
+    } else {
+      useAuthStore.setState({ user: null, initializing: false });
+    }
+  });
+};
+
+export default useAuthStore;
