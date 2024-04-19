@@ -1,6 +1,6 @@
 "use client";
 
-import auth from "@/firebase/firebaseAuth";
+import { auth } from "@/firebase/firebaseAuth";
 import firestore from "@/firebase/firestore";
 import {
   createUserWithEmailAndPassword,
