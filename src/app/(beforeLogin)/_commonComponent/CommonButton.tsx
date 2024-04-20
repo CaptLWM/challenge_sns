@@ -2,6 +2,6 @@
 
 import React from "react";
 
-export default function CommonInput() {
+export default function CommoneButton() {
   return <div>CommonInput</div>;
 }

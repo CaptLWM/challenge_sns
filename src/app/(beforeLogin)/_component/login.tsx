@@ -27,6 +27,7 @@ export default function Main() {
 
   const signIn = async (event: any) => {
     event.preventDefault();
+    console.log("??");
     try {
       await loginWithEmailAndPassword(email, password);
       router.replace("/home");
