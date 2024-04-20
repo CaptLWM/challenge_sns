@@ -33,6 +33,7 @@ const useAuthStore = create<AuthStoreState>((set) => ({
 export const initAuthState = () => {
   checkAuthState((user) => {
     // 인증 상태 확인 함수를 호출합니다.
+
     if (user) {
       useAuthStore.setState({ user, initializing: true });
     } else {
