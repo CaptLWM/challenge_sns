@@ -22,6 +22,7 @@ export const loginWithEmailAndPassword = async (
       email,
       password
     ); // signInWithEmailAndPassword 함수 사용
+    console.log("nn");
     return userCredential.user;
   } catch (error) {
     console.error("Error signing in:", error);

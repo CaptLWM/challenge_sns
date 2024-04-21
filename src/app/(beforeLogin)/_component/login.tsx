@@ -8,6 +8,8 @@ import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { addDoc, collection } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import CommonInputForm from "../_commonComponent/CommonInputForm";
+import CommoneButtonForm from "../_commonComponent/CommonButtonForm";
 
 export default function Main() {
   const [email, setEmail] = useState<string>("");
@@ -29,6 +31,7 @@ export default function Main() {
     event.preventDefault();
     console.log("??");
     try {
+      console.log("email", email, password);
       await loginWithEmailAndPassword(email, password);
       router.replace("/home");
     } catch (error: any) {
@@ -54,43 +57,46 @@ export default function Main() {
         </Text>
       </Stack>
       <form>
-        <div className="flex">
-          <Text w="5rem">이메일</Text>
-          <Input
-            variant="outline"
-            placeholder="email"
-            type="email"
-            name="email"
-            value={email}
-            onChange={onChange}
-            required
-          />
-        </div>
-        <div className="flex mt-3">
-          <Text w="5rem">비밀번호</Text>
-          <Input
-            variant="outline"
-            // type={show ? 'text' : 'password'}
-            // show 를 state로 두고 전환 가능
-            type="password"
-            placeholder="Enter password"
-            name="password"
-            onChange={onChange}
-            required
-          />
-        </div>
-
+        <CommonInputForm
+          props={{
+            label_width: "5rem",
+            input_type: "email",
+            label: "이메일",
+            name: "email",
+            onChange: (e) => onChange(e),
+            placeholder: "이메일",
+            required: true,
+            value: email,
+          }}
+        />
+        <CommonInputForm
+          props={{
+            label_width: "5rem",
+            input_type: "password",
+            label: "비밀번호",
+            name: "password",
+            onChange: (e) => onChange(e),
+            placeholder: "password",
+            required: true,
+            value: password,
+          }}
+        />
         <div className="mt-5">
-          <Button
-            ml={10}
-            colorScheme="teal"
-            onClick={() => router.push("/signUp")}
-          >
-            회원가입
-          </Button>
-          <Button ml={10} colorScheme="teal" onClick={signIn}>
-            로그인
-          </Button>
+          <CommoneButtonForm
+            props={{
+              label: "회원가입",
+              ml: 10,
+              onClick: () => router.push("/signUp"),
+            }}
+          />
+          <CommoneButtonForm
+            props={{
+              type: "submit",
+              label: "로그인",
+              ml: 10,
+              onClick: (event) => signIn(event),
+            }}
+          />
         </div>
       </form>
     </div>
