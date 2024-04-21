@@ -1,3 +1,5 @@
+import { ColorSchemeEnum } from "next/dist/lib/metadata/types/metadata-types";
+
 export type InputType = {
   label_width: string;
   label: string;
@@ -6,5 +8,12 @@ export type InputType = {
   name: string;
   required: boolean;
   value: string;
-  onChange: () => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
+export type ButtonType = {
+  type?: "button" | "submit" | "reset" | undefined;
+  label: string;
+  ml: number;
+  onClick: (event: any) => void;
 };

@@ -1,5 +1,6 @@
 import { Button, HStack, Input, Text, VStack } from "@chakra-ui/react";
 import React from "react";
+import CommonInputForm from "../_commonComponent/CommonInputForm";
 
 export default function Main() {
   // 회원가입
@@ -24,7 +25,20 @@ export default function Main() {
         <Text fontSize="6xl" as="b">
           Just Do It
         </Text>
-
+        <form>
+          {/* <CommonInputForm
+          props={{
+            label_width: "5rem",
+            input_type: "email",
+            label: "이메일",
+            name: "email",
+            onChange: (e) => void,
+            placeholder: "이메일",
+            required: true,
+            value: email,
+          }}
+        /> */}
+        </form>
         <HStack mb={5}>
           <Text w="10rem">아이디</Text>
           <Input></Input>
