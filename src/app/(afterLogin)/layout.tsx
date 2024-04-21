@@ -9,10 +9,10 @@ export default function AfterLoginlayout({
 }) {
   return (
     <>
-      <div className="container flex mx-auto safe-top safe-left safe-right safe-bottom h-lvh">
-        <header className="flex items-end flex-col flex-grow w-44">
-          <section className="w-16 h-lvh">
-            <div className="fixed flex flex-col items-center px-px-8 py-px-0 h-lvh">
+      <div className="container flex mt-10 mx-auto safe-top safe-left safe-right safe-bottom h-lvh bg-red-200">
+        <header className="items-end flex-col flex-grow bg-orange-300">
+          <section className="w-275px h-lvh bg-orange-500">
+            <div className=" fixed flex flex-col items-center px-px-8 py-px-0 h-lvh">
               <nav className="flex-1">
                 <ul className="list-none">
                   <NavMenu />
