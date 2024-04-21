@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Main from "../_component/login";
+import Main from "../_viewComponent/login";
 import useAuthStore, { initAuthState } from "@/store/store";
 
 export default function Login() {
