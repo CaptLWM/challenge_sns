@@ -1,4 +1,3 @@
-import { ColorSchemeEnum } from "next/dist/lib/metadata/types/metadata-types";
 
 export type InputType = {
   label_width: string;
@@ -16,4 +15,5 @@ export type ButtonType = {
   label: string;
   ml: number;
   onClick: (event: any) => void;
+
 };

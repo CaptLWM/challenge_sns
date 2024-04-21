@@ -29,6 +29,7 @@ export default function Main() {
 
   const signIn = async (event: any) => {
     event.preventDefault();
+    console.log("??");
     try {
       console.log("email", email, password);
       await loginWithEmailAndPassword(email, password);

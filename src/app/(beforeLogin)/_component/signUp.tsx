@@ -25,6 +25,7 @@ export default function Main() {
         <Text fontSize="6xl" as="b">
           Just Do It
         </Text>
+
         <form>
           {/* <CommonInputForm
           props={{
@@ -39,6 +40,7 @@ export default function Main() {
           }}
         /> */}
         </form>
+
         <HStack mb={5}>
           <Text w="10rem">아이디</Text>
           <Input></Input>
