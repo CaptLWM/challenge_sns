@@ -4,9 +4,9 @@ import useAuthStore, { initAuthState } from "@/store/store";
 import { Button, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-import Main from "../_viewComponent/home";
+import Main from "../_viewComponent/search";
 
-export default function Home() {
+export default function Search() {
   const router = useRouter();
   const initializing = useAuthStore((state) => state.initializing);
   const user = useAuthStore((state) => state.user);
