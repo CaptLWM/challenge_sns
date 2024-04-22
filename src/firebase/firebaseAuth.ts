@@ -3,6 +3,7 @@
 import {
   User,
   UserCredential,
+  createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -11,6 +12,20 @@ import {
 import firebasedb from "./firebase";
 
 export const auth = getAuth(firebasedb);
+
+export const signUp = async (email: string, password: string) => {
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      // 여기서 유저 정보를 조회할 수 있다
+      console.log(user);
+      alert("성공했습니다!");
+    })
+    .catch((error) => {
+      const errorMessage = error;
+      alert(errorMessage);
+    });
+};
 // 이메일과 비밀번호를 사용하여 로그인
 export const loginWithEmailAndPassword = async (
   email: string,

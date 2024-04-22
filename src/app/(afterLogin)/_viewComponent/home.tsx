@@ -1,11 +1,22 @@
 "use client";
 
+import { auth, logout } from "@/firebase/firebaseAuth";
 import useAuthStore from "@/store/store";
 import { Button, Text } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function Main() {
-  const doLogout = useAuthStore((state) => state.doLogout);
+  const router = useRouter();
+  const doLogout = async (event: any) => {
+    try {
+      await logout();
+      router.replace("/login");
+    } catch (error: any) {
+      const errorMessage = error.message;
+      alert(errorMessage);
+    }
+  };
   return (
     <div>
       <Text>처음화면</Text>
