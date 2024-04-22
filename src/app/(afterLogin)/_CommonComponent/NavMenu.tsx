@@ -15,31 +15,31 @@ export default function NavMenu() {
   const segment = useSelectedLayoutSegment();
   return (
     <>
-      <li>
+      <li className="flex justify-center items-center mb-3">
         <Link href="/home">
           <div>
-            <TbHome />
+            <TbHome size="40px" />
           </div>
         </Link>
       </li>
-      <li>
+      <li className="flex justify-center items-center mb-3">
         <Link href="/search">
           <div>
-            <TbSearch />
+            <TbSearch size="40px" />
           </div>
         </Link>
       </li>
-      <li>
+      <li className="flex justify-center items-center mb-3">
         <Link href="/messages">
           <div>
-            <TbMessageDots />
+            <TbMessageDots size="40px" />
           </div>
         </Link>
       </li>
-      <li>
+      <li className="flex justify-center items-center mb-3">
         <Link href="/challenge">
           <div>
-            <TbTargetArrow />
+            <TbTargetArrow size="40px" />
           </div>
         </Link>
       </li>
