@@ -111,7 +111,6 @@ export default function Main() {
           >
             회원가입
           </Button>
-          \
         </HStack>
       </form>
     </div>
