@@ -57,7 +57,6 @@ export const logout = async (): Promise<void> => {
 // 인증 상태 확인
 export const checkAuthState = (callback: (user: User | null) => void) => {
   onAuthStateChanged(auth, (user) => {
-    console.log("firebase", auth);
     callback(user);
   });
 };
