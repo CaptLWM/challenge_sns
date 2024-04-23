@@ -105,7 +105,7 @@ export default function Main() {
               : ""}
           </FormErrorMessage>
         </FormControl>
-        <HStack>
+        <HStack mt={5}>
           <Button
             isLoading={isSubmitting}
             type="submit"
