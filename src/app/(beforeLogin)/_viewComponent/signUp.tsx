@@ -1,9 +1,19 @@
-import { Button, HStack, Input, Text, VStack } from "@chakra-ui/react";
+import {
+  Button,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  HStack,
+  Input,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signUpWithEmailAndPassword } from "@/firebase/firestore";
 
 const signUpSchema = z.object({
   email: z
@@ -14,6 +24,8 @@ const signUpSchema = z.object({
     .string()
     .regex(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/)
     .min(8, "비밀번호 길이"),
+  bio: z.string(),
+  nickname: z.string(),
 });
 
 export default function Main() {
@@ -26,45 +38,80 @@ export default function Main() {
     resolver: zodResolver(signUpSchema),
   });
 
+  const signUp = async (data: any) => {
+    try {
+      // 회원가입 하고
+      const user = await signUpWithEmailAndPassword(
+        data.email,
+        data.password,
+        data.bio,
+        data.nickname
+      );
+      console.log("signup", user);
+      // 세부정보 저장 하는거 까지 문제 없으면 home으로 이동
+      // router.replace('/home')
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="container mx-auto mr-20 ml-20">
       <Text fontSize="6xl" as="b">
         Just Do It
       </Text>
 
-      <form>
-        <VStack spacing={3}>
-          {/* 이메일 양식 추가 필요 */}
-          <HStack mb={5}>
-            <Text w="10rem">이메일</Text>
-            <Input></Input>
-          </HStack>
-          <HStack mb={5}>
-            <Text w="10rem">닉네임</Text>
-            <Input></Input>
-          </HStack>
-          <HStack mb={5}>
-            <Text w="10rem">비밀번호</Text>
-            <Input></Input>
-          </HStack>
-          <HStack mb={5}>
-            <Text w="10rem">비밀번호 확인</Text>
-            <Input></Input>
-          </HStack>
-
-          {/* TODO 자기소개 100자이내 */}
-          <HStack mb={5}>
-            <Text w="10rem">자기소개</Text>
-            <Input></Input>
-          </HStack>
-          {/* TODO 프로필사진 */}
-          <HStack mb={5}>
-            <Text w="10rem">프로필사진</Text>
-            <Input></Input>
-          </HStack>
-        </VStack>
+      <form onSubmit={handleSubmit(signUp)}>
+        <FormControl isInvalid={!!errors.email}>
+          <FormLabel htmlFor="email">이메일</FormLabel>
+          <Input id="email" placeholder="Email" {...register("email")} />
+          <FormErrorMessage>
+            {typeof errors.email?.message === "string"
+              ? errors.email.message
+              : ""}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.password}>
+          <FormLabel htmlFor="비밀번호">비밀번호</FormLabel>
+          <Input
+            id="password"
+            placeholder="password"
+            type="password"
+            {...register("password")}
+          />
+          <FormErrorMessage>
+            {typeof errors.password?.message === "string"
+              ? errors.password.message
+              : ""}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.bio}>
+          <FormLabel htmlFor="bio">자기소개</FormLabel>
+          <Input id="bio" placeholder="bio" {...register("bio")} />
+          <FormErrorMessage>
+            {typeof errors.bio?.message === "string" ? errors.bio.message : ""}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.nickname}>
+          <FormLabel htmlFor="nickname">닉네임</FormLabel>
+          <Input
+            id="nickname"
+            placeholder="nickname"
+            {...register("nickname")}
+          />
+          <FormErrorMessage>
+            {typeof errors.nickname?.message === "string"
+              ? errors.nickname.message
+              : ""}
+          </FormErrorMessage>
+        </FormControl>
         <HStack>
-          <Button colorScheme="teal" width="full">
+          <Button
+            isLoading={isSubmitting}
+            type="submit"
+            colorScheme="teal"
+            width="full"
+          >
             회원가입
           </Button>
           <Button
