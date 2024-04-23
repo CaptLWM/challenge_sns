@@ -1,20 +1,64 @@
 "use client";
 
+import { User } from "@/firebase/firebase.type";
+import { getUser } from "@/firebase/firestore";
+import useAuthStore, { initAuthState } from "@/store/store";
+import { Text } from "@chakra-ui/react";
+import { DocumentData } from "firebase/firestore";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { TbTargetArrow } from "react-icons/tb"; // challenge
 import { TbSearch } from "react-icons/tb"; // search
 import { TbHome } from "react-icons/tb"; // home
 import { TbMessageDots } from "react-icons/tb"; // message
 
 export default function NavMenu() {
-  // 호출된 레이아웃보다 한 단계 아래에서 활성 경로 세그먼트를 읽을 수 있게 해줍니다.
+  // 상태를 추가하여 사용자 정보를 저장
+  const [userInfo, setUserInfo] = useState<DocumentData | null>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   // 즉 주소를 가지고 올 수 있음
   // 이거 활용해서 그 페이지 방문 했을때 안했을때 아이콘 변경할 수 있음
+  // 호출된 레이아웃보다 한 단계 아래에서 활성 경로 세그먼트를 읽을 수 있게 해줍니다.
   const segment = useSelectedLayoutSegment();
+
+  // 사용자 ID 가져오기
+  const user = useAuthStore((state) => state.user);
+  const uid = user ? user.uid : null;
+  useEffect(() => {
+    if (uid) {
+      getUser(uid)
+        .then((data) => {
+          setUserInfo(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError(err);
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  }, [uid]); // uid가 변경될 때마다 effect 실행
+
+  if (loading) {
+    return <Text>Loading...</Text>; // 로딩 상태 표시
+  }
+
+  if (error) {
+    return <Text>Error loading user info</Text>; // 에러 처리
+  }
+
   return (
     <>
+      <li className="flex justify-center items-center mb-3">
+        {userInfo ? (
+          <Text>{userInfo.nickname}</Text>
+        ) : (
+          <Text>No user info</Text>
+        )}
+      </li>
       <li className="flex justify-center items-center mb-3">
         <Link href="/home">
           <div>
