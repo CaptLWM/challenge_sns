@@ -8,17 +8,46 @@ import {
 } from "firebase/firestore";
 import firebasedb from "./firebase";
 import { User } from "./firebase.type";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "./firebaseAuth";
 
 export const firestore = getFirestore(firebasedb);
 
-// 회원 정보 저장 함수
-export const saveUser = async (user: User) => {
-  // doc(firestore, 경로, pathSegments)
-  const userDocRef = doc(firestore, "/User/userInfo", user.uid);
-  // setDoc(참조, 데이터, 옵션) 	지정된 DocumentReference 에서 참조하는 문서에 씁니다. 문서가 아직 존재하지 않으면 생성됩니다. merge 또는 mergeFields 제공하면 제공된 데이터를 기존 문서에 병합할 수 있습니다.
-  // uid 있으면 덮어쓰고 없으면 새문서
-  await setDoc(userDocRef, user);
-  console.log("User", user);
+/*
+  추가적으로 해야하는것
+  1. 날짜 업데이트
+  2. 경고문 수정\
+*/
+
+// 회원가입
+export const signUpWithEmailAndPassword = async (
+  email: string,
+  password: string,
+  nickname: string,
+  bio: string
+) => {
+  try {
+    const credential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = credential.user;
+    alert("성공했습니다!");
+    const userDocRef = doc(firestore, "/User", user.uid);
+    await setDoc(userDocRef, {
+      bio: bio,
+      uid: user.uid,
+      email: email,
+      nickname: nickname,
+      createdAt: "test",
+      updatedAt: "test",
+    });
+  } catch (error) {
+    const errorMessage = error;
+    alert(errorMessage);
+    return error;
+  }
 };
 
 // 회원 정보 읽기 함수

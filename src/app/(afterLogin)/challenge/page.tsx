@@ -12,7 +12,6 @@ export default function Challenge() {
 
   const checkAuthState = initAuthState();
 
-  console.log("home", initializing && user, initializing, user, checkAuthState);
   if (!initializing && !user) {
     router.replace("/login"); // 로그인되지 않은 경우 로그인 페이지로 리디렉션
   }

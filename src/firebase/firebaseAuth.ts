@@ -13,17 +13,24 @@ import firebasedb from "./firebase";
 
 export const auth = getAuth(firebasedb);
 
-export const signUp = async (email: string, password: string) => {
-  createUserWithEmailAndPassword(auth, email, password)
+// 회원가입
+export const signUpWithEmailAndPassword = async (
+  email: string,
+  password: string
+) => {
+  await createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
       // 여기서 유저 정보를 조회할 수 있다
-      console.log(user);
+      console.log("회원가입", user.uid);
+
       alert("성공했습니다!");
+      return user.uid;
     })
     .catch((error) => {
       const errorMessage = error;
       alert(errorMessage);
+      return error;
     });
 };
 // 이메일과 비밀번호를 사용하여 로그인
