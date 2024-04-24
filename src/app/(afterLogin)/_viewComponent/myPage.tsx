@@ -1,19 +1,18 @@
+"use client";
+
 import {
-  Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
-  HStack,
   Input,
-  Text,
-  VStack,
 } from "@chakra-ui/react";
-import React from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signUpWithEmailAndPassword } from "@/firebase/firestore";
+import useAuthStore from "@/store/store";
+import { DocumentData } from "firebase/firestore";
+import { getUser } from "@/firebase/firestore";
 
 const signUpSchema = z.object({
   email: z
@@ -29,7 +28,10 @@ const signUpSchema = z.object({
 });
 
 export default function Main() {
-  const router = useRouter();
+  // 상태를 추가하여 사용자 정보를 저장
+  const [userInfo, setUserInfo] = useState<DocumentData | null>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const {
     handleSubmit,
     register,
@@ -38,30 +40,30 @@ export default function Main() {
     resolver: zodResolver(signUpSchema),
   });
 
-  const signUp = async (data: any) => {
-    try {
-      // 회원가입 하고
-      const user = await signUpWithEmailAndPassword(
-        data.email,
-        data.password,
-        data.bio,
-        data.nickname
-      );
-      console.log("signup", user);
-      // 세부정보 저장 하는거 까지 문제 없으면 home으로 이동
-      // router.replace('/home')
-    } catch (error) {
-      console.log(error);
+  // 로그인한 유저정보 가져오기
+  const user = useAuthStore((state) => state.user);
+  const uid = user ? user.uid : null;
+
+  useEffect(() => {
+    if (uid) {
+      getUser(uid)
+        .then((data) => {
+          setUserInfo(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError(err);
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
-  };
+  }, [uid]);
 
+  const update = async (data: any) => {};
   return (
-    <div className="container mx-auto mr-20 ml-20">
-      <Text fontSize="6xl" as="b">
-        Just Do It
-      </Text>
-
-      <form onSubmit={handleSubmit(signUp)}>
+    <div>
+      <form onSubmit={handleSubmit(update)}>
         <FormControl isInvalid={!!errors.email}>
           <FormLabel htmlFor="email">이메일</FormLabel>
           <Input id="email" placeholder="Email" {...register("email")} />
@@ -105,23 +107,6 @@ export default function Main() {
               : ""}
           </FormErrorMessage>
         </FormControl>
-        <HStack mt={5}>
-          <Button
-            isLoading={isSubmitting}
-            type="submit"
-            colorScheme="teal"
-            width="full"
-          >
-            회원가입
-          </Button>
-          <Button
-            colorScheme="teal"
-            width="full"
-            onClick={() => router.replace("/login")}
-          >
-            로그인
-          </Button>
-        </HStack>
       </form>
     </div>
   );
