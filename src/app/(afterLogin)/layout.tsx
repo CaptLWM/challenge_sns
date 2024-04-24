@@ -1,6 +1,6 @@
 import React from "react";
 import NavMenu from "./_CommonComponent/NavMenu";
-import { HStack } from "@chakra-ui/react";
+import { Divider, HStack } from "@chakra-ui/react";
 
 export default function AfterLoginlayout({
   children,
@@ -21,6 +21,9 @@ export default function AfterLoginlayout({
             </div>
           </section>
         </header>
+        <div className="mt-10 mb-1 bg-slate-950 w-1">
+          <Divider orientation="vertical" />
+        </div>
         <div className="mt-10 mb-2 flex items-start flex-col flex-grow">
           <div className="w-full h-full flex justify-between">
             <main className="w-full bg-lime-300">{children}</main>
