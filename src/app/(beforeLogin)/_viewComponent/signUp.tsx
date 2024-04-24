@@ -61,7 +61,7 @@ export default function Main() {
         Just Do It
       </Text>
 
-      <form onSubmit={handleSubmit(signUp)}>
+      <form onSubmit={handleSubmit(signUp)} autoComplete="off">
         <FormControl isInvalid={!!errors.email}>
           <FormLabel htmlFor="email">이메일</FormLabel>
           <Input id="email" placeholder="Email" {...register("email")} />

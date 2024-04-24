@@ -67,7 +67,7 @@ export const getUser = async (uid: string) => {
 
 // 회원 정보 업데이트 함수
 export const updateUser = async (uid: string, updateData: Partial<User>) => {
-  const userDocRef = doc(firestore, "/User/userInfo", uid);
+  const userDocRef = doc(firestore, "/User", uid);
   await updateDoc(userDocRef, updateData);
   console.log("User updated:", updateData);
 };
