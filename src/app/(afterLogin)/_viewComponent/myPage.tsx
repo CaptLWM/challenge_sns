@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -12,7 +13,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useAuthStore from "@/store/store";
 import { DocumentData } from "firebase/firestore";
-import { getUser } from "@/firebase/firestore";
+import { getUser, updateUser } from "@/firebase/firestore";
 
 const signUpSchema = z.object({
   email: z
@@ -60,13 +61,30 @@ export default function Main() {
     }
   }, [uid]);
 
-  const update = async (data: any) => {};
+  console.log(userInfo);
+
+  const update = async (data: any) => {
+    console.log("update");
+    const user_uid: string = uid ? uid : "";
+    try {
+      await updateUser(user_uid, data);
+    } catch (error: any) {
+      const errorMessage = error.message;
+      console.log(errorMessage);
+      alert(errorMessage);
+    }
+  };
   return (
     <div>
-      <form onSubmit={handleSubmit(update)}>
+      <form onSubmit={handleSubmit(update)} autoComplete="off">
         <FormControl isInvalid={!!errors.email}>
           <FormLabel htmlFor="email">이메일</FormLabel>
-          <Input id="email" placeholder="Email" {...register("email")} />
+          <Input
+            id="email"
+            placeholder="Email"
+            defaultValue={userInfo?.email}
+            {...register("email")}
+          />
           <FormErrorMessage>
             {typeof errors.email?.message === "string"
               ? errors.email.message
@@ -80,6 +98,7 @@ export default function Main() {
             placeholder="password"
             type="password"
             {...register("password")}
+            defaultValue=""
           />
           <FormErrorMessage>
             {typeof errors.password?.message === "string"
@@ -89,7 +108,12 @@ export default function Main() {
         </FormControl>
         <FormControl isInvalid={!!errors.bio}>
           <FormLabel htmlFor="bio">자기소개</FormLabel>
-          <Input id="bio" placeholder="bio" {...register("bio")} />
+          <Input
+            id="bio"
+            placeholder="bio"
+            {...register("bio")}
+            defaultValue={userInfo?.bio}
+          />
           <FormErrorMessage>
             {typeof errors.bio?.message === "string" ? errors.bio.message : ""}
           </FormErrorMessage>
@@ -100,6 +124,7 @@ export default function Main() {
             id="nickname"
             placeholder="nickname"
             {...register("nickname")}
+            defaultValue={userInfo?.nickname}
           />
           <FormErrorMessage>
             {typeof errors.nickname?.message === "string"
@@ -107,6 +132,14 @@ export default function Main() {
               : ""}
           </FormErrorMessage>
         </FormControl>
+        <Button
+          colorScheme="teal"
+          isLoading={isSubmitting}
+          type="submit"
+          width="full"
+        >
+          내정보 수정
+        </Button>
       </form>
     </div>
   );

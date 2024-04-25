@@ -30,7 +30,6 @@ export default function NavMenu() {
   // getuser는 promise를 반환함 => q비동기
   // 데이터가 도착하기 전에 닉네임에 접근하려고 하니 에러가 발생
   // useEffect는 컴포넌트가 마운트될 때 및 uid가 변경될 때 사용자 정보를 가지고옴
-
   // useEffect를 활용하여 처리 가능 + 로딩 에러 상태 가져오기
 
   useEffect(() => {
@@ -61,7 +60,6 @@ export default function NavMenu() {
     <>
       <li className="flex justify-center items-center mb-3">
         {userInfo ? (
-
           <Link href="/myPage">{userInfo.nickname}</Link>
         ) : (
           <Text>No user info</Text>
