@@ -8,7 +8,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -17,6 +17,7 @@ import { signUpWithEmailAndPassword } from "@/firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "@/firebase/firestorage";
 import { auth } from "@/firebase/firebaseAuth";
+import Image from "next/image";
 
 const signUpSchema = z.object({
   email: z
@@ -35,14 +36,16 @@ const signUpSchema = z.object({
 export default function Main() {
   const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const {
     handleSubmit,
     register,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(signUpSchema),
   });
-  console.log(errors);
+
   const signUp = async (data: any) => {
     // console.log("hi");
 
@@ -55,10 +58,38 @@ export default function Main() {
         data.nickname,
         data.image[0]
       );
+      router.replace("/home");
     } catch (error) {
       console.log(error);
     }
   };
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedFile) {
+      const fileURL = URL.createObjectURL(selectedFile);
+      setPreview(fileURL);
+    }
+  }, [selectedFile]);
+  // const test = getValues("image");
+
+  // if (test && test.length > 0) {
+  //   const firstFile = test[0];
+  //   if (firstFile instanceof File) {
+  //     const fileURL = URL.createObjectURL(test[0]);
+  //     console.log(fileURL);
+  //     setPreview(fileURL);
+  //   } else {
+  //     console.log("file 아님");
+  //   }
+  // } else {
+  //   console.log("타입에러");
+  // }
 
   return (
     <div className="container mx-auto mr-20 ml-20">
@@ -110,7 +141,7 @@ export default function Main() {
               : ""}
           </FormErrorMessage>
         </FormControl>
-        <FormControl isInvalid={!!errors.nickname}>
+        <FormControl isInvalid={!!errors.image}>
           <FormLabel htmlFor="image">프로필이미지</FormLabel>
           <Input
             id="image"
@@ -118,8 +149,7 @@ export default function Main() {
             type="file"
             accept="image/*"
             {...register("image", {
-              onChange: (e) => setSelectedFile(e.target.files[0]),
-              value: selectedFile,
+              onChange: onFileChange,
             })}
           />
           <FormErrorMessage>
@@ -128,6 +158,11 @@ export default function Main() {
               : ""}
           </FormErrorMessage>
         </FormControl>
+        {preview && (
+          <div>
+            <Image src={preview} alt="미리보기" width={200} height={200} />
+          </div>
+        )}
         <HStack mt={5}>
           <Button
             isLoading={isSubmitting}

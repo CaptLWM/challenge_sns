@@ -5,6 +5,7 @@ import { getUser } from "@/firebase/firestore";
 import useAuthStore, { initAuthState } from "@/store/store";
 import { Text } from "@chakra-ui/react";
 import { DocumentData } from "firebase/firestore";
+import Image from "next/image";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -26,7 +27,8 @@ export default function NavMenu() {
   // 사용자 ID 가져오기
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : null;
-
+  console.log("uid", uid);
+  // TODO 지금 처음 회원가입하고 로그인 했을때 닉네임 잘 못찾아옴
   // getuser는 promise를 반환함 => q비동기
   // 데이터가 도착하기 전에 닉네임에 접근하려고 하니 에러가 발생
   // useEffect는 컴포넌트가 마운트될 때 및 uid가 변경될 때 사용자 정보를 가지고옴
@@ -56,11 +58,23 @@ export default function NavMenu() {
     return <Text>Error loading user info</Text>; // 에러 처리
   }
 
+  console.log("navuserInfo", userInfo);
+
   return (
     <>
       <li className="flex justify-center items-center mb-3">
         {userInfo ? (
-          <Link href="/myPage">{userInfo.nickname}</Link>
+          <Link href="/myPage">
+            <div>
+              <Text>{userInfo.nickname}</Text>
+              <Image
+                src={userInfo.profileImage}
+                alt="미리보기"
+                width={50}
+                height={50}
+              />
+            </div>
+          </Link>
         ) : (
           <Text>No user info</Text>
         )}
