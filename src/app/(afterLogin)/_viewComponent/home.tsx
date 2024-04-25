@@ -5,6 +5,8 @@ import useAuthStore from "@/store/store";
 import { Button, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import React from "react";
+import FileUpload from "../_CommonComponent/FileUpload";
+import BoardItemCard from "../_CommonComponent/BoardItemCard";
 
 export default function Main() {
   const router = useRouter();
@@ -19,8 +21,15 @@ export default function Main() {
   };
   return (
     <div>
-      <Text>처음화면</Text>
-      <Button onClick={doLogout}>로그아웃</Button>
+      <BoardItemCard />
+      <BoardItemCard />
+      <BoardItemCard />
+      <BoardItemCard />
+      <BoardItemCard />
+      <BoardItemCard />
+      <BoardItemCard />
+      <BoardItemCard />
+      <BoardItemCard />
     </div>
   );
 }
