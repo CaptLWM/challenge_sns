@@ -10,6 +10,8 @@ import firebasedb from "./firebase";
 import { User } from "./firebase.type";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebaseAuth";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "./firestorage";
 
 export const firestore = getFirestore(firebasedb);
 
@@ -24,7 +26,8 @@ export const signUpWithEmailAndPassword = async (
   email: string,
   password: string,
   nickname: string,
-  bio: string
+  bio: string,
+  image: File
 ) => {
   try {
     const credential = await createUserWithEmailAndPassword(
@@ -33,16 +36,28 @@ export const signUpWithEmailAndPassword = async (
       password
     );
     const user = credential.user;
-    alert("성공했습니다!");
+    const imageRef = ref(storage, `${user?.uid}/${image?.name}`);
+    console.log("imageRef", imageRef);
+    try {
+      // 파일 올리면 => uid 값으로 폴더 생성됨
+      await uploadBytes(imageRef, image);
+      console.log("성공");
+    } catch (error) {
+      console.log("파일업로드 실패", error);
+    }
+    const downloadURL = await getDownloadURL(imageRef);
+    console.log("URL", downloadURL);
     const userDocRef = doc(firestore, "/User", user.uid);
     await setDoc(userDocRef, {
       bio: bio,
       uid: user.uid,
       email: email,
       nickname: nickname,
+      profileImage: downloadURL,
       createdAt: "test",
       updatedAt: "test",
     });
+    return user.uid;
   } catch (error) {
     const errorMessage = error;
     alert(errorMessage);

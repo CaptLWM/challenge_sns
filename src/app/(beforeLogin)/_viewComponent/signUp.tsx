@@ -8,12 +8,15 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signUpWithEmailAndPassword } from "@/firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "@/firebase/firestorage";
+import { auth } from "@/firebase/firebaseAuth";
 
 const signUpSchema = z.object({
   email: z
@@ -26,10 +29,12 @@ const signUpSchema = z.object({
     .min(8, "비밀번호 길이"),
   bio: z.string(),
   nickname: z.string(),
+  image: z.any(),
 });
 
 export default function Main() {
   const router = useRouter();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const {
     handleSubmit,
     register,
@@ -37,19 +42,19 @@ export default function Main() {
   } = useForm({
     resolver: zodResolver(signUpSchema),
   });
-
+  console.log(errors);
   const signUp = async (data: any) => {
+    // console.log("hi");
+
     try {
       // 회원가입 하고
-      const user = await signUpWithEmailAndPassword(
+      await signUpWithEmailAndPassword(
         data.email,
         data.password,
         data.bio,
-        data.nickname
+        data.nickname,
+        data.image[0]
       );
-      console.log("signup", user);
-      // 세부정보 저장 하는거 까지 문제 없으면 home으로 이동
-      // router.replace('/home')
     } catch (error) {
       console.log(error);
     }
@@ -102,6 +107,24 @@ export default function Main() {
           <FormErrorMessage>
             {typeof errors.nickname?.message === "string"
               ? errors.nickname.message
+              : ""}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.nickname}>
+          <FormLabel htmlFor="image">프로필이미지</FormLabel>
+          <Input
+            id="image"
+            placeholder="이미지"
+            type="file"
+            accept="image/*"
+            {...register("image", {
+              onChange: (e) => setSelectedFile(e.target.files[0]),
+              value: selectedFile,
+            })}
+          />
+          <FormErrorMessage>
+            {typeof errors.image?.message === "string"
+              ? errors.image.message
               : ""}
           </FormErrorMessage>
         </FormControl>
