@@ -60,7 +60,7 @@ export default function NavMenu() {
     <>
       <li className="flex justify-center items-center mb-3">
         {userInfo ? (
-          <Link href="/myPage">{userInfo.nickname}</Link>
+          <Text>{userInfo.nickname}</Text>
         ) : (
           <Text>No user info</Text>
         )}
