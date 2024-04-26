@@ -66,23 +66,6 @@ export default function NavMenu() {
   return (
     <>
       <li className="flex justify-center items-center mb-3">
-        {userInfo ? (
-          <Link href="/myPage">
-            <div>
-              <Text>{userInfo.nickname}</Text>
-              <Image
-                src={userInfo.profileImage}
-                alt="미리보기"
-                width={50}
-                height={50}
-              />
-            </div>
-          </Link>
-        ) : (
-          <Text>No user info</Text>
-        )}
-      </li>
-      <li className="flex justify-center items-center mb-3">
         <Link href="/home">
           <div>
             <TbHome size="40px" />
