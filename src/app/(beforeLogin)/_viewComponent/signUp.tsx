@@ -40,7 +40,6 @@ export default function Main() {
   const {
     handleSubmit,
     register,
-    getValues,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(signUpSchema),
@@ -53,14 +52,17 @@ export default function Main() {
   };
 
   const signUp = async (data: any) => {
+    console.log(data.image[0]);
+    // console.log(selectedFile);
     try {
       // 회원가입 하고
+
       await signUpWithEmailAndPassword(
         data.email,
         data.password,
         data.bio,
         data.nickname,
-        data.image[0]
+        data.image
       );
       router.replace("/home");
     } catch (error) {

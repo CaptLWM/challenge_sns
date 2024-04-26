@@ -27,7 +27,7 @@ export const signUpWithEmailAndPassword = async (
   password: string,
   nickname: string,
   bio: string,
-  image: File
+  image: File[]
 ) => {
   try {
     // console.log("email", email);
@@ -38,13 +38,12 @@ export const signUpWithEmailAndPassword = async (
     );
 
     const user = credential.user;
-    const imageRef = ref(storage, `${user?.uid}/${image?.name}`);
+    const imageRef = ref(storage, `${user?.uid}/${image[0]?.name}`);
+    // const imageRef = ref(storage, `${user?.uid}/${image?.name}`);
 
     try {
-      console.log("image", image);
-      console.log("imageRef", imageRef);
       // 파일 올리면 => uid 값으로 폴더 생성됨
-      await uploadBytes(imageRef, image);
+      await uploadBytes(imageRef, image[0]); // 파일 업로드
       alert("성공");
       console.log("성공");
     } catch (error) {
