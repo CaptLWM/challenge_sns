@@ -56,7 +56,6 @@ export default function Main() {
     // console.log(selectedFile);
     try {
       // 회원가입 하고
-
       await signUpWithEmailAndPassword(
         data.email,
         data.password,
@@ -64,7 +63,6 @@ export default function Main() {
         data.nickname,
         data.image
       );
-      router.push("/home");
     } catch (error) {
       console.log("!!!!", error);
     }
