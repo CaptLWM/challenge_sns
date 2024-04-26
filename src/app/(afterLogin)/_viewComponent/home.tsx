@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import FileUpload from "../_CommonComponent/FileUpload";
 import BoardItemCard from "../_CommonComponent/BoardItemCard";
-import BoardCreateCard from "../_CommonComponent/\bBoardCreateCard";
+import BoardCreateCard from "../_CommonComponent/BoardCreateCard";
 
 export default function Main() {
   const router = useRouter();
