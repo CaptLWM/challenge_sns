@@ -46,9 +46,15 @@ export default function Main() {
     resolver: zodResolver(signUpSchema),
   });
 
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
   const signUp = async (data: any) => {
     // console.log("hi");
-
+    console.log(data);
     try {
       // 회원가입 하고
       await signUpWithEmailAndPassword(
@@ -60,13 +66,7 @@ export default function Main() {
       );
       router.replace("/home");
     } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setSelectedFile(e.target.files[0]);
+      console.log("!!!!", error);
     }
   };
 
@@ -76,20 +76,6 @@ export default function Main() {
       setPreview(fileURL);
     }
   }, [selectedFile]);
-  // const test = getValues("image");
-
-  // if (test && test.length > 0) {
-  //   const firstFile = test[0];
-  //   if (firstFile instanceof File) {
-  //     const fileURL = URL.createObjectURL(test[0]);
-  //     console.log(fileURL);
-  //     setPreview(fileURL);
-  //   } else {
-  //     console.log("file 아님");
-  //   }
-  // } else {
-  //   console.log("타입에러");
-  // }
 
   return (
     <div className="container mx-auto mr-20 ml-20">
