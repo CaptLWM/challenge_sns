@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import FileUpload from "../_CommonComponent/FileUpload";
 import BoardItemCard from "../_CommonComponent/BoardItemCard";
+import BoardCreateCard from "../_CommonComponent/\bBoardCreateCard";
 
 export default function Main() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function Main() {
     <div>
       <Text>처음화면</Text>
       <Button onClick={doLogout}>로그아웃</Button>
+      <BoardCreateCard />
       <BoardItemCard />
     </div>
   );

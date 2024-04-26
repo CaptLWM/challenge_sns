@@ -56,6 +56,7 @@ export default function Main() {
     // console.log(selectedFile);
     try {
       // 회원가입 하고
+
       await signUpWithEmailAndPassword(
         data.email,
         data.password,

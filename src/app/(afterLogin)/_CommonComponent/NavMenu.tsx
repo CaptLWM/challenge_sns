@@ -40,16 +40,20 @@ export default function NavMenu() {
   useEffect(() => {
     router.refresh();
     if (uid) {
+      console.log("uid2", uid);
       getUser(uid)
         .then((data) => {
+          console.log("data", data);
           setUserInfo(data);
           setLoading(false);
         })
         .catch((err) => {
+          console.log("err", err);
           setError(err);
           setLoading(false);
         });
     } else {
+      console.log("uid3", uid);
       setLoading(false);
     }
   }, [router, uid]); // uid가 변경될 때마다 effect 실행
