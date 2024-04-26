@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import useAuthStore from "@/store/store";
 import { DocumentData } from "firebase/firestore";
 import { getUser, updateUser } from "@/firebase/firestore";
+import { useRouter } from "next/navigation";
 
 const signUpSchema = z.object({
   email: z
@@ -29,6 +30,7 @@ const signUpSchema = z.object({
 });
 
 export default function Main() {
+  const router = useRouter();
   // 상태를 추가하여 사용자 정보를 저장
   const [userInfo, setUserInfo] = useState<DocumentData | null>();
   const [loading, setLoading] = useState(true);
@@ -68,6 +70,7 @@ export default function Main() {
     const user_uid: string = uid ? uid : "";
     try {
       await updateUser(user_uid, data);
+      router.replace("/home");
     } catch (error: any) {
       const errorMessage = error.message;
       console.log(errorMessage);

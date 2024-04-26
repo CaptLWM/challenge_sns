@@ -21,14 +21,8 @@ export default function Main() {
   };
   return (
     <div>
-      <BoardItemCard />
-      <BoardItemCard />
-      <BoardItemCard />
-      <BoardItemCard />
-      <BoardItemCard />
-      <BoardItemCard />
-      <BoardItemCard />
-      <BoardItemCard />
+      <Text>처음화면</Text>
+      <Button onClick={doLogout}>로그아웃</Button>
       <BoardItemCard />
     </div>
   );

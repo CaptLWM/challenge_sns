@@ -1,6 +1,7 @@
 "use client";
 
 import { User } from "@/firebase/firebase.type";
+import { checkAuthState } from "@/firebase/firebaseAuth";
 import { getUser } from "@/firebase/firestore";
 import useAuthStore, { initAuthState } from "@/store/store";
 import { Text } from "@chakra-ui/react";
@@ -25,8 +26,10 @@ export default function NavMenu() {
   const segment = useSelectedLayoutSegment();
 
   // 사용자 ID 가져오기
+  const checkAuth = initAuthState();
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : null;
+
   console.log("uid", uid);
   // TODO 지금 처음 회원가입하고 로그인 했을때 닉네임 잘 못찾아옴
   // getuser는 promise를 반환함 => q비동기
@@ -106,6 +109,23 @@ export default function NavMenu() {
             <TbTargetArrow size="40px" />
           </div>
         </Link>
+      </li>
+      <li className="flex justify-center items-center mb-3">
+        {userInfo ? (
+          <Link href="/myPage">
+            <div>
+              <Text>{userInfo.nickname}</Text>
+              <Image
+                src={userInfo.profileImage}
+                alt="미리보기"
+                width={50}
+                height={50}
+              />
+            </div>
+          </Link>
+        ) : (
+          <Text>No user info</Text>
+        )}
       </li>
     </>
   );
