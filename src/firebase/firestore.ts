@@ -7,7 +7,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import firebasedb from "./firebase";
-import { User } from "./firebase.type";
+import { Board, User } from "./firebase.type";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebaseAuth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -96,4 +96,14 @@ export const deleteUser = async (uid: string) => {
   const userDocRef = doc(firestore, "/User/userInfo", uid);
   await deleteDoc(userDocRef);
   console.log("User deleted:", uid);
+};
+
+// 게시물 등록
+export const createBoardItem = async (data: Board) => {
+  const boardItemDocRef = doc(firestore, "/BoardItem");
+  await setDoc(boardItemDocRef, {
+    ...data,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
 };

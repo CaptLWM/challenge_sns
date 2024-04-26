@@ -1,5 +1,4 @@
-
-export type InputType = {
+export interface InputType {
   label_width: string;
   label: string;
   placeholder: string;
@@ -8,12 +7,11 @@ export type InputType = {
   required: boolean;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-};
+}
 
-export type ButtonType = {
+export interface ButtonType {
   type?: "button" | "submit" | "reset" | undefined;
   label: string;
   ml: number;
   onClick: (event: any) => void;
-
-};
+}
