@@ -53,8 +53,6 @@ export default function Main() {
   };
 
   const signUp = async (data: any) => {
-    // console.log("hi");
-    console.log(data);
     try {
       // 회원가입 하고
       await signUpWithEmailAndPassword(

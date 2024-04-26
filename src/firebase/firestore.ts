@@ -62,6 +62,7 @@ export const signUpWithEmailAndPassword = async (
       createdAt: "test",
       updatedAt: "test",
     });
+    return user.uid;
   } catch (error) {
     const errorMessage = error;
     alert(errorMessage);
