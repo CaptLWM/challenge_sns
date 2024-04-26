@@ -64,7 +64,6 @@ export default function Main() {
         data.nickname,
         data.image
       );
-      router.push("/home");
     } catch (error) {
       console.log("!!!!", error);
     }

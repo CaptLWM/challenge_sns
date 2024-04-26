@@ -8,7 +8,7 @@ import { Text } from "@chakra-ui/react";
 import { DocumentData } from "firebase/firestore";
 import Image from "next/image";
 import Link from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
+import { useRouter, useSelectedLayoutSegment } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { TbTargetArrow } from "react-icons/tb"; // challenge
 import { TbSearch } from "react-icons/tb"; // search
@@ -16,6 +16,7 @@ import { TbHome } from "react-icons/tb"; // home
 import { TbMessageDots } from "react-icons/tb"; // message
 
 export default function NavMenu() {
+  const router = useRouter();
   // 상태를 추가하여 사용자 정보를 저장
   const [userInfo, setUserInfo] = useState<DocumentData | null>();
   const [loading, setLoading] = useState(true);
@@ -26,18 +27,18 @@ export default function NavMenu() {
   const segment = useSelectedLayoutSegment();
 
   // 사용자 ID 가져오기
-  const checkAuth = initAuthState();
+
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : null;
-
   // TODO 지금 처음 회원가입하고 로그인 했을때 닉네임 잘 못찾아옴
-  // getuser는 promise를 반환함 => q비동기
+
+  // getuser는 promise를 반환함 => 비동기
   // 데이터가 도착하기 전에 닉네임에 접근하려고 하니 에러가 발생
   // useEffect는 컴포넌트가 마운트될 때 및 uid가 변경될 때 사용자 정보를 가지고옴
   // useEffect를 활용하여 처리 가능 + 로딩 에러 상태 가져오기
 
   useEffect(() => {
-    console.log("uid1", uid);
+    router.refresh();
     if (uid) {
       console.log("uid2", uid);
       getUser(uid)
@@ -55,7 +56,7 @@ export default function NavMenu() {
       console.log("uid3", uid);
       setLoading(false);
     }
-  }, [uid]); // uid가 변경될 때마다 effect 실행
+  }, [router, uid]); // uid가 변경될 때마다 effect 실행
 
   if (loading) {
     return <Text>Loading...</Text>; // 로딩 상태 표시
@@ -64,8 +65,6 @@ export default function NavMenu() {
   if (error) {
     return <Text>Error loading user info</Text>; // 에러 처리
   }
-
-  console.log("navuserInfo", userInfo);
 
   return (
     <>

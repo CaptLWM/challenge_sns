@@ -45,3 +45,4 @@ export const checkAuthState = (callback: (user: User | null) => void) => {
     callback(user);
   });
 };
+// const AuthListener = (callback: (user: User | null) => void) => {

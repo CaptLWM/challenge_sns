@@ -44,14 +44,12 @@ export default function Main() {
   const router = useRouter();
 
   const signIn = async (data: any) => {
-    console.log("?????");
     try {
       await loginWithEmailAndPassword(data.email, data.password);
       router.replace("/home");
     } catch (error: any) {
       //   const errorCode = error.code;
       const errorMessage = error.message;
-      console.log(errorMessage);
       if (
         errorMessage === "Firebase: Error (auth/invalid-email)." ||
         errorMessage === "Firebase: Error (auth/invalid-credential)."

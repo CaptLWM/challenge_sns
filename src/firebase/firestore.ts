@@ -41,16 +41,15 @@ export const signUpWithEmailAndPassword = async (
     const imageRef = ref(storage, `${user?.uid}/${image[0]?.name}`);
     // const imageRef = ref(storage, `${user?.uid}/${image?.name}`);
 
-    try {
-      // 파일 올리면 => uid 값으로 폴더 생성됨
-      await uploadBytes(imageRef, image[0]); // 파일 업로드
-      alert("성공");
-      console.log("성공");
-    } catch (error) {
-      console.log("파일업로드 실패", error);
-    }
+    // 이미지 업로드
+
+    // 파일 올리면 => uid 값으로 폴더 생성됨
+    await uploadBytes(imageRef, image[0]); // 파일 업로드
+
+    // 이미지 다운로드 URL 가져오기
     const downloadURL = await getDownloadURL(imageRef);
     console.log("URL", downloadURL);
+
     const userDocRef = doc(firestore, "/User", user.uid);
     await setDoc(userDocRef, {
       bio: bio,
@@ -58,8 +57,8 @@ export const signUpWithEmailAndPassword = async (
       email: email,
       nickname: nickname,
       profileImage: downloadURL,
-      createdAt: "test",
-      updatedAt: "test",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
     return user.uid;
   } catch (error) {

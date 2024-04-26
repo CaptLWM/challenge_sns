@@ -63,17 +63,13 @@ export default function Main() {
     }
   }, [uid]);
 
-  console.log(userInfo);
-
   const update = async (data: any) => {
-    console.log("update");
     const user_uid: string = uid ? uid : "";
     try {
       await updateUser(user_uid, data);
       router.replace("/home");
     } catch (error: any) {
       const errorMessage = error.message;
-      console.log(errorMessage);
       alert(errorMessage);
     }
   };
