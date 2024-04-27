@@ -1,7 +1,5 @@
 "use client";
 
-import { User } from "@/firebase/firebase.type";
-import { checkAuthState } from "@/firebase/firebaseAuth";
 import { getUser } from "@/firebase/firestore";
 import useAuthStore, { initAuthState } from "@/store/store";
 import { Text } from "@chakra-ui/react";

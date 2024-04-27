@@ -14,9 +14,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signUpWithEmailAndPassword } from "@/firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "@/firebase/firestorage";
-import { auth } from "@/firebase/firebaseAuth";
 import Image from "next/image";
 
 const signUpSchema = z.object({
@@ -33,6 +30,7 @@ const signUpSchema = z.object({
   image: z.any(),
 });
 
+// TODO : 회원가입할때 이메일 중복확인(알아서 걸러주긴 함), 닉네임 중복확인, 비밀번호 확인 필요
 export default function Main() {
   const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
