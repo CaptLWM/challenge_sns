@@ -47,6 +47,7 @@ export default function BoardItemCard({
     formState: { isSubmitting },
   } = useForm();
 
+  // TODO 수정, 삭제 후 모달창 닫고 새로고침
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFile(e.target.files[0]);
@@ -56,7 +57,9 @@ export default function BoardItemCard({
   // 게시물 삭제
   const deleteItem = async () => {
     console.log("id", id);
-    await deleteDoc(doc(firestore, "/BoardItem", id));
+    await deleteDoc(doc(firestore, "/BoardItem", id)).then(() =>
+      deleteModal.onClose()
+    );
   };
 
   const modifyItem = async (data: any, uid: string) => {
@@ -68,7 +71,7 @@ export default function BoardItemCard({
       image: data.image ? preview : props.image,
       createdAt: props.createdAt,
       updatedAt: new Date().toISOString(),
-    });
+    }).then(() => modifyModal.onClose());
   };
 
   useEffect(() => {
