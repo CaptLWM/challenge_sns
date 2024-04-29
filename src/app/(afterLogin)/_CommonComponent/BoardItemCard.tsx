@@ -48,12 +48,6 @@ export default function BoardItemCard({
         <CardBody>
           <Text py="2">{props.content}</Text>
         </CardBody>
-
-        <CardFooter>
-          <Button variant="solid" colorScheme="blue">
-            Buy Latte
-          </Button>
-        </CardFooter>
       </Stack>
     </Card>
   );
