@@ -1,4 +1,6 @@
 import {
+  addDoc,
+  collection,
   deleteDoc,
   doc,
   getDoc,
@@ -12,6 +14,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebaseAuth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "./firestorage";
+import { create } from "domain";
 
 export const firestore = getFirestore(firebasedb);
 
@@ -99,11 +102,25 @@ export const deleteUser = async (uid: string) => {
 };
 
 // 게시물 등록
-export const createBoardItem = async (data: Board) => {
-  const boardItemDocRef = doc(firestore, "/BoardItem");
-  await setDoc(boardItemDocRef, {
+export const createBoardItem = async (data: Board, uid: string | null) => {
+  // const user = Credential.user;
+  const imageRef = ref(storage, `${uid}/${data.image[0]?.name}`);
+  // const imageRef = ref(storage, `${user?.uid}/${image?.name}`);
+
+  // 이미지 업로드
+  // 파일 올리면 => uid 값으로 폴더 생성됨
+  await uploadBytes(imageRef, data.image[0]); // 파일 업로드
+
+  // 이미지 다운로드 URL 가져오기
+  const downloadURL = await getDownloadURL(imageRef);
+  // console.log("URL", downloadURL);
+
+  await addDoc(collection(firestore, "BoardItem"), {
     ...data,
+    image: downloadURL,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    commentCount: 0,
+    likeCount: 0,
   });
 };

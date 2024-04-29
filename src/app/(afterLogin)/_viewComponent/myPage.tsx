@@ -44,6 +44,7 @@ export default function Main() {
   });
 
   // 로그인한 유저정보 가져오기
+  // TODO  이미지 변경도 추가해야함
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : null;
 
