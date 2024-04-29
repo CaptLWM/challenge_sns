@@ -11,15 +11,20 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { DocumentData, deleteDoc, doc } from "firebase/firestore";
+import { DocumentData, deleteDoc, doc, getDoc } from "firebase/firestore";
 import React from "react";
 
-export default function BoardItemCard({ props }: DocumentData) {
+export default function BoardItemCard({
+  props,
+  id,
+}: {
+  props: DocumentData;
+  id: string;
+}) {
+  console.log("props", props, id);
   const deleteItem = async () => {
-    console.log("props.id", props.id);
-    const todoRef = doc(firestore, "/BoardItem", props.id);
-    console.log("cost", todoRef);
-    await deleteDoc(doc(firestore, "/BoardItem", todoRef.id));
+    console.log("id", id);
+    await deleteDoc(doc(firestore, "/BoardItem", id));
   };
 
   // await deleteDoc(doc(db, "cities", "DC"));

@@ -47,7 +47,8 @@ export default function Main() {
       // doc.id의 경우 따로 지정하지 않는 한 자동으로 생성되는 id입니다.
       // doc.data()를 실행하면 해당 document의 데이터를 가져올 수 있습니다.
       querySnapshot.forEach((doc) => {
-        initial.push(doc.data());
+        // 항상 id를 같이 넘겨줘야함 (문서 id가 필요하기 때문
+        initial.push({ data: doc.data(), id: doc.id });
       });
       setTemp(initial);
     };
@@ -62,7 +63,7 @@ export default function Main() {
       <Button onClick={doLogout}>로그아웃</Button>
       <BoardCreateCard />
       {temp.map((v, i) => (
-        <BoardItemCard key={i} props={v} />
+        <BoardItemCard key={i} props={v.data} id={v.id} />
       ))}
     </div>
   );
