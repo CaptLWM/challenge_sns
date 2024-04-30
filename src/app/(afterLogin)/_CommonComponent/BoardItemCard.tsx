@@ -67,10 +67,20 @@ export default function BoardItemCard({
   const modifyItem = async (data: any, uid: string) => {
     const itemRef = doc(firestore, "/BoardItem", id);
     // console.log(data.image);
-    console.log("modify", data);
-    const imageRef = ref(storage, `${uid}/${data.image[0]?.name}`);
-    await uploadBytes(imageRef, data.image[0]);
-    const downloadURL = await getDownloadURL(imageRef);
+    // console.log("modify", props.image);
+    // console.log("modify2", data.image);
+    const previousImage = props.image ?? "default_image_url_or_placeholder";
+
+    // 다운로드 URL을 기본값으로 설정
+    const downloadURL =
+      data.image && data.image.length > 0
+        ? await (async () => {
+            const imageFile = data.image[0];
+            const imageRef = ref(storage, `${uid}/${imageFile.name}`);
+            await uploadBytes(imageRef, imageFile);
+            return await getDownloadURL(imageRef);
+          })()
+        : previousImage;
 
     await updateDoc(itemRef, {
       id: uid,
