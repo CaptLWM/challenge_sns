@@ -1,4 +1,5 @@
 import {
+  DocumentData,
   addDoc,
   collection,
   deleteDoc,
@@ -122,5 +123,41 @@ export const createBoardItem = async (data: Board, uid: string | null) => {
     updatedAt: new Date().toISOString(),
     commentCount: 0,
     likeCount: 0,
+  });
+};
+
+export const modifyBoardItem = async (
+  props: DocumentData,
+  data: Board,
+  id: string,
+  uid: string
+) => {
+  console.log("dataserver", props, data);
+  const itemRef = doc(firestore, "/BoardItem", id);
+  // console.log(data.image);
+  // console.log("modify", props.image);
+  // console.log("modify2", data.image);
+  const previousImage = props.image ?? "default_image_url_or_placeholder";
+
+  // 다운로드 URL을 기본값으로 설정
+  const downloadURL =
+    data.image && data.image.length > 0
+      ? await (async () => {
+          const imageFile = data.image[0];
+          const imageRef = ref(storage, `${uid}/${imageFile.name}`);
+          await uploadBytes(imageRef, imageFile);
+          return await getDownloadURL(imageRef);
+        })()
+      : previousImage;
+
+  await updateDoc(itemRef, {
+    id: uid,
+    nickname: props.nickname ?? null, // Add null check here
+    commentCount: 0,
+    likeCount: 0,
+    content: data.content,
+    image: data.image ? downloadURL : props.image,
+    createdAt: props.createdAt,
+    updatedAt: new Date().toISOString(),
   });
 };

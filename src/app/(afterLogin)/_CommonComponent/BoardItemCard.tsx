@@ -1,7 +1,8 @@
 "use client";
 
 import { storage } from "@/firebase/firestorage";
-import { firestore } from "@/firebase/firestore";
+import { firestore, modifyBoardItem } from "@/firebase/firestore";
+import useAuthStore from "@/store/store";
 import {
   Button,
   Card,
@@ -21,6 +22,7 @@ import {
   Input,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   DocumentData,
   deleteDoc,
@@ -46,9 +48,10 @@ export default function BoardItemCard({
   const {
     handleSubmit,
     register,
+    reset,
     formState: { isSubmitting },
   } = useForm();
-
+  const queryClient = useQueryClient();
   // TODO 수정, 삭제 후 모달창 닫고 새로고침
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -56,43 +59,28 @@ export default function BoardItemCard({
     }
   };
 
-  // 게시물 삭제
-  const deleteItem = async () => {
-    console.log("id", id);
-    await deleteDoc(doc(firestore, "/BoardItem", id)).then(() =>
-      deleteModal.onClose()
-    );
-  };
+  // DB저장된 사용자 정보 가져오기
+  const user = useAuthStore((state) => state.user);
+  const uid = user ? user.uid : "";
 
-  const modifyItem = async (data: any, uid: string) => {
-    const itemRef = doc(firestore, "/BoardItem", id);
-    // console.log(data.image);
-    // console.log("modify", props.image);
-    // console.log("modify2", data.image);
-    const previousImage = props.image ?? "default_image_url_or_placeholder";
-
-    // 다운로드 URL을 기본값으로 설정
-    const downloadURL =
-      data.image && data.image.length > 0
-        ? await (async () => {
-            const imageFile = data.image[0];
-            const imageRef = ref(storage, `${uid}/${imageFile.name}`);
-            await uploadBytes(imageRef, imageFile);
-            return await getDownloadURL(imageRef);
-          })()
-        : previousImage;
-
-    await updateDoc(itemRef, {
-      id: uid,
-      nickname: props.nickname ?? null, // Add null check here
-      commentCount: 0,
-      likeCount: 0,
-      content: data.content,
-      image: data.image ? downloadURL : props.image,
-      createdAt: props.createdAt,
-      updatedAt: new Date().toISOString(),
-    }).then(() => modifyModal.onClose());
-  };
+  const deleteBoard = useMutation({
+    mutationFn: async (id: string) => {
+      console.log("id", id);
+      await deleteDoc(doc(firestore, "/BoardItem", id));
+    },
+    onSuccess: () => {
+      deleteModal.onClose();
+      queryClient.invalidateQueries();
+      // 필요한 경우 폼 리셋
+      reset();
+      setPreview(null);
+      alert("게시물이 성공적으로 삭제되었습니다.");
+    },
+    onError: (error: any) => {
+      queryClient.invalidateQueries();
+      alert(`게시물 삭제에 실패했습니다: ${error.message}`);
+    },
+  });
 
   useEffect(() => {
     if (selectedFile) {
@@ -101,6 +89,37 @@ export default function BoardItemCard({
     }
   }, [selectedFile]);
 
+  const modifyBoard = useMutation({
+    mutationFn: async ({
+      data,
+      props,
+      id,
+    }: {
+      data: any;
+      props: DocumentData;
+      id: string;
+    }) => {
+      console.log("data", data, props);
+      await modifyBoardItem(props, data, id, uid);
+    },
+    onSuccess: () => {
+      modifyModal.onClose();
+      queryClient.invalidateQueries();
+      // 필요한 경우 폼 리셋
+      reset();
+      setPreview(null);
+      alert("게시물이 성공적으로 등록되었습니다.");
+    },
+    onError: (error: any) => {
+      queryClient.invalidateQueries();
+      alert(`게시물 등록에 실패했습니다: ${error.message}`);
+    },
+  });
+
+  const onSubmitModify = (data: any) => {
+    console.log("data3", data);
+    modifyBoard.mutate({ data, props, id }); // Mutation을 통해 데이터 등록 요청
+  };
   // await deleteDoc(doc(db, "cities", "DC"));
   return (
     <>
@@ -143,7 +162,11 @@ export default function BoardItemCard({
             <Button variant="ghost" onClick={deleteModal.onClose}>
               취소
             </Button>
-            <Button colorScheme="blue" mr={3} onClick={deleteItem}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => deleteBoard.mutate(id)}
+            >
               삭제
             </Button>
           </ModalFooter>
@@ -160,7 +183,12 @@ export default function BoardItemCard({
         <ModalContent>
           <ModalHeader>게시글 수정</ModalHeader>
           <ModalCloseButton />
-          <form onSubmit={handleSubmit((data) => modifyItem(data, id))}>
+          <form
+            onSubmit={handleSubmit((data) => {
+              console.log("data12", data);
+              onSubmitModify(data);
+            })}
+          >
             <ModalBody>
               <FormControl>
                 <FormLabel htmlFor="내용">내용</FormLabel>

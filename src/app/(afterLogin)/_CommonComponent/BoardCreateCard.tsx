@@ -17,6 +17,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DocumentData, getFirestore } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -26,6 +27,7 @@ export default function BoardCreateCard() {
   const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const queryClient = useQueryClient();
   //////
   const [userInfo, setUserInfo] = useState<DocumentData | null>();
   const [loading, setLoading] = useState(true);
@@ -68,29 +70,33 @@ export default function BoardCreateCard() {
   }, [router, uid]); // uid가 변경될 때마다 effect 실행
 
   // 게시물 등록
-  const createItem = async (data: any, uid: string) => {
-    try {
-      // 게시물 등록
+  const createBoard = useMutation({
+    mutationFn: async (data: any) => {
       await createBoardItem(
         {
+          ...data,
           id: uid,
-          content: data.content,
-          image: data.image,
-          nickname: userInfo?.nickname ?? null, // Add null check here
+          nickname: userInfo?.nickname ?? null,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           commentCount: 0,
           likeCount: 0,
         },
-        uid // Add the missing uid argument here
+        uid
       );
-      // TODO 리액트 쿼리로 바꿔서 업데이트 되도록 해야함
-    } catch (error) {
-      const errorMessage = error;
-      alert(errorMessage);
-      return error;
-    }
-  };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+      // 필요한 경우 폼 리셋
+      reset();
+      setPreview(null);
+      alert("게시물이 성공적으로 등록되었습니다.");
+    },
+    onError: (error: any) => {
+      queryClient.invalidateQueries();
+      alert(`게시물 등록에 실패했습니다: ${error.message}`);
+    },
+  });
 
   // 미리보기
   useEffect(() => {
@@ -99,6 +105,10 @@ export default function BoardCreateCard() {
       setPreview(fileURL);
     }
   }, [selectedFile]);
+
+  const onSubmit = (data: any) => {
+    createBoard.mutate(data); // Mutation을 통해 데이터 등록 요청
+  };
 
   return (
     <Card
@@ -109,7 +119,7 @@ export default function BoardCreateCard() {
       padding={5}
     >
       <Stack>
-        <form onSubmit={handleSubmit((data) => createItem(data, uid))}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <CardBody>
             {/* 제목은 추후 챌린지로 변경 */}
             {/* <FormControl>
