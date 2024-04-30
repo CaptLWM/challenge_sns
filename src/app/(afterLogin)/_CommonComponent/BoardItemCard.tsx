@@ -1,5 +1,6 @@
 "use client";
 
+import { storage } from "@/firebase/firestorage";
 import { firestore } from "@/firebase/firestore";
 import {
   Button,
@@ -27,6 +28,7 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -64,11 +66,19 @@ export default function BoardItemCard({
 
   const modifyItem = async (data: any, uid: string) => {
     const itemRef = doc(firestore, "/BoardItem", id);
+    // console.log(data.image);
     console.log("modify", data);
+    const imageRef = ref(storage, `${uid}/${data.image[0]?.name}`);
+    await uploadBytes(imageRef, data.image[0]);
+    const downloadURL = await getDownloadURL(imageRef);
+
     await updateDoc(itemRef, {
-      ...props,
+      id: uid,
+      nickname: props.nickname ?? null, // Add null check here
+      commentCount: 0,
+      likeCount: 0,
       content: data.content,
-      image: data.image ? preview : props.image,
+      image: data.image ? downloadURL : props.image,
       createdAt: props.createdAt,
       updatedAt: new Date().toISOString(),
     }).then(() => modifyModal.onClose());
