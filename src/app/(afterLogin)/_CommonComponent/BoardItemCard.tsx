@@ -23,6 +23,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import {
   DocumentData,
   deleteDoc,
@@ -30,6 +31,7 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
+
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -48,6 +50,7 @@ export default function BoardItemCard({
   const {
     handleSubmit,
     register,
+
     reset,
     formState: { isSubmitting },
   } = useForm();
@@ -58,6 +61,7 @@ export default function BoardItemCard({
       setSelectedFile(e.target.files[0]);
     }
   };
+
 
   // DB저장된 사용자 정보 가져오기
   const user = useAuthStore((state) => state.user);
@@ -183,13 +187,14 @@ export default function BoardItemCard({
         <ModalContent>
           <ModalHeader>게시글 수정</ModalHeader>
           <ModalCloseButton />
+
           <form
             onSubmit={handleSubmit((data) => {
               console.log("data12", data);
               onSubmitModify(data);
             })}
           >
-            <ModalBody>
+             <ModalBody>
               <FormControl>
                 <FormLabel htmlFor="내용">내용</FormLabel>
                 <Input

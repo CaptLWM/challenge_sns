@@ -17,7 +17,9 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { DocumentData, getFirestore } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -27,12 +29,11 @@ export default function BoardCreateCard() {
   const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const queryClient = useQueryClient();
-  //////
+
+  const queryClient = useQueryClient();  
   const [userInfo, setUserInfo] = useState<DocumentData | null>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  //////
   const {
     handleSubmit,
     register,
@@ -70,6 +71,7 @@ export default function BoardCreateCard() {
   }, [router, uid]); // uid가 변경될 때마다 effect 실행
 
   // 게시물 등록
+
   const createBoard = useMutation({
     mutationFn: async (data: any) => {
       await createBoardItem(
@@ -82,6 +84,7 @@ export default function BoardCreateCard() {
           commentCount: 0,
           likeCount: 0,
         },
+
         uid
       );
     },
@@ -98,6 +101,7 @@ export default function BoardCreateCard() {
     },
   });
 
+
   // 미리보기
   useEffect(() => {
     if (selectedFile) {
@@ -105,6 +109,7 @@ export default function BoardCreateCard() {
       setPreview(fileURL);
     }
   }, [selectedFile]);
+
 
   const onSubmit = (data: any) => {
     createBoard.mutate(data); // Mutation을 통해 데이터 등록 요청

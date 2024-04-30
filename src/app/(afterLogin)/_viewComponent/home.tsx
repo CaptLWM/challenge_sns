@@ -19,10 +19,12 @@ import {
 import firebasedb from "@/firebase/firebase";
 import { firestore } from "@/firebase/firestore";
 import { Board } from "@/firebase/firebase.type";
+
 import { useBoardListQuery } from "@/queries/queries";
 
 export default function Main() {
   const router = useRouter();
+  const [temp, setTemp] = React.useState<DocumentData[]>([]);
   const doLogout = async (event: any) => {
     try {
       await logout();
@@ -34,6 +36,7 @@ export default function Main() {
   };
 
   // 데이터 호출 테스트
+
   const boardList = useBoardListQuery();
   console.log("boardlist", boardList.data);
 
@@ -42,6 +45,7 @@ export default function Main() {
       <Text>처음화면</Text>
       <Button onClick={doLogout}>로그아웃</Button>
       <BoardCreateCard />
+
       {boardList.data
         ? boardList.data.map((v, i) => (
             <BoardItemCard key={i} props={v.data} id={v.id} />
