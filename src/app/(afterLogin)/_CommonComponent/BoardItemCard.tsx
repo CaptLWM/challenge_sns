@@ -21,6 +21,7 @@ import {
   Text,
   Input,
   useDisclosure,
+  CardFooter,
 } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -33,6 +34,7 @@ import {
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import ReplyDrawer from "./ReplyDrawer";
 
 export default function BoardItemCard({
   props,
@@ -45,6 +47,7 @@ export default function BoardItemCard({
   const [preview, setPreview] = useState<string | null>(props.image);
   const deleteModal = useDisclosure();
   const modifyModal = useDisclosure();
+  const replyDrawer = useDisclosure();
   const {
     handleSubmit,
     register,
@@ -61,7 +64,7 @@ export default function BoardItemCard({
 
   // DB저장된 사용자 정보 가져오기
   const user = useAuthStore((state) => state.user);
-  const uid = user ? user.uid : "";
+  const uid = user ? user.uid : ""; // 로그인한 사용자의 uid
 
   const deleteBoard = useMutation({
     mutationFn: async (id: string) => {
@@ -143,6 +146,10 @@ export default function BoardItemCard({
           <CardBody>
             <Text py="2">{props.content}</Text>
           </CardBody>
+          <CardFooter>
+            <Button>좋아요</Button>
+            <Button onClick={replyDrawer.onOpen}>댓글</Button>
+          </CardFooter>
         </Stack>
       </Card>
       <Modal
@@ -240,6 +247,12 @@ export default function BoardItemCard({
           </form>
         </ModalContent>
       </Modal>
+      <ReplyDrawer
+        isOpen={replyDrawer.isOpen}
+        onClose={replyDrawer.onClose}
+        id={id}
+        uid={uid}
+      />
     </>
   );
 }
