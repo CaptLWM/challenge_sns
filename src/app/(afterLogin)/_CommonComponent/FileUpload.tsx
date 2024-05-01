@@ -21,7 +21,6 @@ export default function FileUpload() {
         // 파일 올리면 => uid 값으로 폴더 생성됨
         await uploadBytes(imageRef, selectedFile);
         const downloadURL = await getDownloadURL(imageRef);
-        console.log(downloadURL);
         console.log("성공");
       } catch (error) {
         console.log("파일업로드 실패", error);

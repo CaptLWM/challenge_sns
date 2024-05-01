@@ -30,7 +30,7 @@ export default function BoardCreateCard() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  const queryClient = useQueryClient();  
+  const queryClient = useQueryClient();
   const [userInfo, setUserInfo] = useState<DocumentData | null>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -55,17 +55,14 @@ export default function BoardCreateCard() {
     if (uid) {
       getUser(uid)
         .then((data) => {
-          console.log("data", data);
           setUserInfo(data);
           setLoading(false);
         })
         .catch((err) => {
-          console.log("err", err);
           setError(err);
           setLoading(false);
         });
     } else {
-      console.log("uid3", uid);
       setLoading(false);
     }
   }, [router, uid]); // uid가 변경될 때마다 effect 실행
@@ -101,7 +98,6 @@ export default function BoardCreateCard() {
     },
   });
 
-
   // 미리보기
   useEffect(() => {
     if (selectedFile) {
@@ -109,7 +105,6 @@ export default function BoardCreateCard() {
       setPreview(fileURL);
     }
   }, [selectedFile]);
-
 
   const onSubmit = (data: any) => {
     createBoard.mutate(data); // Mutation을 통해 데이터 등록 요청
@@ -134,7 +129,7 @@ export default function BoardCreateCard() {
             <FormControl>
               <FormLabel htmlFor="내용">내용</FormLabel>
               <Input
-                id="password"
+                id="content"
                 placeholder="content"
                 {...register("content")}
               />

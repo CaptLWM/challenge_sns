@@ -52,7 +52,6 @@ export const signUpWithEmailAndPassword = async (
 
     // 이미지 다운로드 URL 가져오기
     const downloadURL = await getDownloadURL(imageRef);
-    console.log("URL", downloadURL);
 
     const userDocRef = doc(firestore, "/User", user.uid);
     await setDoc(userDocRef, {
@@ -74,7 +73,6 @@ export const signUpWithEmailAndPassword = async (
 
 // 회원 정보 읽기 함수
 export const getUser = async (uid: string) => {
-  console.log("uid", uid);
   const userDocRef = doc(firestore, "/User", uid);
   // getDoc(참조) : 이 DocumentReference 에서 참조하는 문서를 읽습니다. 참고: getDoc() 서버에서 데이터를 기다리면서 가능한 경우 최신 데이터를 제공하려고 시도하지만 오프라인 상태이고 서버에 연결할 수 없는 경우 캐시된 데이터를 반환하거나 실패할 수 있습니다. 이 동작을 지정하려면 getDocFromCache() 또는 getDocFromServer()를 호출합니다. .
   const userSnap = await getDoc(userDocRef);
@@ -132,7 +130,6 @@ export const modifyBoardItem = async (
   id: string,
   uid: string
 ) => {
-  console.log("dataserver", props, data);
   const itemRef = doc(firestore, "/BoardItem", id);
   // console.log(data.image);
   // console.log("modify", props.image);
@@ -159,5 +156,14 @@ export const modifyBoardItem = async (
     image: data.image ? downloadURL : props.image,
     createdAt: props.createdAt,
     updatedAt: new Date().toISOString(),
+  });
+};
+
+export const createBoardItemReply = async (data: any, id: any, uid: any) => {
+  await addDoc(collection(firestore, "BoardItemReply"), {
+    content: data.content,
+    createdAt: new Date().toISOString(),
+    feedId: id,
+    userId: uid,
   });
 };
