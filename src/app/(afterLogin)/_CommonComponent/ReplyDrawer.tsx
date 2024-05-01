@@ -1,6 +1,7 @@
 "use client";
 
 import { createBoardItemReply } from "@/firebase/firestore";
+import { useBoardItemReplyQuery } from "@/queries/queries";
 // import { useBoardItemReplyQuery } from "@/queries/queries";
 import {
   Button,
@@ -14,6 +15,7 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Text,
 } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { create } from "domain";
@@ -55,7 +57,6 @@ export default function ReplyDrawer({
     },
     onSuccess: () => {
       queryClient.invalidateQueries();
-      alert("성공");
       reset();
     },
     onError: (error: any) => {
@@ -65,9 +66,11 @@ export default function ReplyDrawer({
     },
   });
   const onSubmit = (data: any) => {
-    console.log("data222", data);
     createReply.mutate(data);
   };
+
+  const replyList = useBoardItemReplyQuery(id);
+  console.log(replyList.data);
   //   const replyList = useBoardItemReplyQuery(id)
   return (
     <Drawer isOpen={isOpen} placement="bottom" onClose={onClose}>
@@ -79,7 +82,7 @@ export default function ReplyDrawer({
         <form onSubmit={handleSubmit(onSubmit)}>
           <DrawerBody>
             <FormControl>
-              <FormLabel htmlFor="댓글">댓글</FormLabel>
+              <FormLabel htmlFor="댓글">작성자 들어갈곳</FormLabel>
               <Input
                 id="content"
                 placeholder="content"
@@ -87,7 +90,11 @@ export default function ReplyDrawer({
               />
             </FormControl>
           </DrawerBody>
-
+          {replyList.data
+            ? replyList.data.map((v, i) => (
+                <Text key={i}>{v.data.content}</Text>
+              ))
+            : null}
           <DrawerFooter>
             <Button variant="outline" mr={3} onClick={onClose}>
               Cancel
