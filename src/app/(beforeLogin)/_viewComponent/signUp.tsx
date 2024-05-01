@@ -50,7 +50,6 @@ export default function Main() {
   };
 
   const signUp = async (data: any) => {
-    console.log(data.image[0]);
     // console.log(selectedFile);
     try {
       // 회원가입 하고

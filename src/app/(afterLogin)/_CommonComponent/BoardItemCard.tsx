@@ -65,14 +65,12 @@ export default function BoardItemCard({
     }
   };
 
-
   // DB저장된 사용자 정보 가져오기
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : ""; // 로그인한 사용자의 uid
 
   const deleteBoard = useMutation({
     mutationFn: async (id: string) => {
-      console.log("id", id);
       await deleteDoc(doc(firestore, "/BoardItem", id));
     },
     onSuccess: () => {
@@ -106,7 +104,6 @@ export default function BoardItemCard({
       props: DocumentData;
       id: string;
     }) => {
-      console.log("data", data, props);
       await modifyBoardItem(props, data, id, uid);
     },
     onSuccess: () => {
@@ -124,7 +121,6 @@ export default function BoardItemCard({
   });
 
   const onSubmitModify = (data: any) => {
-    console.log("data3", data);
     modifyBoard.mutate({ data, props, id }); // Mutation을 통해 데이터 등록 요청
   };
   // await deleteDoc(doc(db, "cities", "DC"));
@@ -197,11 +193,10 @@ export default function BoardItemCard({
 
           <form
             onSubmit={handleSubmit((data) => {
-              console.log("data12", data);
               onSubmitModify(data);
             })}
           >
-             <ModalBody>
+            <ModalBody>
               <FormControl>
                 <FormLabel htmlFor="내용">내용</FormLabel>
                 <Input
@@ -252,12 +247,14 @@ export default function BoardItemCard({
           </form>
         </ModalContent>
       </Modal>
-      <ReplyDrawer
-        isOpen={replyDrawer.isOpen}
-        onClose={replyDrawer.onClose}
-        id={id}
-        uid={uid}
-      />
+      {replyDrawer.isOpen ? (
+        <ReplyDrawer
+          isOpen={replyDrawer.isOpen}
+          onClose={replyDrawer.onClose}
+          id={id}
+          uid={uid}
+        />
+      ) : null}
     </>
   );
 }
