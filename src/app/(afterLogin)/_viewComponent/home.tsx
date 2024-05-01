@@ -38,7 +38,6 @@ export default function Main() {
   // 데이터 호출 테스트
 
   const boardList = useBoardListQuery();
-
   return (
     <div>
       <Text>처음화면</Text>
