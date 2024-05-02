@@ -19,7 +19,8 @@ import {
 import firebasedb from "@/firebase/firebase";
 import { firestore } from "@/firebase/firestore";
 import { Board } from "@/firebase/firebase.type";
-
+import { useBottomScrollListener } from "react-bottom-scroll-listener";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { useBoardListQuery } from "@/queries/queries";
 
 export default function Main() {
@@ -36,19 +37,33 @@ export default function Main() {
   };
 
   // 데이터 호출 테스트
-
   const boardList = useBoardListQuery();
+  console.log("boardList", boardList.data);
+  // const boardList = useBoardListQuery();
+  // console.log("boardList", boardList.data);
   return (
     <div>
       <Text>처음화면</Text>
       <Button onClick={doLogout}>로그아웃</Button>
       <BoardCreateCard />
-
-      {boardList.data
-        ? boardList.data.map((v, i) => (
-            <BoardItemCard key={i} props={v.data} id={v.id} />
-          ))
-        : null}
+      <InfiniteScroll
+        dataLength={boardList.data?.pages.flat().length ?? 0}
+        next={boardList.fetchNextPage}
+        hasMore={boardList.hasNextPage}
+        loader={<div>Loading</div>}
+        scrollThreshold={0.8}
+      >
+        {boardList.data?.pages.map((page, pageIndex) => {
+          console.log("pageIndex", pageIndex);
+          return (
+            <div key={pageIndex}>
+              {page.data.map((v, i) => (
+                <BoardItemCard key={v.id} props={v.data} id={v.id} />
+              ))}
+            </div>
+          );
+        })}
+      </InfiniteScroll>
     </div>
   );
 }

@@ -163,7 +163,28 @@ export const createBoardItemReply = async (data: any, id: any, uid: any) => {
   await addDoc(collection(firestore, "BoardItemReply"), {
     content: data.content,
     createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     feedId: id,
     userId: uid,
   });
+};
+
+export const modifyBoardItemReply = async (
+  data: any,
+  uid: string,
+  id: string
+) => {
+  console.log("uid!!!", id, uid);
+  const userDocRef = doc(firestore, "BoardItemReply", id);
+  await updateDoc(userDocRef, {
+    userId: uid,
+    content: data.content,
+    updatedAt: new Date().toISOString(),
+  });
+};
+
+export const deleteBoardItemReply = async (uid: string) => {
+  const userDocRef = doc(firestore, "BoardItemReply", uid);
+  await deleteDoc(userDocRef);
+  console.log("성공");
 };
