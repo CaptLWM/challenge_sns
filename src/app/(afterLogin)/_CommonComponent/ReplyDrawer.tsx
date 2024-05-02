@@ -48,14 +48,12 @@ export default function ReplyDrawer({
     reset,
     formState: { isSubmitting },
   } = useForm();
-  console.log(stateModify);
 
   const user = useAuthStore((state) => state.user);
   const loginuid = user ? user.uid : "";
 
   const createReply = useMutation({
     mutationFn: async (data: any) => {
-      console.log("data", data);
       await createBoardItemReply(
         {
           content: data.content,
@@ -98,10 +96,8 @@ export default function ReplyDrawer({
 
   const modifyReply = useMutation({
     mutationFn: async (id: string) => {
-      console.log("id!!!!!!!", id, uid);
       await modifyBoardItemReply(
         {
-          feedId: id,
           userId: uid,
           content: modifyContent,
           updatedAt: new Date().toISOString(),
@@ -123,7 +119,6 @@ export default function ReplyDrawer({
   });
 
   const replyList = useBoardItemReplyQuery(id);
-  console.log(replyList.data);
   //   const replyList = useBoardItemReplyQuery(id)
   return (
     <Drawer isOpen={isOpen} placement="bottom" onClose={onClose}>
