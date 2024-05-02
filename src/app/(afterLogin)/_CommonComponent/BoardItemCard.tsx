@@ -130,6 +130,7 @@ export default function BoardItemCard({
         direction={{ base: "column", sm: "row" }}
         overflow="hidden"
         variant="outline"
+        width={{ base: "100%", sm: "80%" }}
         margin={10}
         padding={5}
       >
@@ -140,10 +141,11 @@ export default function BoardItemCard({
           alt="Caffe Latte"
         />
         {/* TODO 작성자에 따라 삭제 여부 체크 */}
-        <Button onClick={deleteModal.onOpen}>삭제</Button>
-        <Button onClick={modifyModal.onOpen}>수정</Button>
-        <Stack>
+
+        <Stack width={{ base: "100%" }}>
           <CardBody>
+            <Button onClick={deleteModal.onOpen}>삭제</Button>
+            <Button onClick={modifyModal.onOpen}>수정</Button>
             <Text py="2">{props.content}</Text>
           </CardBody>
           <CardFooter>

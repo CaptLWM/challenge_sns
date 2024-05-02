@@ -115,10 +115,11 @@ export default function BoardCreateCard() {
       direction={{ base: "column", sm: "row" }}
       overflow="hidden"
       variant="outline"
+      width={{ base: "100%", sm: "80%" }}
       margin={10}
       padding={5}
     >
-      <Stack>
+      <Stack width={{ base: "100%" }}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardBody>
             {/* 제목은 추후 챌린지로 변경 */}
@@ -142,6 +143,7 @@ export default function BoardCreateCard() {
                 placeholder="이미지"
                 type="file"
                 accept="image/*"
+                variant="unstyled"
                 {...register("image", {
                   onChange: onFileChange,
                 })}
@@ -154,7 +156,7 @@ export default function BoardCreateCard() {
             )}
           </CardBody>
 
-          <CardFooter>
+          <CardFooter justifyContent="end">
             <Button
               isLoading={isSubmitting}
               type="submit"
