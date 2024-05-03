@@ -124,6 +124,34 @@ export const createBoardItem = async (data: Board, uid: string | null) => {
   });
 };
 
+export const boardItemLike = async (
+  props: DocumentData,
+  uid: string,
+  id: string
+) => {
+  const userLikeRef = doc(firestore, "/BoardItem", id);
+
+  // 좋아요 리스트가 있는지 확인 없으면 빈 배열로 초기화
+  const currentLikeUserList: string[] = Array.isArray(props.likeUserList)
+    ? props.likeUserList
+    : [];
+
+  // 아이디 포함 되어 있는지 확인
+  const isLiked = currentLikeUserList.includes(uid);
+
+  if (isLiked) {
+    // 사용자가 이미 좋아요를 누른 경우, likeUserList에서 제거합니다.
+    const updatedLikeUserList = currentLikeUserList.filter(
+      (user) => user !== uid
+    );
+    await updateDoc(userLikeRef, { likeUserList: updatedLikeUserList });
+  } else {
+    // 사용자가 좋아요를 누르지 않은 경우, likeUserList에 추가합니다.
+    const updatedLikeUserList = currentLikeUserList.concat(uid);
+    await updateDoc(userLikeRef, { likeUserList: updatedLikeUserList });
+  }
+};
+
 export const modifyBoardItem = async (
   props: DocumentData,
   data: Board,
@@ -158,6 +186,8 @@ export const modifyBoardItem = async (
     updatedAt: new Date().toISOString(),
   });
 };
+
+// 게시물 좋아요
 
 export const createBoardItemReply = async (data: any, id: any, uid: any) => {
   await addDoc(collection(firestore, "BoardItemReply"), {

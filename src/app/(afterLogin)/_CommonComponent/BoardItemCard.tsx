@@ -1,7 +1,10 @@
 "use client";
 
-import { storage } from "@/firebase/firestorage";
-import { firestore, modifyBoardItem } from "@/firebase/firestore";
+import {
+  boardItemLike,
+  firestore,
+  modifyBoardItem,
+} from "@/firebase/firestore";
 import useAuthStore from "@/store/store";
 import {
   Button,
@@ -22,18 +25,10 @@ import {
   Input,
   useDisclosure,
   CardFooter,
+  HStack,
 } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import {
-  DocumentData,
-  deleteDoc,
-  doc,
-  getDoc,
-  updateDoc,
-} from "firebase/firestore";
-
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { DocumentData, deleteDoc, doc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReplyDrawer from "./ReplyDrawer";
@@ -53,7 +48,6 @@ export default function BoardItemCard({
   const {
     handleSubmit,
     register,
-
     reset,
     formState: { isSubmitting },
   } = useForm();
@@ -123,6 +117,37 @@ export default function BoardItemCard({
   const onSubmitModify = (data: any) => {
     modifyBoard.mutate({ data, props, id }); // Mutation을 통해 데이터 등록 요청
   };
+
+  // const onSubmitLike = () => {
+  //   console.log("게시물 uid", id);
+  //   console.log("지금 로그인한 사람 id", uid);
+
+  // };
+  const likeMutate = useMutation({
+    mutationFn: async ({
+      props,
+      id,
+      uid,
+    }: {
+      props: DocumentData;
+      id: string;
+      uid: string;
+    }) => {
+      await boardItemLike(props, uid, id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+    onError: (error: any) => {
+      queryClient.invalidateQueries();
+      console.log("error", error.message);
+    },
+  });
+
+  const onSubmitLike = () => {
+    likeMutate.mutate({ props, id, uid });
+  };
+  const test = props?.likeUserList?.includes(uid);
   // await deleteDoc(doc(db, "cities", "DC"));
   return (
     <>
@@ -136,7 +161,12 @@ export default function BoardItemCard({
       >
         <Image
           objectFit="cover"
-          maxW={{ base: "100%", sm: "200px" }}
+          boxSize={{
+            base: "200px",
+            sm: "100px", // 작은 화면
+            md: "150px", // 중간 화면
+          }}
+          // maxW={{ base: "100%", sm: "200px" }}
           src={props.image}
           alt="Caffe Latte"
         />
@@ -144,12 +174,18 @@ export default function BoardItemCard({
 
         <Stack width={{ base: "100%" }}>
           <CardBody>
-            <Button onClick={deleteModal.onOpen}>삭제</Button>
-            <Button onClick={modifyModal.onOpen}>수정</Button>
-            <Text py="2">{props.content}</Text>
+            <HStack justifyContent="space-between">
+              <Text py="2">{props.content}</Text>
+              <div>
+                <Button onClick={deleteModal.onOpen}>삭제</Button>
+                <Button onClick={modifyModal.onOpen}>수정</Button>
+              </div>
+            </HStack>
           </CardBody>
-          <CardFooter>
-            <Button>좋아요</Button>
+          <CardFooter justifyContent="end">
+            <Button colorScheme={test ? "blue" : null} onClick={onSubmitLike}>
+              좋아요
+            </Button>
             <Button onClick={replyDrawer.onOpen}>댓글</Button>
           </CardFooter>
         </Stack>
