@@ -6,6 +6,7 @@ import React from "react";
 import BoardItemCard from "../_CommonComponent/BoardItemCard";
 import BoardCreateCard from "../_CommonComponent/BoardCreateCard";
 import { DocumentData } from "firebase/firestore";
+
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useBoardListQuery } from "@/queries/queries";
 

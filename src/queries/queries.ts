@@ -54,6 +54,7 @@ export const useBoardListQuery = (
       data.push({ data: doc.data(), id: doc.id });
     });
 
+
     // 다음페이지를 가져오기 위한 기준점 설정
     const lastVisible =
       querySnapshot.docs.length > 0
@@ -62,12 +63,14 @@ export const useBoardListQuery = (
 
     return {
       data,
+
       nextPageParam: lastVisible, // 다음 페이지를 위한 기준
     };
   };
   return useInfiniteQuery({
     queryKey: ["boardlist"],
     queryFn: fetchData,
+
     getNextPageParam: (lastPage) => lastPage.nextPageParam, // 다음 페이지를 위한 기준
     initialPageParam, // 첫 페이지의 기준 설정
   });
