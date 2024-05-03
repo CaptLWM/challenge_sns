@@ -183,7 +183,10 @@ export default function BoardItemCard({
             </HStack>
           </CardBody>
           <CardFooter justifyContent="end">
-            <Button colorScheme={test ? "blue" : null} onClick={onSubmitLike}>
+            <Button
+              colorScheme={test ? "blue" : undefined}
+              onClick={onSubmitLike}
+            >
               좋아요
             </Button>
             <Button onClick={replyDrawer.onOpen}>댓글</Button>
