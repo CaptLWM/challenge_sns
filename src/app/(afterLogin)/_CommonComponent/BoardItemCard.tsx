@@ -32,6 +32,8 @@ import { DocumentData, deleteDoc, doc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReplyDrawer from "./ReplyDrawer";
+import { deleteObject, ref } from "firebase/storage";
+import { storage } from "@/firebase/firestorage";
 
 export default function BoardItemCard({
   props,
@@ -66,6 +68,11 @@ export default function BoardItemCard({
   const deleteBoard = useMutation({
     mutationFn: async (id: string) => {
       await deleteDoc(doc(firestore, "/BoardItem", id));
+      try {
+        await deleteObject(ref(storage, props.image));
+      } catch (error: any) {
+        console.log("파일삭제 error", error.message);
+      }
     },
     onSuccess: () => {
       deleteModal.onClose();
@@ -121,7 +128,7 @@ export default function BoardItemCard({
   // const onSubmitLike = () => {
   console.log("게시물 uid", id);
   console.log("지금 로그인한 사람 id", uid);
-  console.log("props", props);
+  console.log("props", props.id === id);
 
   // };
   const likeMutate = useMutation({
@@ -177,7 +184,7 @@ export default function BoardItemCard({
           <CardBody>
             <HStack justifyContent="space-between">
               <Text py="2">{props.content}</Text>
-              {props.id === id ? (
+              {props.id === uid ? (
                 <div>
                   <Button onClick={deleteModal.onOpen}>삭제</Button>
                   <Button onClick={modifyModal.onOpen}>수정</Button>

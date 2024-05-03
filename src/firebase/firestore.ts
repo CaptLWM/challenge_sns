@@ -13,7 +13,12 @@ import firebasedb from "./firebase";
 import { Board, User } from "./firebase.type";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebaseAuth";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import { storage } from "./firestorage";
 import { create } from "domain";
 
@@ -165,16 +170,43 @@ export const modifyBoardItem = async (
   // console.log("modify2", data.image);
   const previousImage = props.image ?? "default_image_url_or_placeholder";
 
-  // 다운로드 URL을 기본값으로 설정
-  const downloadURL =
-    data.image && data.image.length > 0
-      ? await (async () => {
-          const imageFile = data.image[0];
-          const imageRef = ref(storage, `${uid}/${imageFile.name}`);
-          await uploadBytes(imageRef, imageFile);
-          return await getDownloadURL(imageRef);
-        })()
-      : previousImage;
+  // 새로운 이미지인지 아닌지 확인
+  const hasNewImage = data.image && data.image.length > 0;
+
+  // 새로운 이미지 변경
+  let downloadURL;
+
+  if (hasNewImage) {
+    const imageFile = data.image[0];
+    const imageRef = ref(storage, `${uid}/${imageFile.name}`);
+    await uploadBytes(imageRef, imageFile);
+    downloadURL = await getDownloadURL(imageRef);
+
+    // 이미지 변경시 과거 이미지 삭제
+    if (previousImage && previousImage !== "default_image_url_or_placeholder") {
+      const previousImageRef = ref(storage, previousImage);
+      try {
+        // 이미지 삭제 함수, 이미지 삭제할때 과거이미지는 url 그대로 쓰면 됨
+        await deleteObject(previousImageRef);
+      } catch (error) {
+        console.error("Error deleting previous image:", error);
+      }
+    }
+  } else {
+    // If no new image, retain the existing image
+    downloadURL = previousImage;
+  }
+
+  // // 다운로드 URL을 기본값으로 설정
+  // const downloadURL =
+  //   data.image && data.image.length > 0
+  //     ? await (async () => {
+  //         const imageFile = data.image[0];
+  //         const imageRef = ref(storage, `${uid}/${imageFile.name}`);
+  //         await uploadBytes(imageRef, imageFile);
+  //         return await getDownloadURL(imageRef);
+  //       })()
+  //     : previousImage;
 
   await updateDoc(itemRef, {
     id: uid,
@@ -182,7 +214,7 @@ export const modifyBoardItem = async (
     commentCount: 0,
     likeCount: 0,
     content: data.content,
-    image: data.image ? downloadURL : props.image,
+    image: downloadURL,
     createdAt: props.createdAt,
     updatedAt: new Date().toISOString(),
   });
