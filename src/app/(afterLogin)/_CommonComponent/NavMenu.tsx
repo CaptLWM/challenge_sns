@@ -1,8 +1,9 @@
 "use client";
 
+import { logout } from "@/firebase/firebaseAuth";
 import { getUser } from "@/firebase/firestore";
 import useAuthStore, { initAuthState } from "@/store/store";
-import { Text } from "@chakra-ui/react";
+import { Button, Text } from "@chakra-ui/react";
 import { DocumentData } from "firebase/firestore";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,9 +24,17 @@ export default function NavMenu() {
   // 이거 활용해서 그 페이지 방문 했을때 안했을때 아이콘 변경할 수 있음
   // 호출된 레이아웃보다 한 단계 아래에서 활성 경로 세그먼트를 읽을 수 있게 해줍니다.
   const segment = useSelectedLayoutSegment();
+  const doLogout = async (event: any) => {
+    try {
+      await logout();
+      router.replace("/login");
+    } catch (error: any) {
+      const errorMessage = error.message;
+      alert(errorMessage);
+    }
+  };
 
   // 사용자 ID 가져오기
-
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : null;
   // TODO 지금 처음 회원가입하고 로그인 했을때 닉네임 잘 못찾아옴
@@ -106,6 +115,9 @@ export default function NavMenu() {
         ) : (
           <Text>No user info</Text>
         )}
+      </li>
+      <li className="flex justify-center items-center mb-3">
+        <Button onClick={doLogout}>로그아웃</Button>
       </li>
     </>
   );

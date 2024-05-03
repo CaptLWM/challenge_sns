@@ -1,40 +1,18 @@
 "use client";
 
-import { auth, logout } from "@/firebase/firebaseAuth";
-import useAuthStore from "@/store/store";
 import { Button, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
-import FileUpload from "../_CommonComponent/FileUpload";
+import React from "react";
 import BoardItemCard from "../_CommonComponent/BoardItemCard";
 import BoardCreateCard from "../_CommonComponent/BoardCreateCard";
-import {
-  DocumentData,
-  QuerySnapshot,
-  collection,
-  getDocs,
-  orderBy,
-  query,
-} from "firebase/firestore";
-import firebasedb from "@/firebase/firebase";
-import { firestore } from "@/firebase/firestore";
-import { Board } from "@/firebase/firebase.type";
-import { useBottomScrollListener } from "react-bottom-scroll-listener";
+import { DocumentData } from "firebase/firestore";
+
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useBoardListQuery } from "@/queries/queries";
 
 export default function Main() {
   const router = useRouter();
   const [temp, setTemp] = React.useState<DocumentData[]>([]);
-  const doLogout = async (event: any) => {
-    try {
-      await logout();
-      router.replace("/login");
-    } catch (error: any) {
-      const errorMessage = error.message;
-      alert(errorMessage);
-    }
-  };
 
   // 데이터 호출 테스트
   const boardList = useBoardListQuery();
@@ -43,15 +21,16 @@ export default function Main() {
   // console.log("boardList", boardList.data);
   return (
     <div>
-      <Text>처음화면</Text>
-      <Button onClick={doLogout}>로그아웃</Button>
+      <Text margin={2.5} padding={5}>
+        Just Do It!
+      </Text>
       <BoardCreateCard />
       <InfiniteScroll
-        dataLength={boardList.data?.pages.flat().length ?? 0}
-        next={boardList.fetchNextPage}
-        hasMore={boardList.hasNextPage}
-        loader={<div>Loading</div>}
-        scrollThreshold={0.8}
+        dataLength={boardList.data?.pages.flat().length ?? 0} // 현재까지 로드된 데이터 총 수(필수)
+        next={boardList.fetchNextPage} // 스크롤 끝에 도달하면 함수 호출(필수))
+        hasMore={boardList.hasNextPage} // 다음 페이지가 있는지 여부(필수)
+        loader={<div>Loading</div>} // 로드할때 보여줄 것(필수)
+        scrollThreshold={0.8} // 스크롤 임계값, 스크롤이 컨테이너의 80%에 도달하면 next 호출
       >
         {boardList.data?.pages.map((page, pageIndex) => {
           console.log("pageIndex", pageIndex);
