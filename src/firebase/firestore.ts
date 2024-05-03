@@ -220,6 +220,8 @@ export const modifyBoardItem = async (
   });
 };
 
+// 게시물 좋아요
+
 export const createBoardItemReply = async (data: any, id: any, uid: any) => {
   await addDoc(collection(firestore, "BoardItemReply"), {
     content: data.content,
