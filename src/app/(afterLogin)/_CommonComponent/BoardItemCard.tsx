@@ -119,8 +119,9 @@ export default function BoardItemCard({
   };
 
   // const onSubmitLike = () => {
-  //   console.log("게시물 uid", id);
-  //   console.log("지금 로그인한 사람 id", uid);
+  console.log("게시물 uid", id);
+  console.log("지금 로그인한 사람 id", uid);
+  console.log("props", props);
 
   // };
   const likeMutate = useMutation({
@@ -176,10 +177,12 @@ export default function BoardItemCard({
           <CardBody>
             <HStack justifyContent="space-between">
               <Text py="2">{props.content}</Text>
-              <div>
-                <Button onClick={deleteModal.onOpen}>삭제</Button>
-                <Button onClick={modifyModal.onOpen}>수정</Button>
-              </div>
+              {props.id === id ? (
+                <div>
+                  <Button onClick={deleteModal.onOpen}>삭제</Button>
+                  <Button onClick={modifyModal.onOpen}>수정</Button>
+                </div>
+              ) : null}
             </HStack>
           </CardBody>
           <CardFooter justifyContent="end">
