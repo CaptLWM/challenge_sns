@@ -18,6 +18,7 @@ import CommoneButtonForm from "../_commonComponent/CommonButtonForm";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SignIn } from "@/firebase/firebase.type";
 
 const loginSchema = z.object({
   email: z
@@ -37,13 +38,13 @@ export default function Main() {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<SignIn>({
     resolver: zodResolver(loginSchema),
   });
 
   const router = useRouter();
 
-  const signIn = async (data: any) => {
+  const signIn = async (data: SignIn) => {
     try {
       await loginWithEmailAndPassword(data.email, data.password);
       router.replace("/home");

@@ -15,6 +15,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signUpWithEmailAndPassword } from "@/firebase/firestore";
 import Image from "next/image";
+import { SignUp } from "@/firebase/firebase.type";
 
 const signUpSchema = z.object({
   email: z
@@ -31,7 +32,7 @@ const signUpSchema = z.object({
     .min(8, "비밀번호 길이"),
   bio: z.string(),
   nickname: z.string(),
-  image: z.any(),
+  image: z.string(),
 });
 
 // TODO : 회원가입할때 이메일 중복확인(알아서 걸러주긴 함), 닉네임 중복확인, 비밀번호 확인 필요
@@ -44,7 +45,7 @@ export default function Main() {
     register,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<SignUp>({
     resolver: zodResolver(signUpSchema),
   });
 
@@ -54,7 +55,7 @@ export default function Main() {
     }
   };
 
-  const signUp = async (data: any) => {
+  const signUp = async (data: SignUp) => {
     // console.log(selectedFile);
     try {
       console.log(data.password, data.confirmPassword);
@@ -63,7 +64,7 @@ export default function Main() {
         data.password === "" ||
         data.bio === "" ||
         data.nickname === "" ||
-        data.image === ""
+        data.image.length === 0
       ) {
         alert("빈칸을 채워주세요");
         return;

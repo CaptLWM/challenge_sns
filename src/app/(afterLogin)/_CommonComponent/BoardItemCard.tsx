@@ -34,6 +34,7 @@ import { useForm } from "react-hook-form";
 import ReplyDrawer from "./ReplyDrawer";
 import { deleteObject, ref } from "firebase/storage";
 import { storage } from "@/firebase/firestorage";
+import { Board } from "@/firebase/firebase.type";
 
 export default function BoardItemCard({
   props,
@@ -52,7 +53,7 @@ export default function BoardItemCard({
     register,
     reset,
     formState: { isSubmitting },
-  } = useForm();
+  } = useForm<Board>();
   const queryClient = useQueryClient();
   // TODO 수정, 삭제 후 모달창 닫고 새로고침
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,7 +102,7 @@ export default function BoardItemCard({
       props,
       id,
     }: {
-      data: any;
+      data: Board;
       props: DocumentData;
       id: string;
     }) => {
@@ -121,7 +122,7 @@ export default function BoardItemCard({
     },
   });
 
-  const onSubmitModify = (data: any) => {
+  const onSubmitModify = (data: Board) => {
     modifyBoard.mutate({ data, props, id }); // Mutation을 통해 데이터 등록 요청
   };
 

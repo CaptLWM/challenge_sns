@@ -1,6 +1,7 @@
 "use client";
 
 import firebasedb from "@/firebase/firebase";
+import { Board } from "@/firebase/firebase.type";
 import { createBoardItem, getUser } from "@/firebase/firestore";
 import useAuthStore from "@/store/store";
 import {
@@ -17,7 +18,8 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { DocumentData, getFirestore } from "firebase/firestore";
@@ -39,7 +41,7 @@ export default function BoardCreateCard() {
     register,
     reset,
     formState: { isSubmitting },
-  } = useForm();
+  } = useForm<Board>();
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -70,7 +72,7 @@ export default function BoardCreateCard() {
   // 게시물 등록
 
   const createBoard = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Board) => {
       await createBoardItem(
         {
           ...data,
@@ -106,7 +108,7 @@ export default function BoardCreateCard() {
     }
   }, [selectedFile]);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: Board) => {
     createBoard.mutate(data); // Mutation을 통해 데이터 등록 요청
   };
 
@@ -128,7 +130,7 @@ export default function BoardCreateCard() {
               <Input id="email" placeholder="Email" {...register("email")} />
             </FormControl> */}
             <FormControl>
-              <FormLabel htmlFor="내용">내용</FormLabel>
+              <FormLabel htmlFor="content">내용</FormLabel>
               <Input
                 id="content"
                 placeholder="content"
@@ -137,7 +139,7 @@ export default function BoardCreateCard() {
             </FormControl>
 
             <FormControl>
-              <FormLabel htmlFor="image">프로필이미지</FormLabel>
+              <FormLabel htmlFor="image">이미지추가</FormLabel>
               <Input
                 id="image"
                 placeholder="이미지"

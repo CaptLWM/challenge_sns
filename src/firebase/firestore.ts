@@ -10,7 +10,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import firebasedb from "./firebase";
-import { Board, User } from "./firebase.type";
+import { Board, Reply, User } from "./firebase.type";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebaseAuth";
 import {
@@ -222,7 +222,11 @@ export const modifyBoardItem = async (
 
 // 게시물 좋아요
 
-export const createBoardItemReply = async (data: any, id: any, uid: any) => {
+export const createBoardItemReply = async (
+  data: Reply,
+  id: string,
+  uid: string
+) => {
   await addDoc(collection(firestore, "BoardItemReply"), {
     content: data.content,
     createdAt: new Date().toISOString(),
@@ -233,7 +237,7 @@ export const createBoardItemReply = async (data: any, id: any, uid: any) => {
 };
 
 export const modifyBoardItemReply = async (
-  data: any,
+  data: Reply,
   uid: string,
   id: string
 ) => {
