@@ -184,6 +184,7 @@ export default function BoardItemCard({
           <CardBody>
             <HStack justifyContent="space-between">
               <Text py="2">{props.content}</Text>
+
               {props.id === uid ? (
                 <div>
                   <Button onClick={deleteModal.onOpen}>삭제</Button>
