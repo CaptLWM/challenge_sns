@@ -1,5 +1,6 @@
 "use client";
 
+import { Reply } from "@/firebase/firebase.type";
 import {
   createBoardItemReply,
   deleteBoardItemReply,
@@ -47,17 +48,21 @@ export default function ReplyDrawer({
     register,
     reset,
     formState: { isSubmitting },
-  } = useForm();
+  } = useForm<Reply>();
 
   const user = useAuthStore((state) => state.user);
   const loginuid = user ? user.uid : "";
 
+  const replyList = useBoardItemReplyQuery(id);
+  //   const replyList = useBoardItemReplyQuery(id)
+
   const createReply = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Reply) => {
       await createBoardItemReply(
         {
           content: data.content,
           createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
           feedId: id,
           userId: uid,
         },
@@ -75,12 +80,12 @@ export default function ReplyDrawer({
       alert("실패");
     },
   });
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: Reply) => {
     createReply.mutate(data);
   };
 
   const deleteReply = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async () => {
       await deleteBoardItemReply(id);
     },
     onSuccess: () => {
@@ -95,9 +100,10 @@ export default function ReplyDrawer({
   });
 
   const modifyReply = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (data: Reply) => {
       await modifyBoardItemReply(
         {
+          ...data,
           userId: uid,
           content: modifyContent,
           updatedAt: new Date().toISOString(),
@@ -118,8 +124,6 @@ export default function ReplyDrawer({
     },
   });
 
-  const replyList = useBoardItemReplyQuery(id);
-  //   const replyList = useBoardItemReplyQuery(id)
   return (
     <Drawer isOpen={isOpen} placement="bottom" onClose={onClose}>
       <DrawerOverlay />

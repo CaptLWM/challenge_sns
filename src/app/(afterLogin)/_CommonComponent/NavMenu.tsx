@@ -24,7 +24,7 @@ export default function NavMenu() {
   // 이거 활용해서 그 페이지 방문 했을때 안했을때 아이콘 변경할 수 있음
   // 호출된 레이아웃보다 한 단계 아래에서 활성 경로 세그먼트를 읽을 수 있게 해줍니다.
   const segment = useSelectedLayoutSegment();
-  const doLogout = async (event: any) => {
+  const doLogout = async (event: React.MouseEvent<HTMLButtonElement>) => {
     try {
       await logout();
       router.replace("/login");
