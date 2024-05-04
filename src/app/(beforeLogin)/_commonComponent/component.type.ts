@@ -13,5 +13,5 @@ export interface ButtonType {
   type?: "button" | "submit" | "reset" | undefined;
   label: string;
   ml: number;
-  onClick: (event: React.MouseEvent<HTMLInputElement>) => void;
+  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
