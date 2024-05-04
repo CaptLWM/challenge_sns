@@ -25,6 +25,10 @@ const signUpSchema = z.object({
     .string()
     .regex(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/)
     .min(8, "비밀번호 길이"),
+  confirmPassword: z
+    .string()
+    .regex(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/)
+    .min(8, "비밀번호 길이"),
   bio: z.string(),
   nickname: z.string(),
   image: z.any(),
@@ -38,6 +42,7 @@ export default function Main() {
   const {
     handleSubmit,
     register,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(signUpSchema),
@@ -52,8 +57,22 @@ export default function Main() {
   const signUp = async (data: any) => {
     // console.log(selectedFile);
     try {
+      console.log(data.password, data.confirmPassword);
+      if (
+        data.email === "" ||
+        data.password === "" ||
+        data.bio === "" ||
+        data.nickname === "" ||
+        data.image === ""
+      ) {
+        alert("빈칸을 채워주세요");
+        return;
+      }
+      if (data.password !== data.confirmPassword) {
+        alert("비밀번호가 일치하지 않습니다.");
+        return;
+      }
       // 회원가입 하고
-
       await signUpWithEmailAndPassword(
         data.email,
         data.password,
@@ -73,13 +92,29 @@ export default function Main() {
     }
   }, [selectedFile]);
 
+  const password = watch("password");
+
   return (
     <div className="container mx-auto mr-20 ml-20">
       <Text fontSize="6xl" as="b">
         Just Do It
       </Text>
 
-      <form onSubmit={handleSubmit(signUp)} autoComplete="off">
+      <form onSubmit={handleSubmit(signUp)} autoComplete="new-password">
+        {/* 자동완성 막기 위한 가짜 태그 */}
+        <input
+          type="text"
+          name="fakeField1"
+          style={{ display: "none" }}
+          autoComplete="off"
+        />
+        <input
+          type="password"
+          name="fakeField2"
+          style={{ display: "none" }}
+          autoComplete="new-password"
+        />
+        {/* 자동완성 막기 위한 가짜 태그 */}
         <FormControl isInvalid={!!errors.email}>
           <FormLabel htmlFor="email">이메일</FormLabel>
           <Input id="email" placeholder="Email" {...register("email")} />
@@ -100,6 +135,24 @@ export default function Main() {
           <FormErrorMessage>
             {typeof errors.password?.message === "string"
               ? errors.password.message
+              : ""}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.confirmPassword}>
+          <FormLabel htmlFor="confirmPassword">비밀번호 확인</FormLabel>
+          <Input
+            id="confirmPassword"
+            type="password"
+            placeholder="비밀번호 확인"
+            {...register("confirmPassword", {
+              required: "비밀번호 확인은 필수 항목입니다.",
+              validate: (value) =>
+                value === password || "비밀번호가 일치하지 않습니다.",
+            })}
+          />
+          <FormErrorMessage>
+            {typeof errors.confirmPassword?.message === "string"
+              ? errors.confirmPassword.message
               : ""}
           </FormErrorMessage>
         </FormControl>
