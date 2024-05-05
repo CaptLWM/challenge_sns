@@ -22,6 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQueryClient } from "@tanstack/react-query";
 
+
 import { DocumentData, getFirestore } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -83,6 +84,7 @@ export default function BoardCreateCard() {
   }, [selectedFile]);
 
   const onSubmit = (data: Board) => {
+
     createBoard.mutate(data, {
       onSuccess: () => {
         queryClient.invalidateQueries();

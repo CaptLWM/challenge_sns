@@ -54,6 +54,7 @@ export default function ReplyDrawer({
 
   const replyList = useBoardItemReplyQuery(id);
   //   const replyList = useBoardItemReplyQuery(id)
+
   const createReply = useCreateReply({ id, uid });
   const modifyReply = useModifyReply({ uid, id, modifyContent });
   const deleteReply = useDeleteReply(id);
@@ -71,7 +72,6 @@ export default function ReplyDrawer({
       },
     });
   };
-
   return (
     <Drawer isOpen={isOpen} placement="bottom" onClose={onClose}>
       <DrawerOverlay />

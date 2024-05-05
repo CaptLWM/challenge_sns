@@ -35,6 +35,7 @@ import ReplyDrawer from "./ReplyDrawer";
 import { deleteObject, ref } from "firebase/storage";
 import { storage } from "@/firebase/firestorage";
 import { Board } from "@/firebase/firebase.type";
+
 import {
   useBoardItemLike,
   useDeleteBoard,
@@ -80,6 +81,7 @@ export default function BoardItemCard({
       setPreview(fileURL);
     }
   }, [selectedFile]);
+
 
   const onSubmitModify = (data: Board) => {
     modifyBoard.mutate(
