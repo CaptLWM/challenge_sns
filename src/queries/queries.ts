@@ -10,6 +10,7 @@ import {
   firestore,
   modifyBoardItem,
   modifyBoardItemReply,
+  updateUser,
 } from "@/firebase/firestore";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -33,6 +34,16 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
+import { BOARD_ITEM_REPLY, BOARD_LIST } from "./queryKeys";
+
+// 사용자 정보 수정
+export const useModifyUser = (uid: string) => {
+  return useMutation({
+    mutationFn: async (data: User) => {
+      await updateUser(uid, data);
+    },
+  });
+};
 
 // 게시물 불러오기
 export const useBoardListQuery = (
@@ -85,7 +96,7 @@ export const useBoardListQuery = (
     };
   };
   return useInfiniteQuery({
-    queryKey: ["boardlist"],
+    queryKey: [BOARD_LIST],
     queryFn: fetchData,
 
     getNextPageParam: (lastPage) => lastPage.nextPageParam, // 다음 페이지를 위한 기준
@@ -187,7 +198,7 @@ export const useBoardItemReplyQuery = (feedId: string) => {
     return initial;
   };
   return useQuery({
-    queryKey: ["boarditem reply"],
+    queryKey: [BOARD_ITEM_REPLY],
     queryFn: fetchData,
     enabled: !!feedId,
   });

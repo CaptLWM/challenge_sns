@@ -15,6 +15,8 @@ import useAuthStore from "@/store/store";
 import { DocumentData } from "firebase/firestore";
 import { getUser, updateUser } from "@/firebase/firestore";
 import { useRouter } from "next/navigation";
+import { useModifyUser } from "@/queries/queries";
+import { User } from "@/firebase/firebase.type";
 
 const signUpSchema = z.object({
   email: z
@@ -39,7 +41,7 @@ export default function Main() {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<User>({
     resolver: zodResolver(signUpSchema),
   });
 
@@ -64,19 +66,24 @@ export default function Main() {
     }
   }, [uid]);
 
-  const update = async (data: any) => {
-    const user_uid: string = uid ? uid : "";
-    try {
-      await updateUser(user_uid, data);
-      router.replace("/home");
-    } catch (error: any) {
-      const errorMessage = error.message;
-      alert(errorMessage);
-    }
+  const user_uid: string = uid ? uid : "";
+  const modifyUser = useModifyUser(user_uid);
+
+  const onSubmitModify = (data: User) => {
+    modifyUser.mutate(data),
+      {
+        onSuccess: () => {
+          router.replace("/home");
+        },
+        onError: (error: any) => {
+          const errorMessage = error.message;
+          alert(errorMessage);
+        },
+      };
   };
   return (
     <div>
-      <form onSubmit={handleSubmit(update)} autoComplete="off">
+      <form onSubmit={handleSubmit(onSubmitModify)} autoComplete="off">
         <FormControl isInvalid={!!errors.email}>
           <FormLabel htmlFor="email">이메일</FormLabel>
           <Input
