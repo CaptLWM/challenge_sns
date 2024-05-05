@@ -1,6 +1,15 @@
-import { Board } from "@/firebase/firebase.type";
+"use client";
+
+import { Board, Reply, User } from "@/firebase/firebase.type";
 import { storage } from "@/firebase/firestorage";
-import { createBoardItem, firestore } from "@/firebase/firestore";
+import {
+  boardItemLike,
+  createBoardItem,
+  createBoardItemReply,
+  firestore,
+  modifyBoardItem,
+  modifyBoardItemReply,
+} from "@/firebase/firestore";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import {
   DocumentData,
@@ -8,6 +17,8 @@ import {
   QuerySnapshot,
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   limit,
   orderBy,
@@ -15,7 +26,12 @@ import {
   startAfter,
   where,
 } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 
 // 게시물 불러오기
 export const useBoardListQuery = (
@@ -76,6 +92,80 @@ export const useBoardListQuery = (
   });
 };
 
+// 게시물 생성
+export const useCreateBoard = ({
+  uid,
+  userInfo,
+}: {
+  uid: string;
+  userInfo: DocumentData | null;
+}) => {
+  return useMutation({
+    mutationFn: async (data: Board) => {
+      await createBoardItem(
+        {
+          ...data,
+          id: uid,
+          nickname: userInfo?.nickname ?? null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          commentCount: 0,
+          likeCount: 0,
+        },
+        uid
+      );
+    },
+  });
+};
+
+// 게시물 수정
+export const useModifyBoard = (uid: string) => {
+  return useMutation({
+    mutationFn: async ({
+      data,
+      props,
+      id,
+    }: {
+      data: Board;
+      props: DocumentData;
+      id: string;
+    }) => {
+      await modifyBoardItem(props, data, id, uid);
+    },
+  });
+};
+
+// 게시글 삭제
+export const useDeleteBoard = (props: DocumentData) => {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await deleteDoc(doc(firestore, "/BoardItem", id));
+      try {
+        await deleteObject(ref(storage, props.image));
+      } catch (error: any) {
+        console.log("파일삭제 error", error.message);
+      }
+    },
+  });
+};
+
+// 게시물 좋아욧
+export const useBoardItemLike = () => {
+  return useMutation({
+    mutationFn: async ({
+      props,
+      id,
+      uid,
+    }: {
+      props: DocumentData;
+      id: string;
+      uid: string;
+    }) => {
+      await boardItemLike(props, uid, id);
+    },
+  });
+};
+
 // 댓글 불러오기
 export const useBoardItemReplyQuery = (feedId: string) => {
   const fetchData = async () => {
@@ -99,5 +189,50 @@ export const useBoardItemReplyQuery = (feedId: string) => {
     queryKey: ["boarditem reply"],
     queryFn: fetchData,
     enabled: !!feedId,
+  });
+};
+
+// 댓글 작성
+export const useCreateReply = ({ id, uid }: { id: string; uid: string }) => {
+  return useMutation({
+    mutationFn: async (data: Reply) => {
+      await createBoardItemReply(
+        {
+          content: data.content,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          feedId: id,
+          userId: uid,
+        },
+        id,
+        uid
+      );
+    },
+  });
+};
+
+// 댓글 수정
+export const useModifyReply = ({
+  uid,
+  id,
+  modifyContent,
+}: {
+  uid: string;
+  id: string;
+  modifyContent: string;
+}) => {
+  return useMutation({
+    mutationFn: async (data: Reply) => {
+      await modifyBoardItemReply(
+        {
+          ...data,
+          userId: uid,
+          content: modifyContent,
+          updatedAt: new Date().toISOString(),
+        },
+        uid,
+        id
+      );
+    },
   });
 };
