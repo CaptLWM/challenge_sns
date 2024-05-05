@@ -36,6 +36,12 @@ import { deleteObject, ref } from "firebase/storage";
 import { storage } from "@/firebase/firestorage";
 import { Board } from "@/firebase/firebase.type";
 
+import {
+  useBoardItemLike,
+  useDeleteBoard,
+  useModifyBoard,
+} from "@/queries/queries";
+
 export default function BoardItemCard({
   props,
   id,
@@ -66,28 +72,8 @@ export default function BoardItemCard({
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : ""; // 로그인한 사용자의 uid
 
-  const deleteBoard = useMutation({
-    mutationFn: async (id: string) => {
-      await deleteDoc(doc(firestore, "/BoardItem", id));
-      try {
-        await deleteObject(ref(storage, props.image));
-      } catch (error: any) {
-        console.log("파일삭제 error", error.message);
-      }
-    },
-    onSuccess: () => {
-      deleteModal.onClose();
-      queryClient.invalidateQueries();
-      // 필요한 경우 폼 리셋
-      reset();
-      setPreview(null);
-      alert("게시물이 성공적으로 삭제되었습니다.");
-    },
-    onError: (error: any) => {
-      queryClient.invalidateQueries();
-      alert(`게시물 삭제에 실패했습니다: ${error.message}`);
-    },
-  });
+  const deleteBoard = useDeleteBoard(props);
+  const modifyBoard = useModifyBoard(uid);
 
   useEffect(() => {
     if (selectedFile) {
@@ -96,34 +82,25 @@ export default function BoardItemCard({
     }
   }, [selectedFile]);
 
-  const modifyBoard = useMutation({
-    mutationFn: async ({
-      data,
-      props,
-      id,
-    }: {
-      data: Board;
-      props: DocumentData;
-      id: string;
-    }) => {
-      await modifyBoardItem(props, data, id, uid);
-    },
-    onSuccess: () => {
-      modifyModal.onClose();
-      queryClient.invalidateQueries();
-      // 필요한 경우 폼 리셋
-      reset();
-      setPreview(null);
-      alert("게시물이 성공적으로 등록되었습니다.");
-    },
-    onError: (error: any) => {
-      queryClient.invalidateQueries();
-      alert(`게시물 등록에 실패했습니다: ${error.message}`);
-    },
-  });
 
   const onSubmitModify = (data: Board) => {
-    modifyBoard.mutate({ data, props, id }); // Mutation을 통해 데이터 등록 요청
+    modifyBoard.mutate(
+      { data, props, id },
+      {
+        onSuccess: () => {
+          modifyModal.onClose();
+          queryClient.invalidateQueries();
+          // 필요한 경우 폼 리셋
+          reset();
+          setPreview(null);
+          alert("게시물이 성공적으로 등록되었습니다.");
+        },
+        onError: (error: any) => {
+          queryClient.invalidateQueries();
+          alert(`게시물 등록에 실패했습니다: ${error.message}`);
+        },
+      }
+    ); // Mutation을 통해 데이터 등록 요청
   };
 
   // const onSubmitLike = () => {
@@ -132,29 +109,21 @@ export default function BoardItemCard({
   console.log("props", props.id === id);
 
   // };
-  const likeMutate = useMutation({
-    mutationFn: async ({
-      props,
-      id,
-      uid,
-    }: {
-      props: DocumentData;
-      id: string;
-      uid: string;
-    }) => {
-      await boardItemLike(props, uid, id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries();
-    },
-    onError: (error: any) => {
-      queryClient.invalidateQueries();
-      console.log("error", error.message);
-    },
-  });
+  const likeMutate = useBoardItemLike();
 
   const onSubmitLike = () => {
-    likeMutate.mutate({ props, id, uid });
+    likeMutate.mutate(
+      { props, id, uid },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries();
+        },
+        onError: (error: any) => {
+          queryClient.invalidateQueries();
+          console.log("error", error.message);
+        },
+      }
+    );
   };
   const test = props?.likeUserList?.includes(uid);
   // await deleteDoc(doc(db, "cities", "DC"));
@@ -225,7 +194,22 @@ export default function BoardItemCard({
             <Button
               colorScheme="blue"
               mr={3}
-              onClick={() => deleteBoard.mutate(id)}
+              onClick={() =>
+                deleteBoard.mutate(id, {
+                  onSuccess: () => {
+                    deleteModal.onClose();
+                    queryClient.invalidateQueries();
+                    // 필요한 경우 폼 리셋
+                    reset();
+                    setPreview(null);
+                    alert("게시물이 성공적으로 삭제되었습니다.");
+                  },
+                  onError: (error: any) => {
+                    queryClient.invalidateQueries();
+                    alert(`게시물 삭제에 실패했습니다: ${error.message}`);
+                  },
+                })
+              }
             >
               삭제
             </Button>

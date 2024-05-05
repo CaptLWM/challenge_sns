@@ -2,11 +2,11 @@
 
 import { Reply } from "@/firebase/firebase.type";
 import {
-  createBoardItemReply,
-  deleteBoardItemReply,
-  modifyBoardItemReply,
-} from "@/firebase/firestore";
-import { useBoardItemReplyQuery } from "@/queries/queries";
+  useBoardItemReplyQuery,
+  useCreateReply,
+  useDeleteReply,
+  useModifyReply,
+} from "@/queries/queries";
 import useAuthStore from "@/store/store";
 // import { useBoardItemReplyQuery } from "@/queries/queries";
 import {
@@ -24,8 +24,7 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { create } from "domain";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -56,74 +55,23 @@ export default function ReplyDrawer({
   const replyList = useBoardItemReplyQuery(id);
   //   const replyList = useBoardItemReplyQuery(id)
 
-  const createReply = useMutation({
-    mutationFn: async (data: Reply) => {
-      await createBoardItemReply(
-        {
-          content: data.content,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          feedId: id,
-          userId: uid,
-        },
-        id,
-        uid
-      );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries();
-      reset();
-    },
-    onError: (error: any) => {
-      // queryClient.invalidateQueries();
-      console.log("error", error.message);
-      alert("실패");
-    },
-  });
+  const createReply = useCreateReply({ id, uid });
+  const modifyReply = useModifyReply({ uid, id, modifyContent });
+  const deleteReply = useDeleteReply(id);
+
   const onSubmit = (data: Reply) => {
-    createReply.mutate(data);
+    createReply.mutate(data, {
+      onSuccess: () => {
+        queryClient.invalidateQueries();
+        reset();
+      },
+      onError: (error: any) => {
+        // queryClient.invalidateQueries();
+        console.log("error", error.message);
+        alert("실패");
+      },
+    });
   };
-
-  const deleteReply = useMutation({
-    mutationFn: async () => {
-      await deleteBoardItemReply(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries();
-      // 필요한 경우 폼 리셋
-      alert("삭제 성공");
-    },
-    onError: (error: any) => {
-      queryClient.invalidateQueries();
-      alert(`삭제 실패`);
-    },
-  });
-
-  const modifyReply = useMutation({
-    mutationFn: async (data: Reply) => {
-      await modifyBoardItemReply(
-        {
-          ...data,
-          userId: uid,
-          content: modifyContent,
-          updatedAt: new Date().toISOString(),
-        },
-        uid,
-        id
-      );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries();
-      // 필요한 경우 폼 리셋
-      alert("수정 성공");
-    },
-    onError: (error: any) => {
-      console.log("error", error);
-      queryClient.invalidateQueries();
-      alert(`수정 실패`);
-    },
-  });
-
   return (
     <Drawer isOpen={isOpen} placement="bottom" onClose={onClose}>
       <DrawerOverlay />
@@ -167,12 +115,37 @@ export default function ReplyDrawer({
                               onClick={(e) => {
                                 e.preventDefault();
                                 setStateModify(false);
-                                modifyReply.mutate(v.id);
+                                modifyReply.mutate(v.id, {
+                                  onSuccess: () => {
+                                    queryClient.invalidateQueries();
+                                    // 필요한 경우 폼 리셋
+                                    alert("수정 성공");
+                                  },
+                                  onError: (error: any) => {
+                                    console.log("error", error);
+                                    queryClient.invalidateQueries();
+                                    alert(`수정 실패`);
+                                  },
+                                });
                               }}
                             >
                               수정
                             </Button>
-                            <Button onClick={() => deleteReply.mutate(v.id)}>
+                            <Button
+                              onClick={() =>
+                                deleteReply.mutate(v.id, {
+                                  onSuccess: () => {
+                                    queryClient.invalidateQueries();
+                                    // 필요한 경우 폼 리셋
+                                    alert("삭제 성공");
+                                  },
+                                  onError: (error: any) => {
+                                    queryClient.invalidateQueries();
+                                    alert(`삭제 실패`);
+                                  },
+                                })
+                              }
+                            >
                               삭제
                             </Button>
                           </>

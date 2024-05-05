@@ -20,12 +20,14 @@ import {
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+
 
 import { DocumentData, getFirestore } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useCreateBoard } from "@/queries/queries";
 
 export default function BoardCreateCard() {
   const router = useRouter();
@@ -33,7 +35,8 @@ export default function BoardCreateCard() {
   const [preview, setPreview] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
-  const [userInfo, setUserInfo] = useState<DocumentData | null>();
+
+  const [userInfo, setUserInfo] = useState<DocumentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const {
@@ -52,6 +55,7 @@ export default function BoardCreateCard() {
   // DB저장된 사용자 정보 가져오기
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : "";
+  const createBoard = useCreateBoard({ uid, userInfo });
 
   useEffect(() => {
     if (uid) {
@@ -71,35 +75,6 @@ export default function BoardCreateCard() {
 
   // 게시물 등록
 
-  const createBoard = useMutation({
-    mutationFn: async (data: Board) => {
-      await createBoardItem(
-        {
-          ...data,
-          id: uid,
-          nickname: userInfo?.nickname ?? null,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          commentCount: 0,
-          likeCount: 0,
-        },
-
-        uid
-      );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries();
-      // 필요한 경우 폼 리셋
-      reset();
-      setPreview(null);
-      alert("게시물이 성공적으로 등록되었습니다.");
-    },
-    onError: (error: any) => {
-      queryClient.invalidateQueries();
-      alert(`게시물 등록에 실패했습니다: ${error.message}`);
-    },
-  });
-
   // 미리보기
   useEffect(() => {
     if (selectedFile) {
@@ -109,7 +84,20 @@ export default function BoardCreateCard() {
   }, [selectedFile]);
 
   const onSubmit = (data: Board) => {
-    createBoard.mutate(data); // Mutation을 통해 데이터 등록 요청
+
+    createBoard.mutate(data, {
+      onSuccess: () => {
+        queryClient.invalidateQueries();
+        // 필요한 경우 폼 리셋
+        reset();
+        setPreview(null);
+        alert("게시물이 성공적으로 등록되었습니다.");
+      },
+      onError: (error: any) => {
+        queryClient.invalidateQueries();
+        alert(`게시물 등록에 실패했습니다: ${error.message}`);
+      },
+    }); // Mutation을 통해 데이터 등록 요청
   };
 
   return (
