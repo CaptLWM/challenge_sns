@@ -6,6 +6,7 @@ import {
   boardItemLike,
   createBoardItem,
   createBoardItemReply,
+  deleteBoardItemReply,
   firestore,
   modifyBoardItem,
   modifyBoardItemReply,
@@ -233,6 +234,15 @@ export const useModifyReply = ({
         uid,
         id
       );
+    },
+  });
+};
+
+// 댓글 삭제
+export const useDeleteReply = (id: string) => {
+  return useMutation({
+    mutationFn: async () => {
+      await deleteBoardItemReply(id);
     },
   });
 };
