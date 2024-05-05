@@ -10,10 +10,7 @@ import {
   firestore,
   modifyBoardItem,
   modifyBoardItemReply,
-<<<<<<< HEAD
-=======
   updateUser,
->>>>>>> ded177b2060f02def5628b4b223ca156052221c5
 } from "@/firebase/firestore";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -37,8 +34,6 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
-<<<<<<< HEAD
-=======
 import { BOARD_ITEM_REPLY, BOARD_LIST } from "./queryKeys";
 
 // 사용자 정보 수정
@@ -49,7 +44,6 @@ export const useModifyUser = (uid: string) => {
     },
   });
 };
->>>>>>> ded177b2060f02def5628b4b223ca156052221c5
 
 // 게시물 불러오기
 export const useBoardListQuery = (
