@@ -8,6 +8,7 @@ import {
   createBoardItemReply,
   deleteBoardItemReply,
   firestore,
+  followUser,
   modifyBoardItem,
   modifyBoardItemReply,
   updateUser,
@@ -310,6 +311,21 @@ export const useDeleteReply = (id: string) => {
   return useMutation({
     mutationFn: async () => {
       await deleteBoardItemReply(id);
+    },
+  });
+};
+
+// 사용자 팔로우
+export const useFollowUser = () => {
+  return useMutation({
+    mutationFn: async ({
+      uid,
+      userInfo,
+    }: {
+      uid: string;
+      userInfo: DocumentData | null;
+    }) => {
+      await followUser(uid, userInfo);
     },
   });
 };
