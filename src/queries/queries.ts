@@ -88,19 +88,75 @@ export const useBoardListQuery = (
       querySnapshot.docs.length > 0
         ? querySnapshot.docs[querySnapshot.docs.length - 1]
         : null;
-
     return {
       data,
-
       nextPageParam: lastVisible, // 다음 페이지를 위한 기준
     };
   };
   return useInfiniteQuery({
     queryKey: [BOARD_LIST],
     queryFn: fetchData,
-
     getNextPageParam: (lastPage) => lastPage.nextPageParam, // 다음 페이지를 위한 기준
     initialPageParam, // 첫 페이지의 기준 설정
+  });
+};
+
+// 게시물 불러오기(닉네임)
+export const useBoardListNickNameQuery = (
+  nickName: string,
+  initialPageParam?: QueryDocumentSnapshot<DocumentData>
+) => {
+  const fetchData = async ({
+    pageParam,
+  }: {
+    pageParam?: QueryDocumentSnapshot<DocumentData>;
+  }) => {
+    let q;
+    if (pageParam) {
+      q = query(
+        collection(firestore, "BoardItem"),
+        where("nickname", "==", nickName),
+        orderBy("createdAt", "desc"),
+        limit(2),
+        startAfter(pageParam)
+      );
+    } else {
+      q = query(
+        collection(firestore, "BoardItem"),
+        where("nickname", "==", nickName),
+        orderBy("createdAt", "desc"),
+        limit(2)
+      );
+    }
+    // collection 이름이 todos인 collection의 모든 document를 가져옵니다.
+    const querySnapshot: QuerySnapshot = await getDocs(q);
+    // document의 id와 데이터를 initialTodos에 저장합니다.
+    // doc.id의 경우 따로 지정하지 않는 한 자동으로 생성되는 id입니다.
+    // doc.data()를 실행하면 해당 document의 데이터를 가져올 수 있습니다.
+
+    // 튜플형태니까 순서 중요
+    const data: { data: Board; id: string }[] = [];
+
+    querySnapshot.forEach((doc) => {
+      data.push({ data: doc.data() as Board, id: doc.id });
+    });
+
+    // 다음페이지를 가져오기 위한 기준점 설정
+    const lastVisible =
+      querySnapshot.docs.length > 0
+        ? querySnapshot.docs[querySnapshot.docs.length - 1]
+        : null;
+    return {
+      data,
+      nextPageParam: lastVisible, // 다음 페이지를 위한 기준
+    };
+  };
+  return useInfiniteQuery({
+    queryKey: [BOARD_LIST],
+    queryFn: fetchData,
+    getNextPageParam: (lastPage) => lastPage.nextPageParam, // 다음 페이지를 위한 기준
+    initialPageParam, // 첫 페이지의 기준 설정
+    enabled: !!nickName,
   });
 };
 

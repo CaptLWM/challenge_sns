@@ -1,10 +1,5 @@
 "use client";
 
-import {
-  boardItemLike,
-  firestore,
-  modifyBoardItem,
-} from "@/firebase/firestore";
 import useAuthStore from "@/store/store";
 import {
   Button,
@@ -27,13 +22,11 @@ import {
   CardFooter,
   HStack,
 } from "@chakra-ui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DocumentData, deleteDoc, doc } from "firebase/firestore";
+import { useQueryClient } from "@tanstack/react-query";
+import { DocumentData } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReplyDrawer from "./ReplyDrawer";
-import { deleteObject, ref } from "firebase/storage";
-import { storage } from "@/firebase/firestorage";
 import { Board } from "@/firebase/firebase.type";
 
 import {
@@ -41,6 +34,7 @@ import {
   useDeleteBoard,
   useModifyBoard,
 } from "@/queries/queries";
+import Link from "next/link";
 
 export default function BoardItemCard({
   props,
@@ -82,7 +76,6 @@ export default function BoardItemCard({
     }
   }, [selectedFile]);
 
-
   const onSubmitModify = (data: Board) => {
     modifyBoard.mutate(
       { data, props, id },
@@ -104,9 +97,9 @@ export default function BoardItemCard({
   };
 
   // const onSubmitLike = () => {
-  console.log("게시물 uid", id);
-  console.log("지금 로그인한 사람 id", uid);
-  console.log("props", props.id === id);
+  // console.log("게시물 uid", id);
+  // console.log("지금 로그인한 사람 id", uid);
+  // console.log("props", props.id === id);
 
   // };
   const likeMutate = useBoardItemLike();
@@ -137,6 +130,10 @@ export default function BoardItemCard({
         margin={10}
         padding={5}
       >
+        <Link href={`/user/${props.nickname}`}>
+          <Button>{props.nickname}</Button>
+        </Link>
+
         <Image
           objectFit="cover"
           boxSize={{
