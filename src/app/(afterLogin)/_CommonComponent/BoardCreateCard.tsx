@@ -22,7 +22,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQueryClient } from "@tanstack/react-query";
 
-
 import { DocumentData, getFirestore } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -47,8 +46,13 @@ export default function BoardCreateCard() {
   } = useForm<Board>();
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("??????", !e.target.files, selectedFile);
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFile(e.target.files[0]);
+    }
+    if (!e.target.files && selectedFile) {
+      console.log("??????", !e.target.files, selectedFile);
+      return;
     }
   };
 
@@ -83,8 +87,13 @@ export default function BoardCreateCard() {
     }
   }, [selectedFile]);
 
-  const onSubmit = (data: Board) => {
+  console.log(preview);
 
+  const onSubmit = (data: Board) => {
+    if (!data.image || data.image.length === 0 || data.content.length === 0) {
+      alert("내용을 입력해주세요");
+      return;
+    }
     createBoard.mutate(data, {
       onSuccess: () => {
         queryClient.invalidateQueries();
