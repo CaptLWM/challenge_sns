@@ -50,7 +50,6 @@ export const useModifyUser = (uid: string) => {
 export const useBoardListQuery = (
   initialPageParam?: QueryDocumentSnapshot<DocumentData>
 ) => {
-  console.log("initialPageParam", initialPageParam);
   const fetchData = async ({
     pageParam,
   }: {
@@ -319,13 +318,13 @@ export const useDeleteReply = (id: string) => {
 export const useFollowUser = () => {
   return useMutation({
     mutationFn: async ({
-      uid,
+      currentUid,
       userInfo,
     }: {
-      uid: string;
-      userInfo: DocumentData | null;
+      currentUid: string;
+      userInfo: DocumentData;
     }) => {
-      await followUser(uid, userInfo);
+      await followUser(currentUid, userInfo);
     },
   });
 };

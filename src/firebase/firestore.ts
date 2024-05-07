@@ -86,7 +86,7 @@ export const getUser = async (uid: string) => {
   const userSnap = await getDoc(userDocRef);
   // exists() 메소드를 사용하여 문서의 존재를 명시적으로 확인할 수 있습니다.
   if (userSnap.exists()) {
-    console.log("User data:", userSnap.data());
+    // console.log("User data:", userSnap.data());
     return userSnap.data();
   } else {
     console.log("No such user");
@@ -101,10 +101,10 @@ export const getUserNick = async (nickname: string) => {
     where("nickname", "==", nickname)
   );
   const userSnap = await getDocs(nicknameRef);
-  console.log(
-    "User data:",
-    userSnap.docs.map((doc) => doc.data())
-  );
+  // console.log(
+  //   "User data:",
+  //   userSnap.docs.map((doc) => doc.data())
+  // );
   return userSnap.docs.map((doc) => doc.data());
 };
 
@@ -274,7 +274,8 @@ export const deleteBoardItemReply = async (uid: string) => {
 };
 
 export const followUser = async (uid: string, props: DocumentData | null) => {
-  const followUserRef = doc(firestore, "User", uid);
+  console.log(props[0]?.uid);
+  const followUserRef = doc(firestore, "User", props[0]?.uid);
 
   const currentFollowUserList: string[] = Array.isArray(props?.followUserList)
     ? props.followUserList

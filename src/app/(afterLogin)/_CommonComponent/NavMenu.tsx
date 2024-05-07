@@ -8,7 +8,7 @@ import { DocumentData } from "firebase/firestore";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSelectedLayoutSegment } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { TbTargetArrow } from "react-icons/tb"; // challenge
 import { TbSearch } from "react-icons/tb"; // search
 import { TbHome } from "react-icons/tb"; // home
@@ -36,13 +36,20 @@ export default function NavMenu() {
 
   // 사용자 ID 가져오기
   const user = useAuthStore((state) => state.user);
-  const uid = user ? user.uid : null;
+  // const uid = user ? user.uid : null;
+  const uid = useMemo(() => user?.uid, [user?.uid]);
+
   // TODO 지금 처음 회원가입하고 로그인 했을때 닉네임 잘 못찾아옴
-  console.log("nav-user", user);
+
   // getuser는 promise를 반환함 => 비동기
   // 데이터가 도착하기 전에 닉네임에 접근하려고 하니 에러가 발생
   // useEffect는 컴포넌트가 마운트될 때 및 uid가 변경될 때 사용자 정보를 가지고옴
   // useEffect를 활용하여 처리 가능 + 로딩 에러 상태 가져오기
+
+  // 새로 고침하면 유저정보 새로 불러오기
+  useEffect(() => {
+    initAuthState(); // 컴포넌트 마운트 시 유저 정보 초기화
+  }, []);
 
   useEffect(() => {
     router.refresh();

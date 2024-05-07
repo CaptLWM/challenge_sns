@@ -90,8 +90,6 @@ export default function Main() {
     return boardList.data?.pages;
   }, [boardList.data?.pages]);
 
-  console.log(test);
-
   const onSubmitModify = (data: User) => {
     modifyUser.mutate(data),
       {

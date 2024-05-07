@@ -46,12 +46,10 @@ export default function BoardCreateCard() {
   } = useForm<Board>();
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("??????", !e.target.files, selectedFile);
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFile(e.target.files[0]);
     }
     if (!e.target.files && selectedFile) {
-      console.log("??????", !e.target.files, selectedFile);
       return;
     }
   };
@@ -86,8 +84,6 @@ export default function BoardCreateCard() {
       setPreview(fileURL);
     }
   }, [selectedFile]);
-
-  console.log(preview);
 
   const onSubmit = (data: Board) => {
     if (!data.image || data.image.length === 0 || data.content.length === 0) {
