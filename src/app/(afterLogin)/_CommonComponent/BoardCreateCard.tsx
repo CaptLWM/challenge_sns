@@ -46,6 +46,7 @@ export default function BoardCreateCard() {
   } = useForm<Board>();
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("??????", !e.target.files, selectedFile);
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFile(e.target.files[0]);
     }

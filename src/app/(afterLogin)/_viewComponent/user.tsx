@@ -82,6 +82,7 @@ export default function Main({ nickname }: { nickname: string }) {
     return boardList.data?.pages;
   }, [boardList.data?.pages]);
 
+
   // 계속 로그아웃 됨....
   // 내가 팔로우하고 있는지 체크
   const temp2 = userInfo2?.followerUserList?.includes(currentUid);
@@ -93,6 +94,7 @@ export default function Main({ nickname }: { nickname: string }) {
       {currentUid !== uid ? (
         <Button onClick={fowllowtest}>팔로우</Button>
       ) : null}
+
       <InfiniteScroll
         dataLength={boardList.data?.pages.flat().length ?? 0}
         next={boardList.fetchNextPage}
