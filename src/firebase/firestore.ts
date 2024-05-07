@@ -101,6 +101,10 @@ export const getUserNick = async (nickname: string) => {
     where("nickname", "==", nickname)
   );
   const userSnap = await getDocs(nicknameRef);
+  console.log(
+    "User data:",
+    userSnap.docs.map((doc) => doc.data())
+  );
   return userSnap.docs.map((doc) => doc.data());
 };
 

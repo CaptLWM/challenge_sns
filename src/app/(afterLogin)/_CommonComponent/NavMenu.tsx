@@ -38,7 +38,7 @@ export default function NavMenu() {
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : null;
   // TODO 지금 처음 회원가입하고 로그인 했을때 닉네임 잘 못찾아옴
-
+  console.log("nav-user", user);
   // getuser는 promise를 반환함 => 비동기
   // 데이터가 도착하기 전에 닉네임에 접근하려고 하니 에러가 발생
   // useEffect는 컴포넌트가 마운트될 때 및 uid가 변경될 때 사용자 정보를 가지고옴
