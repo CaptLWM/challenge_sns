@@ -320,11 +320,14 @@ export const useFollowUser = () => {
     mutationFn: async ({
       currentUid,
       targetInfo,
+
+      curUserInfo,
     }: {
-      currentUid: string | undefined;
+      currentUid: string;
       targetInfo: DocumentData | null;
+      curUserInfo: DocumentData | null;
     }) => {
-      await followUser(currentUid, targetInfo);
+      await followUser(currentUid, targetInfo, curUserInfo);
     },
   });
 };

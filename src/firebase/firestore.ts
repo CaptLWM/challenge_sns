@@ -274,29 +274,60 @@ export const deleteBoardItemReply = async (uid: string) => {
 };
 
 export const followUser = async (
-  uid: string | undefined,
-  props: DocumentData | null
+  uid: string,
+  targetInfo: DocumentData | null,
+  curInfo: DocumentData | null
 ) => {
-  const followUserRef = doc(firestore, "User", props?.uid);
-  console.log("followUserRef", followUserRef);
-  const currentFollowUserList: string[] = Array.isArray(props?.followUserList)
-    ? props.followUserList
+  const followUserRef = doc(firestore, "User", targetInfo?.uid); // 팔로워
+  const followingUserRef = doc(firestore, "User", uid); // 팔로잉
+  console.log("curInfo", curInfo);
+  const currentFollowUserList: string[] = Array.isArray(
+    targetInfo?.followUserList
+  )
+    ? targetInfo.followUserList
     : [];
-  console.log("currentFollowUserList", currentFollowUserList);
-  const isFollowed = uid ? currentFollowUserList.includes(uid) : false;
-  console.log("isFollowed", isFollowed);
-  console.log(uid, props);
 
+  const currentFollowingUserList: string[] = Array.isArray(
+    curInfo?.followingUserList
+  )
+    ? curInfo.followingUserList
+    : [];
+
+  const isFollowed = uid ? currentFollowUserList.includes(uid) : false;
+
+  const isFollowing = targetInfo?.uid
+    ? currentFollowingUserList.includes(targetInfo.uid)
+    : false;
   if (isFollowed) {
     const updatedFollowUserList = currentFollowUserList.filter(
       (user) => user !== uid
     );
     console.log("update", updatedFollowUserList);
+
     await updateDoc(followUserRef, { followUserList: updatedFollowUserList });
   } else {
     if (uid) {
       const updatedFollowUserList = currentFollowUserList.concat(uid);
       await updateDoc(followUserRef, { followUserList: updatedFollowUserList });
+    }
+    return;
+  }
+
+  if (isFollowing) {
+    const updatedFollowingUserList = currentFollowingUserList.filter(
+      (user) => user !== targetInfo?.uid
+    );
+    await updateDoc(followingUserRef, {
+      followingUserList: updatedFollowingUserList,
+    });
+  } else {
+    if (targetInfo?.uid) {
+      const updatedFollowingUserList = currentFollowingUserList.concat(
+        targetInfo?.uid
+      );
+      await updateDoc(followingUserRef, {
+        followingUserList: updatedFollowingUserList,
+      });
     }
     return;
   }

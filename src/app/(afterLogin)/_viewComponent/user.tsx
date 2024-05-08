@@ -4,7 +4,8 @@ import { useBoardListNickNameQuery, useFollowUser } from "@/queries/queries";
 import React, { useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import BoardItemCard from "../_CommonComponent/BoardItemCard";
-import { Button } from "@chakra-ui/react";
+
+import { Button, Text } from "@chakra-ui/react";
 import { DocumentData, doc, getDoc } from "firebase/firestore";
 import {
   firestore,
@@ -13,11 +14,14 @@ import {
   getUserNick,
 } from "@/firebase/firestore";
 import { useQueryClient } from "@tanstack/react-query";
-import useAuthStore from "@/store/store";
+
+import useAuthStore, { initAuthState } from "@/store/store";
+import { set } from "react-hook-form";
 
 export default function Main({ nickname }: { nickname: string }) {
   const [targetInfo, setTargetInfo] = useState<DocumentData | null>(null);
-  const [check, setCheck] = useState(false);
+  const [curUserInfo, setCurUserInfo] = useState<DocumentData | null>(null);
+  const [check, setCheck] = useState(true);
   const queryClient = useQueryClient();
   const boardList = useBoardListNickNameQuery(nickname);
 
@@ -27,15 +31,36 @@ export default function Main({ nickname }: { nickname: string }) {
     return boardList.data?.pages;
   }, [boardList.data?.pages]);
 
-  const currentUid = useAuthStore((state) => state.user?.uid);
 
+  const user = useAuthStore((state) => state.user);
+  const currentUid = user ? user.uid : ""; // 로그인한 사용자의 uid
+
+  // useEffect(() => {
+  //   if (currentUid && check) {
+  //     const fetchData = async () => {
+  //       try {
+  //         const response2 = await getUser(currentUid);
+  //         setCurUserInfo(response2);
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     };
+  //     fetchData();
+  //     setCheck(false);
+  //   }
+  // }, [currentUid, check]);
   // 팔로우할 유저 정보 가져오기
   useEffect(() => {
     if (check) {
       const fetchData = async () => {
         try {
-          const response = await getUserNick(nickname);
-          setTargetInfo(response[0]);
+
+          const response1 = await getUserNick(nickname);
+          if (currentUid) {
+            const response2 = await getUser(currentUid);
+            setCurUserInfo(response2);
+          }
+          setTargetInfo(response1[0]);
         } catch (error) {
           console.log(error);
         }
@@ -43,25 +68,31 @@ export default function Main({ nickname }: { nickname: string }) {
       fetchData();
       setCheck(false);
     }
-  }, [nickname, check]);
+
+  }, [nickname, check, currentUid]);
 
   // 팔로우 버튼
   const followUser = useFollowUser();
   const follow = () => {
+
+    // setCheck(true);
     followUser.mutate(
-      { currentUid, targetInfo },
+      { currentUid, targetInfo, curUserInfo },
       {
-        onSuccess: async () => {
-          await queryClient.invalidateQueries();
+        onSuccess: () => {
+          // queryClient.invalidateQueries();
           setCheck(true);
         },
         onError: async (error: any) => {
-          await queryClient.invalidateQueries();
+          // await queryClient.invalidateQueries();
           console.log("error", error.message);
           setCheck(true);
         },
       }
     );
+
+    // invalidateQueries 타이밍을 잘 잡아야함
+    queryClient.invalidateQueries();
   };
 
   return (
@@ -69,8 +100,26 @@ export default function Main({ nickname }: { nickname: string }) {
       {nickname}님의 게시물
       {/* <Button>팔로우</Button> */}
       {currentUid !== targetInfo?.uid ? (
-        <Button onClick={follow}>팔로우</Button>
+
+        <Button
+          colorScheme={
+            targetInfo?.followUserList.length > 0 ? "blue" : undefined
+          }
+          onClick={follow}
+        >
+          팔로우
+        </Button>
       ) : null}
+      {targetInfo?.followUserList.length > 0 ? (
+        <Text>{targetInfo?.followUserList.length}</Text>
+      ) : (
+        <Text>0</Text>
+      )}
+      {targetInfo?.followingUserList?.length > 0 ? (
+        <Text>{targetInfo?.followingUserList.length}</Text>
+      ) : (
+        <Text>0</Text>
+      )}
       <InfiniteScroll
         dataLength={boardList.data?.pages.flat().length ?? 0}
         next={boardList.fetchNextPage}
