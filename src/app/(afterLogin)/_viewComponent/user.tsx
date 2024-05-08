@@ -27,7 +27,6 @@ export default function Main({ nickname }: { nickname: string }) {
     return boardList.data?.pages;
   }, [boardList.data?.pages]);
 
-<<<<<<< HEAD
   const currentUid = useAuthStore((state) => state.user?.uid);
 
   // 팔로우할 유저 정보 가져오기
@@ -64,13 +63,6 @@ export default function Main({ nickname }: { nickname: string }) {
       }
     );
   };
-=======
-
-  // 계속 로그아웃 됨....
-  // 내가 팔로우하고 있는지 체크
-  const temp2 = userInfo2?.followerUserList?.includes(currentUid);
-  console.log(temp2);
->>>>>>> 79ed9ef56de8aad3f13da0814e65942e5e3e562e
 
   return (
     <div>
@@ -79,7 +71,6 @@ export default function Main({ nickname }: { nickname: string }) {
       {currentUid !== targetInfo?.uid ? (
         <Button onClick={follow}>팔로우</Button>
       ) : null}
-
       <InfiniteScroll
         dataLength={boardList.data?.pages.flat().length ?? 0}
         next={boardList.fetchNextPage}
