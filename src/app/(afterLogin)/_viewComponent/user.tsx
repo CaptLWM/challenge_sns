@@ -84,6 +84,7 @@ export default function Main({ nickname }: { nickname: string }) {
         },
       }
     );
+    // invalidateQueries 타이밍을 잘 잡아야함
     queryClient.invalidateQueries();
   };
 
@@ -106,11 +107,11 @@ export default function Main({ nickname }: { nickname: string }) {
       ) : (
         <Text>0</Text>
       )}
-      {/* {targetInfo?.followingUserList?.length > 0 ? (
+      {targetInfo?.followingUserList?.length > 0 ? (
         <Text>{targetInfo?.followingUserList.length}</Text>
       ) : (
         <Text>0</Text>
-      )} */}
+      )}
       <InfiniteScroll
         dataLength={boardList.data?.pages.flat().length ?? 0}
         next={boardList.fetchNextPage}
