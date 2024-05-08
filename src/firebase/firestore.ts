@@ -5,9 +5,12 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
   getFirestore,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import firebasedb from "./firebase";
 import { Board, Reply, User } from "./firebase.type";
@@ -83,12 +86,26 @@ export const getUser = async (uid: string) => {
   const userSnap = await getDoc(userDocRef);
   // exists() 메소드를 사용하여 문서의 존재를 명시적으로 확인할 수 있습니다.
   if (userSnap.exists()) {
-    console.log("User data:", userSnap.data());
+    // console.log("User data:", userSnap.data());
     return userSnap.data();
   } else {
     console.log("No such user");
     return null;
   }
+};
+
+// 닉네임
+export const getUserNick = async (nickname: string) => {
+  const nicknameRef = query(
+    collection(firestore, "User"),
+    where("nickname", "==", nickname)
+  );
+  const userSnap = await getDocs(nicknameRef);
+  // console.log(
+  //   "User data:",
+  //   userSnap.docs.map((doc) => doc.data())
+  // );
+  return userSnap.docs.map((doc) => doc.data());
 };
 
 // 회원 정보 업데이트 함수
@@ -254,4 +271,33 @@ export const deleteBoardItemReply = async (uid: string) => {
   const userDocRef = doc(firestore, "BoardItemReply", uid);
   await deleteDoc(userDocRef);
   console.log("성공");
+};
+
+export const followUser = async (
+  uid: string | undefined,
+  props: DocumentData | null
+) => {
+  const followUserRef = doc(firestore, "User", props?.uid);
+  console.log("followUserRef", followUserRef);
+  const currentFollowUserList: string[] = Array.isArray(props?.followUserList)
+    ? props.followUserList
+    : [];
+  console.log("currentFollowUserList", currentFollowUserList);
+  const isFollowed = uid ? currentFollowUserList.includes(uid) : false;
+  console.log("isFollowed", isFollowed);
+  console.log(uid, props);
+
+  if (isFollowed) {
+    const updatedFollowUserList = currentFollowUserList.filter(
+      (user) => user !== uid
+    );
+    console.log("update", updatedFollowUserList);
+    await updateDoc(followUserRef, { followUserList: updatedFollowUserList });
+  } else {
+    if (uid) {
+      const updatedFollowUserList = currentFollowUserList.concat(uid);
+      await updateDoc(followUserRef, { followUserList: updatedFollowUserList });
+    }
+    return;
+  }
 };

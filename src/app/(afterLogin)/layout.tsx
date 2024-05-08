@@ -2,6 +2,8 @@ import React from "react";
 import NavMenu from "./_CommonComponent/NavMenu";
 import { Divider, HStack } from "@chakra-ui/react";
 import RQProvider from "./_CommonComponent/RQProvider";
+import useAuthStore from "@/store/store";
+import { getUser } from "@/firebase/firestore";
 
 export default function AfterLoginlayout({
   children,

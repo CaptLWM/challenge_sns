@@ -1,12 +1,24 @@
 "use client";
 
-import { useBoardListNickNameQuery } from "@/queries/queries";
-import React, { useMemo } from "react";
+import { useBoardListNickNameQuery, useFollowUser } from "@/queries/queries";
+import React, { useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import BoardItemCard from "../_CommonComponent/BoardItemCard";
+import { Button } from "@chakra-ui/react";
+import { DocumentData, doc, getDoc } from "firebase/firestore";
+import {
+  firestore,
+  followUser,
+  getUser,
+  getUserNick,
+} from "@/firebase/firestore";
+import { useQueryClient } from "@tanstack/react-query";
+import useAuthStore from "@/store/store";
 
 export default function Main({ nickname }: { nickname: string }) {
-  console.log("nickname", nickname);
+  const [targetInfo, setTargetInfo] = useState<DocumentData | null>(null);
+  const [check, setCheck] = useState(false);
+  const queryClient = useQueryClient();
   const boardList = useBoardListNickNameQuery(nickname);
 
   // 쿼리키로 할것
@@ -14,9 +26,51 @@ export default function Main({ nickname }: { nickname: string }) {
     if (!boardList.data?.pages) return;
     return boardList.data?.pages;
   }, [boardList.data?.pages]);
+
+  const currentUid = useAuthStore((state) => state.user?.uid);
+
+  // 팔로우할 유저 정보 가져오기
+  useEffect(() => {
+    if (check) {
+      const fetchData = async () => {
+        try {
+          const response = await getUserNick(nickname);
+          setTargetInfo(response[0]);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchData();
+      setCheck(false);
+    }
+  }, [nickname, check]);
+
+  // 팔로우 버튼
+  const followUser = useFollowUser();
+  const follow = () => {
+    followUser.mutate(
+      { currentUid, targetInfo },
+      {
+        onSuccess: async () => {
+          await queryClient.invalidateQueries();
+          setCheck(true);
+        },
+        onError: async (error: any) => {
+          await queryClient.invalidateQueries();
+          console.log("error", error.message);
+          setCheck(true);
+        },
+      }
+    );
+  };
+
   return (
     <div>
-      user
+      {nickname}님의 게시물
+      {/* <Button>팔로우</Button> */}
+      {currentUid !== targetInfo?.uid ? (
+        <Button onClick={follow}>팔로우</Button>
+      ) : null}
       <InfiniteScroll
         dataLength={boardList.data?.pages.flat().length ?? 0}
         next={boardList.fetchNextPage}

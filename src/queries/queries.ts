@@ -8,6 +8,7 @@ import {
   createBoardItemReply,
   deleteBoardItemReply,
   firestore,
+  followUser,
   modifyBoardItem,
   modifyBoardItemReply,
   updateUser,
@@ -49,7 +50,6 @@ export const useModifyUser = (uid: string) => {
 export const useBoardListQuery = (
   initialPageParam?: QueryDocumentSnapshot<DocumentData>
 ) => {
-  console.log("initialPageParam", initialPageParam);
   const fetchData = async ({
     pageParam,
   }: {
@@ -310,6 +310,21 @@ export const useDeleteReply = (id: string) => {
   return useMutation({
     mutationFn: async () => {
       await deleteBoardItemReply(id);
+    },
+  });
+};
+
+// 사용자 팔로우
+export const useFollowUser = () => {
+  return useMutation({
+    mutationFn: async ({
+      currentUid,
+      targetInfo,
+    }: {
+      currentUid: string | undefined;
+      targetInfo: DocumentData | null;
+    }) => {
+      await followUser(currentUid, targetInfo);
     },
   });
 };
