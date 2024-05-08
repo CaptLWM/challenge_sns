@@ -273,23 +273,31 @@ export const deleteBoardItemReply = async (uid: string) => {
   console.log("성공");
 };
 
-export const followUser = async (uid: string, props: DocumentData | null) => {
-  console.log(props[0]?.uid);
-  const followUserRef = doc(firestore, "User", props[0]?.uid);
-
+export const followUser = async (
+  uid: string | undefined,
+  props: DocumentData | null
+) => {
+  const followUserRef = doc(firestore, "User", props?.uid);
+  console.log("followUserRef", followUserRef);
   const currentFollowUserList: string[] = Array.isArray(props?.followUserList)
     ? props.followUserList
     : [];
-
-  const isFollowed = currentFollowUserList.includes(uid);
+  console.log("currentFollowUserList", currentFollowUserList);
+  const isFollowed = uid ? currentFollowUserList.includes(uid) : false;
+  console.log("isFollowed", isFollowed);
+  console.log(uid, props);
 
   if (isFollowed) {
     const updatedFollowUserList = currentFollowUserList.filter(
       (user) => user !== uid
     );
+    console.log("update", updatedFollowUserList);
     await updateDoc(followUserRef, { followUserList: updatedFollowUserList });
   } else {
-    const updatedFollowUserList = currentFollowUserList.concat(uid);
-    await updateDoc(followUserRef, { followUserList: updatedFollowUserList });
+    if (uid) {
+      const updatedFollowUserList = currentFollowUserList.concat(uid);
+      await updateDoc(followUserRef, { followUserList: updatedFollowUserList });
+    }
+    return;
   }
 };

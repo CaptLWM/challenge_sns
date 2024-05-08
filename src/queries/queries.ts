@@ -319,12 +319,12 @@ export const useFollowUser = () => {
   return useMutation({
     mutationFn: async ({
       currentUid,
-      userInfo,
+      targetInfo,
     }: {
-      currentUid: string;
-      userInfo: DocumentData;
+      currentUid: string | undefined;
+      targetInfo: DocumentData | null;
     }) => {
-      await followUser(currentUid, userInfo);
+      await followUser(currentUid, targetInfo);
     },
   });
 };
