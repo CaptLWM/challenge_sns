@@ -298,11 +298,11 @@ export const followUser = async (
   const isFollowing = targetInfo?.uid
     ? currentFollowingUserList.includes(targetInfo.uid)
     : false;
-
   if (isFollowed) {
     const updatedFollowUserList = currentFollowUserList.filter(
       (user) => user !== uid
     );
+    console.log("update", updatedFollowUserList);
 
     await updateDoc(followUserRef, { followUserList: updatedFollowUserList });
   } else {

@@ -4,6 +4,7 @@ import { useBoardListNickNameQuery, useFollowUser } from "@/queries/queries";
 import React, { useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import BoardItemCard from "../_CommonComponent/BoardItemCard";
+
 import { Button, Text } from "@chakra-ui/react";
 import { DocumentData, doc, getDoc } from "firebase/firestore";
 import {
@@ -13,6 +14,7 @@ import {
   getUserNick,
 } from "@/firebase/firestore";
 import { useQueryClient } from "@tanstack/react-query";
+
 import useAuthStore, { initAuthState } from "@/store/store";
 import { set } from "react-hook-form";
 
@@ -28,6 +30,7 @@ export default function Main({ nickname }: { nickname: string }) {
     if (!boardList.data?.pages) return;
     return boardList.data?.pages;
   }, [boardList.data?.pages]);
+
 
   const user = useAuthStore((state) => state.user);
   const currentUid = user ? user.uid : ""; // 로그인한 사용자의 uid
@@ -51,6 +54,7 @@ export default function Main({ nickname }: { nickname: string }) {
     if (check) {
       const fetchData = async () => {
         try {
+
           const response1 = await getUserNick(nickname);
           if (currentUid) {
             const response2 = await getUser(currentUid);
@@ -64,11 +68,13 @@ export default function Main({ nickname }: { nickname: string }) {
       fetchData();
       setCheck(false);
     }
+
   }, [nickname, check, currentUid]);
 
   // 팔로우 버튼
   const followUser = useFollowUser();
   const follow = () => {
+
     // setCheck(true);
     followUser.mutate(
       { currentUid, targetInfo, curUserInfo },
@@ -84,6 +90,7 @@ export default function Main({ nickname }: { nickname: string }) {
         },
       }
     );
+
     // invalidateQueries 타이밍을 잘 잡아야함
     queryClient.invalidateQueries();
   };
@@ -93,6 +100,7 @@ export default function Main({ nickname }: { nickname: string }) {
       {nickname}님의 게시물
       {/* <Button>팔로우</Button> */}
       {currentUid !== targetInfo?.uid ? (
+
         <Button
           colorScheme={
             targetInfo?.followUserList.length > 0 ? "blue" : undefined

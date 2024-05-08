@@ -320,6 +320,7 @@ export const useFollowUser = () => {
     mutationFn: async ({
       currentUid,
       targetInfo,
+
       curUserInfo,
     }: {
       currentUid: string;
