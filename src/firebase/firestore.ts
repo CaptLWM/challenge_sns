@@ -93,6 +93,19 @@ export const getUser = async (uid: string) => {
   }
 };
 
+// 이메일 체크
+export const getUserEmail = async (email: string) => {
+  const emailRef = query(
+    collection(firestore, "User"),
+    where("email", "==", email)
+  );
+  const userSnap = await getDocs(emailRef);
+  // console.log(
+  //   "User data:",
+  //   userSnap.docs.map((doc) => doc.data())
+  // );
+  return userSnap.docs.map((doc) => doc.data());
+};
 // 닉네임
 export const getUserNick = async (nickname: string) => {
   const nicknameRef = query(
@@ -279,7 +292,6 @@ export const followUser = async (
   const targetuid = targetInfo?.uid ? targetInfo?.uid : "";
   const followUserRef = doc(firestore, "User", targetuid); // 팔로워
   const followingUserRef = doc(firestore, "User", uid); // 팔로잉
-  console.log("curInfo", curInfo);
   const currentFollowUserList: string[] = Array.isArray(
     targetInfo?.followUserList
   )

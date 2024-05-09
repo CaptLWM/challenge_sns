@@ -13,40 +13,47 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signUpWithEmailAndPassword } from "@/firebase/firestore";
+import {
+  getUserEmail,
+  getUserNick,
+  signUpWithEmailAndPassword,
+} from "@/firebase/firestore";
 import Image from "next/image";
 import { SignUp } from "@/firebase/firebase.type";
 
-const signUpSchema = z.object({
-  email: z
-    .string()
-    .email("유효하지 않은 이메일 형식입니다.")
-    .min(1, "이메일을 입력해주세요"),
-  password: z
-    .string()
-    .regex(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/)
-    .min(8, "비밀번호 길이"),
-  confirmPassword: z
-    .string()
-    .regex(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/)
-    .min(8, "비밀번호 길이"),
-  bio: z.string(),
-  nickname: z.string(),
-  image: z.string(),
-});
+// const signUpSchema = z.object({
+
+//   password: z
+//     .string()
+//     .regex(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/)
+//     .min(8, "비밀번호 길이"),
+//   confirmPassword: z
+//     .string()
+//     .regex(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/)
+//     .min(8, "비밀번호 길이"),
+//   bio: z.string(),
+//   nickname: z.string(),
+//   image: z.string(),
+// });
 
 // TODO : 회원가입할때 이메일 중복확인(알아서 걸러주긴 함), 닉네임 중복확인, 비밀번호 확인 필요
 export default function Main() {
   const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [nicknameCheck, setNicknameCheck] = useState<boolean | undefined>(
+    false
+  );
+  const [idCheck, setIdCheck] = useState<boolean | undefined>(false);
   const {
     handleSubmit,
     register,
     watch,
+    setError,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<SignUp>({
-    resolver: zodResolver(signUpSchema),
+    mode: "onBlur",
   });
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +65,6 @@ export default function Main() {
   const signUp = async (data: SignUp) => {
     // console.log(selectedFile);
     try {
-      console.log(data.password, data.confirmPassword);
       if (
         data.email === "" ||
         data.password === "" ||
@@ -95,6 +101,105 @@ export default function Main() {
 
   const password = watch("password");
 
+  // 닉네임 중복확인
+  const emailCheck = async (value: string) => {
+    const response = await getUserEmail(value);
+    console.log("response", response);
+    if (response.length > 0) {
+      console.log("이메일 사용 불가");
+      return false;
+    } else {
+      console.log("이메일 사용가능");
+      return true;
+    }
+  };
+
+  const handleCheckEmail = async () => {
+    const check = watch("email");
+    if (!check) {
+      setError("email", {
+        type: "manual",
+        message: "이메일을 먼저 입력하세요.",
+      });
+      return;
+    }
+    const regExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!regExp.test(check)) {
+      setError("email", {
+        type: "manual",
+        message: "이메일 양식을 확인해 주세요",
+      });
+    } else {
+      setIdCheck(true);
+
+      const isAvailable = await emailCheck(check);
+
+      setIdCheck(false);
+      console.log(isAvailable);
+      if (isAvailable) {
+        clearErrors("email");
+        alert("이메일 사용가능합니다");
+        return;
+      } else {
+        setError("email", {
+          type: "manual",
+          message: "이메일이 이미 사용 중입니다.",
+        });
+      }
+    }
+  };
+
+  // 닉네임 중복확인
+  const nickCheck = async (value: string) => {
+    const response = await getUserNick(value);
+    if (response.length > 0) {
+      console.log("닉네임 사용 불가");
+      return false;
+    } else {
+      console.log("닉네임 사용가능");
+      return true;
+    }
+  };
+
+  const handleCheckNickName = async () => {
+    const check = watch("nickname");
+    if (!check) {
+      setError("nickname", {
+        type: "manual",
+        message: "닉네임을 먼저 입력하세요.",
+      });
+      return;
+    }
+    setNicknameCheck(true);
+
+    const isAvailable = await nickCheck(check);
+
+    setNicknameCheck(false);
+
+    if (isAvailable) {
+      clearErrors("nickname");
+      alert("닉네임 사용가능합니다");
+      return;
+    } else {
+      setError("nickname", {
+        type: "manual",
+        message: "이름이 이미 사용 중입니다.",
+      });
+    }
+  };
+
+  // useEffect(() => {
+  //   if (nicknameCheck) {
+  //     console.log("상태가 닉네임 사용가능으로 변경되었습니다.");
+
+  //   } else {
+  //     console.log("상태가 닉네임 사용 불가로 변경되었습니다.");
+
+  //   }
+  // }, [nicknameCheck]);
+
+  // console.log(nicknameCheck);
+
   return (
     <div className="container mx-auto mr-20 ml-20">
       <Text fontSize="6xl" as="b">
@@ -118,7 +223,23 @@ export default function Main() {
         {/* 자동완성 막기 위한 가짜 태그 */}
         <FormControl isInvalid={!!errors.email}>
           <FormLabel htmlFor="email">이메일</FormLabel>
-          <Input id="email" placeholder="Email" {...register("email")} />
+          <HStack>
+            <Input
+              id="email"
+              placeholder="Email"
+              {...register("email", {
+                required: "필수 입력 항목입니다.",
+                validate: (value) => emailCheck(value),
+                // validate: (value) => {
+                //   if (idCheck) {
+                //     return "중복된 이메일입니다.";
+                //   }
+                //   return true;
+                // },
+              })}
+            />
+            <Button onClick={handleCheckEmail}>중복확인</Button>
+          </HStack>
           <FormErrorMessage>
             {typeof errors.email?.message === "string"
               ? errors.email.message
@@ -131,7 +252,18 @@ export default function Main() {
             id="password"
             placeholder="password"
             type="password"
-            {...register("password")}
+            {...register("password", {
+              required: "필수 입력 항목입니다.",
+              minLength: {
+                value: 8,
+                message: "비밀번호는 8자 이상이어야 합니다.",
+              },
+              pattern: {
+                value:
+                  /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/,
+                message: "비밀번호는 숫자와 문자를 포함해야 합니다.",
+              },
+            })}
           />
           <FormErrorMessage>
             {typeof errors.password?.message === "string"
@@ -146,7 +278,7 @@ export default function Main() {
             type="password"
             placeholder="비밀번호 확인"
             {...register("confirmPassword", {
-              required: "비밀번호 확인은 필수 항목입니다.",
+              required: true,
               validate: (value) =>
                 value === password || "비밀번호가 일치하지 않습니다.",
             })}
@@ -166,11 +298,17 @@ export default function Main() {
         </FormControl>
         <FormControl isInvalid={!!errors.nickname}>
           <FormLabel htmlFor="nickname">닉네임</FormLabel>
-          <Input
-            id="nickname"
-            placeholder="nickname"
-            {...register("nickname")}
-          />
+          <HStack>
+            <Input
+              id="nickname"
+              placeholder="nickname"
+              {...register("nickname", {
+                required: true,
+                validate: (value) => nickCheck(value),
+              })}
+            />
+            <Button onClick={handleCheckNickName}>중복확인</Button>
+          </HStack>
           <FormErrorMessage>
             {typeof errors.nickname?.message === "string"
               ? errors.nickname.message
