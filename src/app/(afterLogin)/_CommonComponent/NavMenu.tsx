@@ -1,10 +1,10 @@
 "use client";
 
+import { User } from "@/firebase/firebase.type";
 import { logout } from "@/firebase/firebaseAuth";
 import { getUser } from "@/firebase/firestore";
 import useAuthStore, { initAuthState } from "@/store/store";
 import { Button, Text } from "@chakra-ui/react";
-import { DocumentData } from "firebase/firestore";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSelectedLayoutSegment } from "next/navigation";
@@ -17,7 +17,7 @@ import { TbMessageDots } from "react-icons/tb"; // message
 export default function NavMenu() {
   const router = useRouter();
   // 상태를 추가하여 사용자 정보를 저장
-  const [userInfo, setUserInfo] = useState<DocumentData | null>();
+  const [userInfo, setUserInfo] = useState<User | null>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // 즉 주소를 가지고 올 수 있음
@@ -56,7 +56,17 @@ export default function NavMenu() {
     if (uid) {
       getUser(uid)
         .then((data) => {
-          setUserInfo(data);
+          setUserInfo({
+            uid: data?.uid,
+            email: data?.email,
+            nickname: data?.nickname,
+            bio: data?.bio,
+            profileImage: data?.profileImage,
+            createdAt: data?.createdAt,
+            updatedAt: data?.updatedAt,
+            followingUserList: data?.followingUserList,
+            followUserList: data?.followUserList,
+          });
           setLoading(false);
         })
         .catch((err) => {

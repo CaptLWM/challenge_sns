@@ -1,30 +1,16 @@
 "use client";
 
-import { auth, logout } from "@/firebase/firebaseAuth";
-import useAuthStore from "@/store/store";
+import { logout } from "@/firebase/firebaseAuth";
 import { Button, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React from "react";
 import BoardItemCard from "../_CommonComponent/BoardItemCard";
 import BoardCreateCard from "../_CommonComponent/BoardCreateCard";
-import {
-  DocumentData,
-  QuerySnapshot,
-  collection,
-  getDocs,
-  orderBy,
-  query,
-} from "firebase/firestore";
-import firebasedb from "@/firebase/firebase";
-import { firestore } from "@/firebase/firestore";
-import { Board } from "@/firebase/firebase.type";
-import { useBottomScrollListener } from "react-bottom-scroll-listener";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useBoardListQuery } from "@/queries/queries";
 
 export default function Main() {
   const router = useRouter();
-  const [temp, setTemp] = React.useState<DocumentData[]>([]);
   const doLogout = async (event: any) => {
     try {
       await logout();

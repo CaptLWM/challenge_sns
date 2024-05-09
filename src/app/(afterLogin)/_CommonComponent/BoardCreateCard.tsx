@@ -1,7 +1,7 @@
 "use client";
 
 import firebasedb from "@/firebase/firebase";
-import { Board } from "@/firebase/firebase.type";
+import { Board, User } from "@/firebase/firebase.type";
 import { createBoardItem, getUser } from "@/firebase/firestore";
 import useAuthStore from "@/store/store";
 import {
@@ -21,8 +21,6 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQueryClient } from "@tanstack/react-query";
-
-import { DocumentData, getFirestore } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -35,7 +33,17 @@ export default function BoardCreateCard() {
 
   const queryClient = useQueryClient();
 
-  const [userInfo, setUserInfo] = useState<DocumentData | null>(null);
+  const [userInfo, setUserInfo] = useState<User>({
+    uid: "",
+    email: "",
+    nickname: "",
+    bio: "",
+    createdAt: "",
+    updatedAt: "",
+    profileImage: "",
+    followingUserList: [],
+    followUserList: [],
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const {
@@ -64,7 +72,17 @@ export default function BoardCreateCard() {
     if (uid) {
       getUser(uid)
         .then((data) => {
-          setUserInfo(data);
+          setUserInfo({
+            uid: data?.id,
+            email: data?.email,
+            nickname: data?.nickname,
+            bio: data?.bio,
+            profileImage: data?.profileImage,
+            createdAt: data?.createdAt,
+            updatedAt: data?.updatedAt,
+            followingUserList: data?.followingUserList,
+            followUserList: data?.followUserList,
+          });
           setLoading(false);
         })
         .catch((err) => {

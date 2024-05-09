@@ -1,5 +1,4 @@
 import {
-  DocumentData,
   addDoc,
   collection,
   deleteDoc,
@@ -147,11 +146,7 @@ export const createBoardItem = async (data: Board, uid: string | null) => {
 };
 
 // 게시물 좋아요
-export const boardItemLike = async (
-  props: DocumentData,
-  uid: string,
-  id: string
-) => {
+export const boardItemLike = async (props: Board, uid: string, id: string) => {
   const userLikeRef = doc(firestore, "/BoardItem", id);
 
   // 좋아요 리스트가 있는지 확인 없으면 빈 배열로 초기화
@@ -176,7 +171,7 @@ export const boardItemLike = async (
 };
 
 export const modifyBoardItem = async (
-  props: DocumentData,
+  props: Board,
   data: Board,
   id: string,
   uid: string
@@ -200,8 +195,11 @@ export const modifyBoardItem = async (
     downloadURL = await getDownloadURL(imageRef);
 
     // 이미지 변경시 과거 이미지 삭제
-    if (previousImage && previousImage !== "default_image_url_or_placeholder") {
-      const previousImageRef = ref(storage, previousImage);
+    if (
+      previousImage &&
+      String(previousImage) !== "default_image_url_or_placeholder"
+    ) {
+      const previousImageRef = ref(storage, String(previousImage));
       try {
         // 이미지 삭제 함수, 이미지 삭제할때 과거이미지는 url 그대로 쓰면 됨
         await deleteObject(previousImageRef);
@@ -275,10 +273,11 @@ export const deleteBoardItemReply = async (uid: string) => {
 
 export const followUser = async (
   uid: string,
-  targetInfo: DocumentData | null,
-  curInfo: DocumentData | null
+  targetInfo: User | null,
+  curInfo: User | null
 ) => {
-  const followUserRef = doc(firestore, "User", targetInfo?.uid); // 팔로워
+  const targetuid = targetInfo?.uid ? targetInfo?.uid : "";
+  const followUserRef = doc(firestore, "User", targetuid); // 팔로워
   const followingUserRef = doc(firestore, "User", uid); // 팔로잉
   console.log("curInfo", curInfo);
   const currentFollowUserList: string[] = Array.isArray(

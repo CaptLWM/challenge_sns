@@ -166,7 +166,7 @@ export const useCreateBoard = ({
   userInfo,
 }: {
   uid: string;
-  userInfo: DocumentData | null;
+  userInfo: User | null;
 }) => {
   return useMutation({
     mutationFn: async (data: Board) => {
@@ -195,7 +195,7 @@ export const useModifyBoard = (uid: string) => {
       id,
     }: {
       data: Board;
-      props: DocumentData;
+      props: Board;
       id: string;
     }) => {
       await modifyBoardItem(props, data, id, uid);
@@ -225,7 +225,7 @@ export const useBoardItemLike = () => {
       id,
       uid,
     }: {
-      props: DocumentData;
+      props: Board;
       id: string;
       uid: string;
     }) => {
@@ -324,8 +324,8 @@ export const useFollowUser = () => {
       curUserInfo,
     }: {
       currentUid: string;
-      targetInfo: DocumentData | null;
-      curUserInfo: DocumentData | null;
+      targetInfo: User | null;
+      curUserInfo: User | null;
     }) => {
       await followUser(currentUid, targetInfo, curUserInfo);
     },
