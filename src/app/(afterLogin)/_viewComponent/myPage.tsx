@@ -17,7 +17,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useAuthStore from "@/store/store";
-import { DocumentData } from "firebase/firestore";
 import { getUser, updateUser } from "@/firebase/firestore";
 import { useRouter } from "next/navigation";
 import {
@@ -25,7 +24,7 @@ import {
   useBoardListQuery,
   useModifyUser,
 } from "@/queries/queries";
-import { User } from "@/firebase/firebase.type";
+import { User, UserSignin } from "@/firebase/firebase.type";
 import InfiniteScroll from "react-infinite-scroll-component";
 import BoardItemCard from "../_CommonComponent/BoardItemCard";
 import { useQueryClient } from "@tanstack/react-query";
@@ -48,14 +47,14 @@ export default function Main() {
   const router = useRouter();
   const queryClient = useQueryClient();
   // 상태를 추가하여 사용자 정보를 저장
-  const [userInfo, setUserInfo] = useState<DocumentData | null>(null);
+  const [userInfo, setUserInfo] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
-  } = useForm<User>({
+  } = useForm<UserSignin>({
     resolver: zodResolver(signUpSchema),
   });
 
@@ -67,7 +66,17 @@ export default function Main() {
     if (uid) {
       getUser(uid)
         .then((data) => {
-          setUserInfo(data);
+          setUserInfo({
+            uid: data?.uid,
+            email: data?.email,
+            nickname: data?.nickname,
+            bio: data?.bio,
+            createdAt: data?.createdAt,
+            updatedAt: data?.updatedAt,
+            profileImage: data?.profileImage,
+            followingUserList: data?.followingUserList,
+            followUserList: data?.followUserList,
+          });
 
           setLoading(false);
         })
@@ -82,7 +91,9 @@ export default function Main() {
 
   const user_uid: string = uid ? uid : "";
   const modifyUser = useModifyUser(user_uid);
-  const boardList = useBoardListNickNameQuery(userInfo?.nickname);
+  const boardList = useBoardListNickNameQuery(
+    userInfo?.nickname ? userInfo.nickname : ""
+  );
 
   // 쿼리키로 할것
   const test = useMemo(() => {

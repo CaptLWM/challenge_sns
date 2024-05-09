@@ -23,7 +23,6 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { DocumentData } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReplyDrawer from "./ReplyDrawer";
@@ -40,11 +39,11 @@ export default function BoardItemCard({
   props,
   id,
 }: {
-  props: DocumentData;
+  props: Board;
   id: string;
 }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(props.image);
+  const [preview, setPreview] = useState<string | null>(String(props.image));
   const deleteModal = useDisclosure();
   const modifyModal = useDisclosure();
   const replyDrawer = useDisclosure();
@@ -142,7 +141,7 @@ export default function BoardItemCard({
             md: "150px", // 중간 화면
           }}
           // maxW={{ base: "100%", sm: "200px" }}
-          src={props.image}
+          src={String(props.image)}
           alt="Caffe Latte"
         />
         {/* TODO 작성자에 따라 삭제 여부 체크 */}

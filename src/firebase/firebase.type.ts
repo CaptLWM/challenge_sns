@@ -2,10 +2,16 @@ export interface User {
   bio: string;
   uid: string;
   email: string;
-  nickname: string | null;
-  password: string;
+  nickname: string;
   createdAt: string;
   updatedAt: string;
+  followingUserList: string[];
+  followUserList: string[];
+  profileImage: string;
+}
+
+export interface UserSignin extends User {
+  password: string;
 }
 
 export interface Board {
@@ -15,9 +21,10 @@ export interface Board {
   content: string;
   commentCount?: number;
   image: File[];
-  likeCount?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  likeCount: number;
+  createdAt: string;
+  updatedAt: string;
+  likeUserList: string[];
 }
 
 export interface Reply {
