@@ -134,6 +134,7 @@ export default function BoardItemCard({
         </Link>
 
         <Image
+          loading="lazy"
           objectFit="cover"
           boxSize={{
             base: "200px",
@@ -255,6 +256,7 @@ export default function BoardItemCard({
               {preview && (
                 <div>
                   <Image
+                    loading="lazy"
                     src={preview}
                     alt="미리보기"
                     width={200}
