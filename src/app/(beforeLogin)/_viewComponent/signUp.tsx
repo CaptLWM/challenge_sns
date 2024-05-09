@@ -196,7 +196,13 @@ export default function Main() {
         </FormControl>
         {preview && (
           <div>
-            <Image src={preview} alt="미리보기" width={200} height={200} />
+            <Image
+              loading="lazy"
+              src={preview}
+              alt="미리보기"
+              width={200}
+              height={200}
+            />
           </div>
         )}
         <HStack mt={5}>

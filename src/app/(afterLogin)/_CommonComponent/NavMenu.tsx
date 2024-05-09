@@ -122,6 +122,7 @@ export default function NavMenu() {
             <div>
               <Text>{userInfo.nickname}</Text>
               <Image
+                loading="lazy"
                 src={userInfo.profileImage}
                 alt="미리보기"
                 width={50}

@@ -165,7 +165,13 @@ export default function BoardCreateCard() {
             </FormControl>
             {preview && (
               <div>
-                <Image src={preview} alt="미리보기" width={200} height={200} />
+                <Image
+                  src={preview}
+                  alt="미리보기"
+                  width={200}
+                  height={200}
+                  loading="lazy"
+                />
               </div>
             )}
           </CardBody>
