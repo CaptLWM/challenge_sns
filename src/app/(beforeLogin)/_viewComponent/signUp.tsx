@@ -322,6 +322,7 @@ export default function Main() {
             placeholder="이미지"
             type="file"
             accept="image/*"
+            variant="unstyled"
             {...register("image", {
               onChange: onFileChange,
             })}

@@ -132,6 +132,11 @@ export default function BoardItemCard({
         <Link href={`/user/${props.nickname}`}>
           <Button>{props.nickname}</Button>
         </Link>
+        {props.id !== uid ? (
+          <Link href={`/messages/${props.nickname}`}>
+            <Button>메세지보내기</Button>
+          </Link>
+        ) : null}
 
         <Image
           loading="lazy"
