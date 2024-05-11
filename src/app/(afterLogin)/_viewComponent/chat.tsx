@@ -34,7 +34,6 @@ export default function Main({ params }: { params: { id: string } }) {
   const [nickname, setNickname] = React.useState<string>(""); // 로그인 중인 사용자닉네임
 
   const user = useAuthStore((state) => state.user);
-  console.log("user", user);
   const currentUid = user ? user.uid : ""; // 로그인한 사용자의 uid
 
   useEffect(() => {
@@ -49,7 +48,7 @@ export default function Main({ params }: { params: { id: string } }) {
     } else {
     }
   }, [currentUid]); // uid가 변경될 때마다 effect 실행
-  console.log("nick", nickname);
+
   // 채팅 상대 이미지 가져오기
   useEffect(() => {
     // if (params) {
