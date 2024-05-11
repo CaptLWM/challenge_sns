@@ -49,7 +49,6 @@ export default function Main({ params }: { params: { id: string } }) {
     } else {
     }
   }, [currentUid]); // uid가 변경될 때마다 effect 실행
-  console.log("nick", nickname);
   // 채팅 상대 이미지 가져오기
   useEffect(() => {
     // if (params) {
