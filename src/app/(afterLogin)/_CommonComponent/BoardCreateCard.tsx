@@ -123,6 +123,8 @@ export default function BoardCreateCard() {
     }); // Mutation을 통해 데이터 등록 요청
   };
 
+  console.log("preview", preview);
+
   return (
     <Card
       direction={{ base: "column", sm: "row" }}

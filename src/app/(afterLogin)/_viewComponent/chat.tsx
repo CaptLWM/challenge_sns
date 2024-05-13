@@ -43,7 +43,6 @@ export default function Main({ params }: { params: { id: string } }) {
   const [error, setError] = useState(null);
 
   const user = useAuthStore((state) => state.user);
-  console.log("user", user);
   const currentUid = user ? user.uid : ""; // 로그인한 사용자의 uid
 
   useEffect(() => {
@@ -108,7 +107,6 @@ export default function Main({ params }: { params: { id: string } }) {
 
   // 메세지 보내기
   const sendMessage = async () => {
-    console.log("roomId", roomId);
     if (newMessage.trim() && roomId) {
       await addDoc(collection(firestore, "Chats"), {
         text: newMessage,
@@ -131,27 +129,6 @@ export default function Main({ params }: { params: { id: string } }) {
       }
     }
   };
-  console.log("roomId", roomId);
-  // useEffect(() => {
-  //   const createOrGetChatRoom = async () => {
-  //     const q = query(
-  //       collection(firestore, "ChatRooms"),
-  //       where("participants", "in", [nickname, params.id])
-  //     );
-  //     const querySnapshot = await getDocs(q);
-  //     if (nickname.length > 0 && querySnapshot.empty && messages.length > 0) {
-  //       // 채팅방이 없으면 생성
-  //       const roomId = await createChatRoom();
-  //       setRoomId(roomId);
-  //     } else {
-  //       // 채팅방이 이미 있으면 roomId 설정
-  //       querySnapshot.forEach((doc) => {
-  //         setRoomId(doc.id);
-  //       });
-  //     }
-  //   };
-  //   createOrGetChatRoom();
-  // }, [params.id, nickname, messages.length]);
 
   // 채팅 메시지 불러오기
   useEffect(() => {
@@ -176,60 +153,11 @@ export default function Main({ params }: { params: { id: string } }) {
           return dateA.getTime() - dateB.getTime();
         })
       );
-      console.log("msgs", msgs);
     });
 
     return () => unsubscribe();
   }, [roomId]);
-
-  // const sendMessage = async () => {
-  //   console.log("roomId", roomId);
-  //   if (newMessage.trim() && roomId) {
-  //     await addDoc(collection(firestore, "Chats"), {
-  //       text: newMessage,
-  //       createdAt: new Date().toISOString(),
-  //       roomId: roomId,
-  //       sender: nickname,
-  //     });
-  //     setNewMessage("");
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const q = query(
-  //     collection(firestore, "Messages"),
-  //     where("chatUser", "array-contains-any", [params.id, nickname])
-  //   );
-  //   const unsubscribe = onSnapshot(q, (querySnapshot) => {
-  //     const msgs: any = []; // 추후 타입 수정
-  //     querySnapshot.forEach((doc) => {
-  //       msgs.push({ id: doc.id, ...doc.data() });
-  //     });
-  //     setMessages(
-  //       // msgs
-  //       msgs.sort((a: ChatType, b: ChatType) => {
-  //         const dateA = new Date(a.createdAt);
-  //         const dateB = new Date(b.createdAt);
-
-  //         return dateA.getTime() - dateB.getTime();
-  //       })
-  //     );
-  //   });
-  //   return () => unsubscribe();
-  // }, [params.id]);
-
-  // // 메세지 보내기
-  // const sendMessage = async () => {
-  //   if (newMessage.trim()) {
-  //     await addDoc(collection(firestore, "Messages"), {
-  //       text: newMessage,
-  //       createdAt: new Date().toISOString(),
-  //       chatUser: [nickname, params.id],
-  //     });
-  //     setNewMessage("");
-  //   }
-  // };
-
+  console.log(messages);
   return (
     <>
       <div>
@@ -245,16 +173,17 @@ export default function Main({ params }: { params: { id: string } }) {
       </div>
       <Divider marginBottom={10} marginTop={10} />
       <div>
+        {/*  */}
         {messages.map((msg) => {
           if (msg.sender === nickname) {
             return (
-              <HStack key={msg.sender} justify="flex-end" marginBottom={5}>
+              <HStack key={msg.id} justify="flex-end" marginBottom={5}>
                 <Text>{msg.text}</Text>
               </HStack>
             );
           } else {
             return (
-              <HStack key={msg.sender} align="flex-start" marginBottom={5}>
+              <HStack key={msg.id} align="flex-start" marginBottom={5}>
                 <Image
                   src={profileImg}
                   alt="프로필 이미지"
