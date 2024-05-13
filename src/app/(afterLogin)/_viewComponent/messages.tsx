@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, { use, useEffect } from "react";
 import Chatitem from "../_CommonComponent/Chatitem";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
@@ -7,6 +8,7 @@ import { firestore, getUser } from "@/firebase/firestore";
 import useAuthStore from "@/store/store";
 
 export default function Main() {
+
   const [chatRoomId, setChatRoomId] = React.useState<
     {
       id: string;
@@ -31,6 +33,7 @@ export default function Main() {
     } else {
     }
   }, [currentUid]); // uid가 변경될 때마다 effect 실행
+
 
   console.log("niciname", nickname);
   // 채팅방 목록ID 가져오기
