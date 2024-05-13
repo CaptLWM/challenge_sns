@@ -9,6 +9,7 @@ import {
   Card,
   CardBody,
   CardFooter,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -28,7 +29,7 @@ import { useCreateBoard } from "@/queries/queries";
 
 export default function BoardCreateCard() {
   const router = useRouter();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<FileList | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
@@ -54,10 +55,13 @@ export default function BoardCreateCard() {
   } = useForm<Board>();
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("target", e.target.files);
+    console.log("selected", selectedFile);
     if (e.target.files && e.target.files.length > 0) {
-      setSelectedFile(e.target.files[0]);
+      setSelectedFile(e.target.files);
     }
-    if (!e.target.files && selectedFile) {
+    if (e.target.files?.length === 0) {
+      console.log("파일선택 취소");
       return;
     }
   };
@@ -98,16 +102,22 @@ export default function BoardCreateCard() {
   // 미리보기
   useEffect(() => {
     if (selectedFile) {
-      const fileURL = URL.createObjectURL(selectedFile);
+      const fileURL = URL.createObjectURL(selectedFile[0]);
       setPreview(fileURL);
     }
   }, [selectedFile]);
 
   const onSubmit = (data: Board) => {
+    // console.log("data", data.image, selectedFile?.length);
+
+    if (data.image.length === 0 && selectedFile) {
+      data.image = selectedFile;
+    }
     if (!data.image || data.image.length === 0 || data.content.length === 0) {
       alert("내용을 입력해주세요");
       return;
     }
+    // console.log("final data", data);
     createBoard.mutate(data, {
       onSuccess: () => {
         queryClient.invalidateQueries();
@@ -152,17 +162,29 @@ export default function BoardCreateCard() {
             </FormControl>
 
             <FormControl>
-              <FormLabel htmlFor="image">이미지추가</FormLabel>
-              <Input
-                id="image"
-                placeholder="이미지"
-                type="file"
-                accept="image/*"
-                variant="unstyled"
-                {...register("image", {
-                  onChange: onFileChange,
-                })}
-              />
+              <FormLabel htmlFor="image">
+                <Button
+                  onClick={() => document.getElementById("image")?.click()}
+                >
+                  이미지추가
+                </Button>
+                <Input
+                  id="image"
+                  placeholder="이미지"
+                  type="file"
+                  accept="image/*"
+                  variant="unstyled"
+                  hidden
+                  {...register("image", {
+                    onChange: (event) => {
+                      const file = event.target.files[0];
+                      if (file) {
+                        onFileChange(event);
+                      }
+                    },
+                  })}
+                />
+              </FormLabel>
             </FormControl>
             {preview && (
               <div>
