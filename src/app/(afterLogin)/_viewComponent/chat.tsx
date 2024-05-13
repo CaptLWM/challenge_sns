@@ -43,6 +43,7 @@ export default function Main({ params }: { params: { id: string } }) {
   const [error, setError] = useState(null);
 
   const user = useAuthStore((state) => state.user);
+  console.log("user", user);
   const currentUid = user ? user.uid : ""; // 로그인한 사용자의 uid
 
   useEffect(() => {
@@ -61,7 +62,6 @@ export default function Main({ params }: { params: { id: string } }) {
       setLoading(false);
     }
   }, [currentUid]); // uid가 변경될 때마다 effect 실행
-
   // 채팅 상대 이미지 가져오기
   useEffect(() => {
     // if (params) {
