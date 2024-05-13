@@ -1,6 +1,6 @@
 export interface ChatType {
-  chatUser: string[];
+  sender: string;
   createdAt: string;
-  id: string;
+  roomId: string;
   text: string;
 }

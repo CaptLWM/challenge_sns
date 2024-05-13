@@ -3,14 +3,16 @@
 import firebasedb from "@/firebase/firebase";
 import { firestore, getUser, getUserNick } from "@/firebase/firestore";
 import {
+  QuerySnapshot,
   addDoc,
   collection,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
   where,
 } from "firebase/firestore";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ChatType } from "./component.type";
 import {
   Button,
@@ -24,14 +26,21 @@ import {
 import { set } from "react-hook-form";
 import { profile } from "console";
 import useAuthStore from "@/store/store";
+import { useSearchParams } from "next/navigation";
 
 // 채팅방
 export default function Main({ params }: { params: { id: string } }) {
-  console.log(params.id); // 유저 닉네임
-  const [messages, setMessages] = React.useState<ChatType[]>([]); // 메시지 목록
-  const [newMessage, setNewMessage] = React.useState<string>(""); // 새로운 메시지
-  const [profileImg, setProfileImg] = React.useState<string>(""); // 프로필 이미지
-  const [nickname, setNickname] = React.useState<string>(""); // 로그인 중인 사용자닉네임
+  const searchParams = useSearchParams();
+  // 초기 roomId 설정
+  const initRoomId = searchParams.get("roomId") || undefined;
+  const [messages, setMessages] = useState<ChatType[]>([]); // 메시지 목록
+  const [newMessage, setNewMessage] = useState<string>(""); // 새로운 메시지
+  const [roomId, setRoomId] = useState<string | undefined>(initRoomId); // 채팅방 id
+  const [profileImg, setProfileImg] = useState<string>(""); // 프로필 이미지
+  const [nickname, setNickname] = useState<string>(""); // 로그인 중인 사용자닉네임
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const user = useAuthStore((state) => state.user);
   console.log("user", user);
@@ -42,11 +51,15 @@ export default function Main({ params }: { params: { id: string } }) {
       getUser(currentUid)
         .then((data) => {
           setNickname(data?.nickname);
+          setLoading(false);
         })
         .catch((err) => {
           console.log(err);
+          setError(err);
+          setLoading(false);
         });
     } else {
+      setLoading(false);
     }
   }, [currentUid]); // uid가 변경될 때마다 effect 실행
   // 채팅 상대 이미지 가져오기
@@ -64,12 +77,90 @@ export default function Main({ params }: { params: { id: string } }) {
     };
     fetchReceiverInfo();
     // }
-  }, []);
+  }, [params.id]);
 
+  const createChatRoom = async () => {
+    const chatRoomRef = await addDoc(collection(firestore, "ChatRooms"), {
+      participants: [nickname, params.id],
+    });
+    return chatRoomRef.id;
+  };
+
+  // ChatRoom 생성
+  const createOrGetChatRoom = async () => {
+    if (nickname && params.id) {
+      const q = query(
+        collection(firestore, "ChatRooms"),
+        where("participants", "in", [nickname, params.id])
+      );
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        // 채팅방 없으니 생성
+        const roomId = await createChatRoom();
+        setRoomId(roomId);
+      } else {
+        querySnapshot.forEach((doc) => {
+          setRoomId(doc.id);
+        });
+      }
+    }
+  };
+
+  // 메세지 보내기
+  const sendMessage = async () => {
+    console.log("roomId", roomId);
+    if (newMessage.trim() && roomId) {
+      await addDoc(collection(firestore, "Chats"), {
+        text: newMessage,
+        createdAt: new Date().toISOString(),
+        roomId: roomId,
+        sender: nickname,
+      });
+      setNewMessage("");
+    } else {
+      // 채팅방 없으면 채팅방 생성 후 메세지 전송
+      await createOrGetChatRoom();
+      if (roomId) {
+        await addDoc(collection(firestore, "Chats"), {
+          text: newMessage,
+          createdAt: new Date().toISOString(),
+          roomId: roomId,
+          sender: nickname,
+        });
+        setNewMessage("");
+      }
+    }
+  };
+  console.log("roomId", roomId);
+  // useEffect(() => {
+  //   const createOrGetChatRoom = async () => {
+  //     const q = query(
+  //       collection(firestore, "ChatRooms"),
+  //       where("participants", "in", [nickname, params.id])
+  //     );
+  //     const querySnapshot = await getDocs(q);
+  //     if (nickname.length > 0 && querySnapshot.empty && messages.length > 0) {
+  //       // 채팅방이 없으면 생성
+  //       const roomId = await createChatRoom();
+  //       setRoomId(roomId);
+  //     } else {
+  //       // 채팅방이 이미 있으면 roomId 설정
+  //       querySnapshot.forEach((doc) => {
+  //         setRoomId(doc.id);
+  //       });
+  //     }
+  //   };
+  //   createOrGetChatRoom();
+  // }, [params.id, nickname, messages.length]);
+
+  // 채팅 메시지 불러오기
   useEffect(() => {
+    if (!roomId) return;
+
     const q = query(
-      collection(firestore, "Messages"),
-      where("chatUser", "array-contains-any", [params.id, nickname])
+      collection(firestore, "Chats"),
+      where("roomId", "==", roomId)
+      // orderBy("createdAt")
     );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const msgs: any = []; // 추후 타입 수정
@@ -85,25 +176,60 @@ export default function Main({ params }: { params: { id: string } }) {
           return dateA.getTime() - dateB.getTime();
         })
       );
+      console.log("msgs", msgs);
     });
+
     return () => unsubscribe();
-  }, [params.id]);
+  }, [roomId]);
 
-  // 메세지 보내기
-  const sendMessage = async () => {
-    if (newMessage.trim()) {
-      await addDoc(collection(firestore, "Messages"), {
-        text: newMessage,
-        createdAt: new Date().toISOString(),
-        chatUser: [nickname, params.id],
-      });
-      setNewMessage("");
-    }
-  };
+  // const sendMessage = async () => {
+  //   console.log("roomId", roomId);
+  //   if (newMessage.trim() && roomId) {
+  //     await addDoc(collection(firestore, "Chats"), {
+  //       text: newMessage,
+  //       createdAt: new Date().toISOString(),
+  //       roomId: roomId,
+  //       sender: nickname,
+  //     });
+  //     setNewMessage("");
+  //   }
+  // };
 
-  // chatUser[0] => 보낸사람, chatUser[1] => 받는사람
-  console.log(messages);
-  console.log("profileImg", profileImg);
+  // useEffect(() => {
+  //   const q = query(
+  //     collection(firestore, "Messages"),
+  //     where("chatUser", "array-contains-any", [params.id, nickname])
+  //   );
+  //   const unsubscribe = onSnapshot(q, (querySnapshot) => {
+  //     const msgs: any = []; // 추후 타입 수정
+  //     querySnapshot.forEach((doc) => {
+  //       msgs.push({ id: doc.id, ...doc.data() });
+  //     });
+  //     setMessages(
+  //       // msgs
+  //       msgs.sort((a: ChatType, b: ChatType) => {
+  //         const dateA = new Date(a.createdAt);
+  //         const dateB = new Date(b.createdAt);
+
+  //         return dateA.getTime() - dateB.getTime();
+  //       })
+  //     );
+  //   });
+  //   return () => unsubscribe();
+  // }, [params.id]);
+
+  // // 메세지 보내기
+  // const sendMessage = async () => {
+  //   if (newMessage.trim()) {
+  //     await addDoc(collection(firestore, "Messages"), {
+  //       text: newMessage,
+  //       createdAt: new Date().toISOString(),
+  //       chatUser: [nickname, params.id],
+  //     });
+  //     setNewMessage("");
+  //   }
+  // };
+
   return (
     <>
       <div>
@@ -120,15 +246,15 @@ export default function Main({ params }: { params: { id: string } }) {
       <Divider marginBottom={10} marginTop={10} />
       <div>
         {messages.map((msg) => {
-          if (msg.chatUser[0] === nickname) {
+          if (msg.sender === nickname) {
             return (
-              <HStack key={msg.id} justify="flex-end" marginBottom={5}>
+              <HStack key={msg.sender} justify="flex-end" marginBottom={5}>
                 <Text>{msg.text}</Text>
               </HStack>
             );
           } else {
             return (
-              <HStack key={msg.id} align="flex-start" marginBottom={5}>
+              <HStack key={msg.sender} align="flex-start" marginBottom={5}>
                 <Image
                   src={profileImg}
                   alt="프로필 이미지"
@@ -136,7 +262,7 @@ export default function Main({ params }: { params: { id: string } }) {
                   loading="lazy"
                 />
                 <Text>{msg.text}</Text>
-                <Text>{msg.chatUser[0]}</Text>
+                <Text>{msg.sender}</Text>
               </HStack>
             );
           }
