@@ -21,6 +21,8 @@ import {
   useDisclosure,
   CardFooter,
   HStack,
+  Center,
+  Heading,
 } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
@@ -34,6 +36,10 @@ import {
   useModifyBoard,
 } from "@/queries/queries";
 import Link from "next/link";
+import { TbMessage } from "react-icons/tb";
+import { useRouter } from "next/navigation";
+import { firestore, getUser } from "@/firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 export default function BoardItemCard({
   props,
@@ -42,8 +48,13 @@ export default function BoardItemCard({
   props: Board;
   id: string;
 }) {
+  const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(String(props.image));
+  const [nickname, setNickname] = useState<string>(""); // 로그인 중인 사용자닉네임
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const deleteModal = useDisclosure();
   const modifyModal = useDisclosure();
   const replyDrawer = useDisclosure();
@@ -64,6 +75,23 @@ export default function BoardItemCard({
   // DB저장된 사용자 정보 가져오기
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : ""; // 로그인한 사용자의 uid
+
+  useEffect(() => {
+    if (uid) {
+      getUser(uid)
+        .then((data) => {
+          setNickname(data?.nickname);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setError(err);
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  }, [uid]);
 
   const deleteBoard = useDeleteBoard(props);
   const modifyBoard = useModifyBoard(uid);
@@ -119,6 +147,7 @@ export default function BoardItemCard({
   };
   const test = props?.likeUserList?.includes(uid);
   // await deleteDoc(doc(db, "cities", "DC"));
+
   return (
     <>
       <Card
@@ -129,46 +158,83 @@ export default function BoardItemCard({
         margin={10}
         padding={5}
       >
-        <Link href={`/user/${props.nickname}`}>
-          <Button>{props.nickname}</Button>
-        </Link>
-        {props.id !== uid ? (
-          <Link href={`/messages/${props.nickname}`}>
-            <Button>메세지보내기</Button>
-          </Link>
-        ) : null}
-
-        <Image
-          loading="lazy"
-          objectFit="cover"
-          boxSize={{
-            base: "200px",
-            sm: "100px", // 작은 화면
-            md: "150px", // 중간 화면
-          }}
-          // maxW={{ base: "100%", sm: "200px" }}
-          src={String(props.image)}
-          alt="Caffe Latte"
-        />
-        {/* TODO 작성자에 따라 삭제 여부 체크 */}
-
         <Stack width={{ base: "100%" }}>
+          {/* TODO 작성자에 따라 삭제 여부 체크 */}
           <CardBody>
-            <HStack justifyContent="space-between">
-              <Text py="2">{props.content}</Text>
-
+            <HStack justifyContent="flex-end" marginBottom={8}>
+              <Link href={`/user/${props.nickname}`}>
+                {/* TODO 게시글 등록할때 작성자 이미지는 등록하지 않고 있음
+              <Image
+                loading="lazy"
+                src={props.}
+                alt="미리보기"
+                width={50}
+                height={50}
+              /> */}
+                <Heading size="md" marginRight={4}>
+                  {props.nickname}
+                </Heading>
+              </Link>
+              {props.id !== uid ? (
+                // TODO 채팅방 아이디를 여기서는 안보내줌
+                <Button
+                  onClick={async () => {
+                    try {
+                      const q = query(
+                        collection(firestore, "ChatRooms"),
+                        where("participants", "array-contains", props.nickname)
+                      );
+                      const querySnapshot = await getDocs(q); // await를 사용하여 비동기 작업 완료를 기다림
+                      querySnapshot.forEach((doc) => {
+                        if (doc.data().participants.includes(nickname)) {
+                          router.push(
+                            `/messages/${props.nickname}?roomId=${doc.id}`
+                          );
+                        }
+                      });
+                      // 여기에 쿼리 결과를 처리하는 코드를 추가하면 됩니다.
+                    } catch (error) {
+                      console.error("채팅 방 쿼리 중 오류:", error);
+                    }
+                  }}
+                >
+                  <TbMessage size="30px" />
+                </Button>
+              ) : null}
               {props.id === uid ? (
                 <div>
-                  <Button onClick={deleteModal.onOpen}>삭제</Button>
-                  <Button onClick={modifyModal.onOpen}>수정</Button>
+                  <Button onClick={modifyModal.onOpen} marginRight={4}>
+                    수정
+                  </Button>
+                  <Button colorScheme="red" onClick={deleteModal.onOpen}>
+                    삭제
+                  </Button>
                 </div>
               ) : null}
+            </HStack>
+            <Center>
+              <Image
+                loading="lazy"
+                objectFit="cover"
+                // boxSize={{
+                //   base: "200px",
+                //   sm: "100px", // 작은 화면
+                //   md: "150px", // 중간 화면
+                // }}
+                // maxW={{ base: "100%", sm: "200px" }}
+                src={String(props.image)}
+                alt="Caffe Latte"
+              />
+            </Center>
+            <HStack justifyContent="space-between">
+              <Text py="2">{props.content}</Text>
             </HStack>
           </CardBody>
           <CardFooter justifyContent="end">
             <Button
               colorScheme={test ? "blue" : undefined}
               onClick={onSubmitLike}
+              marginRight={4}
             >
               좋아요
             </Button>

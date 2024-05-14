@@ -104,7 +104,6 @@ export default function Main() {
   // 닉네임 중복확인
   const emailCheck = async (value: string) => {
     const response = await getUserEmail(value);
-    console.log("response", response);
     if (response.length > 0) {
       console.log("이메일 사용 불가");
       return false;
@@ -135,7 +134,7 @@ export default function Main() {
       const isAvailable = await emailCheck(check);
 
       setIdCheck(false);
-      console.log(isAvailable);
+
       if (isAvailable) {
         clearErrors("email");
         alert("이메일 사용가능합니다");

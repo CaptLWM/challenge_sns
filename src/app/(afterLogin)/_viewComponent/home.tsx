@@ -10,25 +10,10 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useBoardListQuery } from "@/queries/queries";
 
 export default function Main() {
-  const router = useRouter();
-  const doLogout = async (event: any) => {
-    try {
-      await logout();
-      router.replace("/login");
-    } catch (error: any) {
-      const errorMessage = error.message;
-      alert(errorMessage);
-    }
-  };
-
-  // 데이터 호출 테스트
   const boardList = useBoardListQuery();
-  // const boardList = useBoardListQuery();
-  // console.log("boardList", boardList.data);
+
   return (
     <div>
-      <Text>처음화면</Text>
-      <Button onClick={doLogout}>로그아웃</Button>
       <BoardCreateCard />
       <InfiniteScroll
         dataLength={boardList.data?.pages.flat().length ?? 0}

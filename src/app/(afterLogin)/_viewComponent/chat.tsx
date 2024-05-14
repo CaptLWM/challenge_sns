@@ -26,10 +26,12 @@ import {
 import { set } from "react-hook-form";
 import { profile } from "console";
 import useAuthStore from "@/store/store";
-import { useSearchParams } from "next/navigation";
+
+import { useRouter, useSearchParams } from "next/navigation";
 
 // 채팅방
 export default function Main({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   // 초기 roomId 설정
   const initRoomId = searchParams.get("roomId") || undefined;
@@ -43,9 +45,8 @@ export default function Main({ params }: { params: { id: string } }) {
   const [error, setError] = useState(null);
 
   const user = useAuthStore((state) => state.user);
-  console.log("user", user);
   const currentUid = user ? user.uid : ""; // 로그인한 사용자의 uid
-
+  console.log("uid", currentUid);
   useEffect(() => {
     if (currentUid) {
       getUser(currentUid)
@@ -62,6 +63,7 @@ export default function Main({ params }: { params: { id: string } }) {
       setLoading(false);
     }
   }, [currentUid]); // uid가 변경될 때마다 effect 실행
+
   // 채팅 상대 이미지 가져오기
   useEffect(() => {
     // if (params) {
@@ -94,6 +96,8 @@ export default function Main({ params }: { params: { id: string } }) {
         where("participants", "in", [nickname, params.id])
       );
       const querySnapshot = await getDocs(q);
+
+      console.log(querySnapshot);
       if (querySnapshot.empty) {
         // 채팅방 없으니 생성
         const roomId = await createChatRoom();
@@ -108,7 +112,6 @@ export default function Main({ params }: { params: { id: string } }) {
 
   // 메세지 보내기
   const sendMessage = async () => {
-    console.log("roomId", roomId);
     if (newMessage.trim() && roomId) {
       await addDoc(collection(firestore, "Chats"), {
         text: newMessage,
@@ -131,28 +134,6 @@ export default function Main({ params }: { params: { id: string } }) {
       }
     }
   };
-  console.log("roomId", roomId);
-  // useEffect(() => {
-  //   const createOrGetChatRoom = async () => {
-  //     const q = query(
-  //       collection(firestore, "ChatRooms"),
-  //       where("participants", "in", [nickname, params.id])
-  //     );
-  //     const querySnapshot = await getDocs(q);
-  //     if (nickname.length > 0 && querySnapshot.empty && messages.length > 0) {
-  //       // 채팅방이 없으면 생성
-  //       const roomId = await createChatRoom();
-  //       setRoomId(roomId);
-  //     } else {
-  //       // 채팅방이 이미 있으면 roomId 설정
-  //       querySnapshot.forEach((doc) => {
-  //         setRoomId(doc.id);
-  //       });
-  //     }
-  //   };
-  //   createOrGetChatRoom();
-  // }, [params.id, nickname, messages.length]);
-
   // 채팅 메시지 불러오기
   useEffect(() => {
     if (!roomId) return;
@@ -179,57 +160,9 @@ export default function Main({ params }: { params: { id: string } }) {
       console.log("msgs", msgs);
     });
 
+
     return () => unsubscribe();
   }, [roomId]);
-
-  // const sendMessage = async () => {
-  //   console.log("roomId", roomId);
-  //   if (newMessage.trim() && roomId) {
-  //     await addDoc(collection(firestore, "Chats"), {
-  //       text: newMessage,
-  //       createdAt: new Date().toISOString(),
-  //       roomId: roomId,
-  //       sender: nickname,
-  //     });
-  //     setNewMessage("");
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const q = query(
-  //     collection(firestore, "Messages"),
-  //     where("chatUser", "array-contains-any", [params.id, nickname])
-  //   );
-  //   const unsubscribe = onSnapshot(q, (querySnapshot) => {
-  //     const msgs: any = []; // 추후 타입 수정
-  //     querySnapshot.forEach((doc) => {
-  //       msgs.push({ id: doc.id, ...doc.data() });
-  //     });
-  //     setMessages(
-  //       // msgs
-  //       msgs.sort((a: ChatType, b: ChatType) => {
-  //         const dateA = new Date(a.createdAt);
-  //         const dateB = new Date(b.createdAt);
-
-  //         return dateA.getTime() - dateB.getTime();
-  //       })
-  //     );
-  //   });
-  //   return () => unsubscribe();
-  // }, [params.id]);
-
-  // // 메세지 보내기
-  // const sendMessage = async () => {
-  //   if (newMessage.trim()) {
-  //     await addDoc(collection(firestore, "Messages"), {
-  //       text: newMessage,
-  //       createdAt: new Date().toISOString(),
-  //       chatUser: [nickname, params.id],
-  //     });
-  //     setNewMessage("");
-  //   }
-  // };
-
   return (
     <>
       <div>
@@ -245,6 +178,7 @@ export default function Main({ params }: { params: { id: string } }) {
       </div>
       <Divider marginBottom={10} marginTop={10} />
       <div>
+        {/*  */}
         {messages.map((msg) => {
           if (msg.sender === nickname) {
             return (

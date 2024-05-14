@@ -21,6 +21,7 @@ import {
   FormControl,
   FormLabel,
   HStack,
+  Heading,
   Input,
   Text,
 } from "@chakra-ui/react";
@@ -41,6 +42,7 @@ export default function ReplyDrawer({
 }) {
   const [stateModify, setStateModify] = useState(false);
   const [modifyContent, setModifyContent] = useState("");
+  const [replyId, setReplyId] = useState("");
   const queryClient = useQueryClient();
   const {
     handleSubmit,
@@ -56,8 +58,8 @@ export default function ReplyDrawer({
   //   const replyList = useBoardItemReplyQuery(id)
 
   const createReply = useCreateReply({ id, uid });
-  const modifyReply = useModifyReply({ uid, id, modifyContent });
-  const deleteReply = useDeleteReply(id);
+  const modifyReply = useModifyReply({ uid, id, modifyContent, replyId });
+  const deleteReply = useDeleteReply(replyId);
 
   const onSubmit = (data: Reply) => {
     createReply.mutate(data, {
@@ -77,17 +79,27 @@ export default function ReplyDrawer({
       <DrawerOverlay />
       <DrawerContent paddingLeft={20} paddingRight={20}>
         <DrawerCloseButton />
-        <DrawerHeader>Create your account</DrawerHeader>
+        <DrawerHeader>
+          <Heading size="md">댓글</Heading>
+        </DrawerHeader>
         {/* TODO 작성자 정보 있어야함 */}
         <form onSubmit={handleSubmit(onSubmit)}>
           <DrawerBody>
             <FormControl>
-              <FormLabel htmlFor="댓글">작성자 들어갈곳</FormLabel>
-              <Input
-                id="content"
-                placeholder="content"
-                {...register("content")}
-              />
+              <HStack>
+                {/* <FormLabel htmlFor="댓글">작성자 들어갈곳</FormLabel> */}
+                <Input
+                  id="content"
+                  placeholder="댓글을 입력해주세요"
+                  {...register("content")}
+                />
+                <Button variant="outline" mr={3} onClick={onClose}>
+                  취소
+                </Button>
+                <Button type="submit" colorScheme="blue">
+                  등록
+                </Button>
+              </HStack>
             </FormControl>
           </DrawerBody>
           {replyList.data
@@ -98,7 +110,7 @@ export default function ReplyDrawer({
                     justifyContent="space-between"
                     padding="16px 24px" // Fix: Provide separate values for padding
                   >
-                    {stateModify ? (
+                    {stateModify && replyId === v.id ? (
                       <>
                         <HStack>
                           <Text>작성자</Text>
@@ -119,6 +131,7 @@ export default function ReplyDrawer({
                                   onSuccess: () => {
                                     queryClient.invalidateQueries();
                                     // 필요한 경우 폼 리셋
+                                    setReplyId("");
                                     alert("수정 성공");
                                   },
                                   onError: (error: any) => {
@@ -128,6 +141,7 @@ export default function ReplyDrawer({
                                   },
                                 });
                               }}
+                              mr={3}
                             >
                               수정
                             </Button>
@@ -145,6 +159,7 @@ export default function ReplyDrawer({
                                   },
                                 })
                               }
+                              colorScheme="red"
                             >
                               삭제
                             </Button>
@@ -162,12 +177,31 @@ export default function ReplyDrawer({
                             <Button
                               onClick={(e) => {
                                 e.preventDefault();
+                                setReplyId(v.id);
                                 setStateModify(true);
                               }}
+                              mr={3}
                             >
                               수정
                             </Button>
-                            <Button onClick={() => deleteReply.mutate(v.id)}>
+                            <Button
+                              colorScheme="red"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setReplyId(v.id);
+                                deleteReply.mutate(v.id, {
+                                  onSuccess: () => {
+                                    queryClient.invalidateQueries();
+                                    // 필요한 경우 폼 리셋
+                                    alert("삭제 성공");
+                                  },
+                                  onError: (error: any) => {
+                                    queryClient.invalidateQueries();
+                                    alert(`삭제 실패`);
+                                  },
+                                });
+                              }}
+                            >
                               삭제
                             </Button>
                           </>
@@ -190,14 +224,7 @@ export default function ReplyDrawer({
                 )
               )
             : null}
-          <DrawerFooter>
-            <Button variant="outline" mr={3} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" colorScheme="blue">
-              Save
-            </Button>
-          </DrawerFooter>
+          <DrawerFooter></DrawerFooter>
         </form>
       </DrawerContent>
     </Drawer>

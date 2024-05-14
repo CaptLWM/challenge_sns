@@ -9,14 +9,17 @@ import {
   Card,
   CardBody,
   CardFooter,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
+  HStack,
   Heading,
   Image,
   Input,
   Stack,
   Text,
+  Textarea,
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -28,7 +31,7 @@ import { useCreateBoard } from "@/queries/queries";
 
 export default function BoardCreateCard() {
   const router = useRouter();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<FileList | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
@@ -55,9 +58,10 @@ export default function BoardCreateCard() {
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setSelectedFile(e.target.files[0]);
+      setSelectedFile(e.target.files);
     }
-    if (!e.target.files && selectedFile) {
+    if (e.target.files?.length === 0) {
+      console.log("파일선택 취소");
       return;
     }
   };
@@ -98,16 +102,22 @@ export default function BoardCreateCard() {
   // 미리보기
   useEffect(() => {
     if (selectedFile) {
-      const fileURL = URL.createObjectURL(selectedFile);
+      const fileURL = URL.createObjectURL(selectedFile[0]);
       setPreview(fileURL);
     }
   }, [selectedFile]);
 
   const onSubmit = (data: Board) => {
+    // console.log("data", data.image, selectedFile?.length);
+
+    if (data.image.length === 0 && selectedFile) {
+      data.image = selectedFile;
+    }
     if (!data.image || data.image.length === 0 || data.content.length === 0) {
       alert("내용을 입력해주세요");
       return;
     }
+    // console.log("final data", data);
     createBoard.mutate(data, {
       onSuccess: () => {
         queryClient.invalidateQueries();
@@ -141,29 +151,27 @@ export default function BoardCreateCard() {
               <Input id="email" placeholder="Email" {...register("email")} />
             </FormControl> */}
             <FormControl>
-              <FormLabel htmlFor="content">내용</FormLabel>
-              <Input
+              <HStack justifyContent="space-between" marginBottom={4}>
+                <FormLabel htmlFor="content">오늘의 도전은 어땠나요?</FormLabel>
+                <Button
+                  isLoading={isSubmitting}
+                  type="submit"
+                  variant="solid"
+                  colorScheme="blue"
+                >
+                  등록
+                </Button>
+              </HStack>
+              <Textarea
                 id="content"
                 placeholder="content"
+                height={200}
+                marginBottom={8}
                 {...register("content")}
               />
             </FormControl>
-
-            <FormControl>
-              <FormLabel htmlFor="image">이미지추가</FormLabel>
-              <Input
-                id="image"
-                placeholder="이미지"
-                type="file"
-                accept="image/*"
-                variant="unstyled"
-                {...register("image", {
-                  onChange: onFileChange,
-                })}
-              />
-            </FormControl>
-            {preview && (
-              <div>
+            <HStack justifyContent="space-between">
+              {preview && (
                 <Image
                   src={preview}
                   alt="미리보기"
@@ -171,20 +179,34 @@ export default function BoardCreateCard() {
                   height={200}
                   loading="lazy"
                 />
-              </div>
-            )}
+              )}
+              <FormControl>
+                <FormLabel htmlFor="image">
+                  <Button
+                    onClick={() => document.getElementById("image")?.click()}
+                  >
+                    이미지추가
+                  </Button>
+                  <Input
+                    id="image"
+                    placeholder="이미지"
+                    type="file"
+                    accept="image/*"
+                    variant="unstyled"
+                    hidden
+                    {...register("image", {
+                      onChange: (event) => {
+                        const file = event.target.files[0];
+                        if (file) {
+                          onFileChange(event);
+                        }
+                      },
+                    })}
+                  />
+                </FormLabel>
+              </FormControl>
+            </HStack>
           </CardBody>
-
-          <CardFooter justifyContent="end">
-            <Button
-              isLoading={isSubmitting}
-              type="submit"
-              variant="solid"
-              colorScheme="blue"
-            >
-              제출
-            </Button>
-          </CardFooter>
         </form>
       </Stack>
     </Card>

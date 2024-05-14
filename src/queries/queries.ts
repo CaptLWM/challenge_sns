@@ -36,6 +36,7 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { BOARD_ITEM_REPLY, BOARD_LIST } from "./queryKeys";
+import { ReplyType } from "@/app/(afterLogin)/_CommonComponent/component.type";
 
 // 사용자 정보 수정
 export const useModifyUser = (uid: string) => {
@@ -243,13 +244,13 @@ export const useBoardItemReplyQuery = (feedId: string) => {
       where("feedId", "==", feedId)
     );
     const querySnapshot: QuerySnapshot = await getDocs(q);
-    const initial: DocumentData[] = [];
+    const initial: any[] = [];
     // document의 id와 데이터를 initialTodos에 저장합니다.
     // doc.id의 경우 따로 지정하지 않는 한 자동으로 생성되는 id입니다.
     // doc.data()를 실행하면 해당 document의 데이터를 가져올 수 있습니다.
     querySnapshot.forEach((doc) => {
       // 항상 id를 같이 넘겨줘야함 (문서 id가 필요하기 때문
-      initial.push({ data: doc.data(), id: doc.id });
+      initial.push({ data: doc.data() as ReplyType, id: doc.id });
     });
     return initial;
   };
@@ -284,10 +285,12 @@ export const useModifyReply = ({
   uid,
   id,
   modifyContent,
+  replyId,
 }: {
   uid: string;
   id: string;
   modifyContent: string;
+  replyId: string;
 }) => {
   return useMutation({
     mutationFn: async (data: Reply) => {
@@ -299,7 +302,8 @@ export const useModifyReply = ({
           updatedAt: new Date().toISOString(),
         },
         uid,
-        id
+        id,
+        replyId
       );
     },
   });
@@ -307,6 +311,7 @@ export const useModifyReply = ({
 
 // 댓글 삭제
 export const useDeleteReply = (id: string) => {
+  console.log("id", id);
   return useMutation({
     mutationFn: async () => {
       await deleteBoardItemReply(id);

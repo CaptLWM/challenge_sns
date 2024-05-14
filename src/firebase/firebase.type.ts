@@ -20,7 +20,7 @@ export interface Board {
   nickname?: string | null;
   content: string;
   commentCount?: number;
-  image: File[];
+  image: FileList;
   likeCount: number;
   createdAt: string;
   updatedAt: string;

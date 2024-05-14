@@ -15,3 +15,11 @@ export interface ButtonType {
   ml: number;
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
+
+export interface ReplyType {
+  content: string;
+  createdAt: string;
+  feedId: string;
+  updatedAt: string;
+  userId: string;
+}
