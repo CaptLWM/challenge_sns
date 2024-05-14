@@ -125,13 +125,13 @@ export default function Main({ nickname }: { nickname: string }) {
           팔로우
         </Button>
       ) : null}
-      {targetInfo?.followUserList.length &&
-      targetInfo?.followUserList.length > 0 ? (
+      {targetInfo?.followUserList?.length &&
+      targetInfo?.followUserList?.length > 0 ? (
         <Text>{targetInfo?.followUserList.length}</Text>
       ) : (
         <Text>0</Text>
       )}
-      {targetInfo?.followingUserList.length &&
+      {targetInfo?.followingUserList?.length &&
       targetInfo?.followingUserList?.length > 0 ? (
         <Text>{targetInfo?.followingUserList.length}</Text>
       ) : (

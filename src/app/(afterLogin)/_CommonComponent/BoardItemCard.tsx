@@ -21,6 +21,8 @@ import {
   useDisclosure,
   CardFooter,
   HStack,
+  Center,
+  Heading,
 } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
@@ -34,6 +36,7 @@ import {
   useModifyBoard,
 } from "@/queries/queries";
 import Link from "next/link";
+import { TbMessage } from "react-icons/tb";
 
 export default function BoardItemCard({
   props,
@@ -129,46 +132,63 @@ export default function BoardItemCard({
         margin={10}
         padding={5}
       >
-        <Link href={`/user/${props.nickname}`}>
-          <Button>{props.nickname}</Button>
-        </Link>
-        {props.id !== uid ? (
-          <Link href={`/messages/${props.nickname}`}>
-            <Button>메세지보내기</Button>
-          </Link>
-        ) : null}
-
-        <Image
-          loading="lazy"
-          objectFit="cover"
-          boxSize={{
-            base: "200px",
-            sm: "100px", // 작은 화면
-            md: "150px", // 중간 화면
-          }}
-          // maxW={{ base: "100%", sm: "200px" }}
-          src={String(props.image)}
-          alt="Caffe Latte"
-        />
-        {/* TODO 작성자에 따라 삭제 여부 체크 */}
-
         <Stack width={{ base: "100%" }}>
+          {/* TODO 작성자에 따라 삭제 여부 체크 */}
           <CardBody>
-            <HStack justifyContent="space-between">
-              <Text py="2">{props.content}</Text>
-
+            <HStack justifyContent="flex-end" marginBottom={8}>
+              <Link href={`/user/${props.nickname}`}>
+                {/* TODO 게시글 등록할때 작성자 이미지는 등록하지 않고 있음
+              <Image
+                loading="lazy"
+                src={props.}
+                alt="미리보기"
+                width={50}
+                height={50}
+              /> */}
+                <Heading size="md" marginRight={4}>
+                  {props.nickname}
+                </Heading>
+              </Link>
+              {props.id !== uid ? (
+                // TODO 채팅방 아이디를 여기서는 안보내줌
+                <Link href={`/messages/${props.nickname}`}>
+                  <TbMessage size="30px" />
+                </Link>
+              ) : null}
               {props.id === uid ? (
                 <div>
-                  <Button onClick={deleteModal.onOpen}>삭제</Button>
-                  <Button onClick={modifyModal.onOpen}>수정</Button>
+                  <Button onClick={modifyModal.onOpen} marginRight={4}>
+                    수정
+                  </Button>
+                  <Button colorScheme="red" onClick={deleteModal.onOpen}>
+                    삭제
+                  </Button>
                 </div>
               ) : null}
+            </HStack>
+            <Center>
+              <Image
+                loading="lazy"
+                objectFit="cover"
+                // boxSize={{
+                //   base: "200px",
+                //   sm: "100px", // 작은 화면
+                //   md: "150px", // 중간 화면
+                // }}
+                // maxW={{ base: "100%", sm: "200px" }}
+                src={String(props.image)}
+                alt="Caffe Latte"
+              />
+            </Center>
+            <HStack justifyContent="space-between">
+              <Text py="2">{props.content}</Text>
             </HStack>
           </CardBody>
           <CardFooter justifyContent="end">
             <Button
               colorScheme={test ? "blue" : undefined}
               onClick={onSubmitLike}
+              marginRight={4}
             >
               좋아요
             </Button>
