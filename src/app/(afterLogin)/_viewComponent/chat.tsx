@@ -26,10 +26,11 @@ import {
 import { set } from "react-hook-form";
 import { profile } from "console";
 import useAuthStore from "@/store/store";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // 채팅방
 export default function Main({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   // 초기 roomId 설정
   const initRoomId = searchParams.get("roomId") || undefined;
@@ -44,7 +45,7 @@ export default function Main({ params }: { params: { id: string } }) {
 
   const user = useAuthStore((state) => state.user);
   const currentUid = user ? user.uid : ""; // 로그인한 사용자의 uid
-
+  console.log("uid", currentUid);
   useEffect(() => {
     if (currentUid) {
       getUser(currentUid)
@@ -61,6 +62,7 @@ export default function Main({ params }: { params: { id: string } }) {
       setLoading(false);
     }
   }, [currentUid]); // uid가 변경될 때마다 effect 실행
+
   // 채팅 상대 이미지 가져오기
   useEffect(() => {
     // if (params) {
@@ -93,6 +95,7 @@ export default function Main({ params }: { params: { id: string } }) {
         where("participants", "in", [nickname, params.id])
       );
       const querySnapshot = await getDocs(q);
+      console.log(querySnapshot);
       if (querySnapshot.empty) {
         // 채팅방 없으니 생성
         const roomId = await createChatRoom();
@@ -157,7 +160,7 @@ export default function Main({ params }: { params: { id: string } }) {
 
     return () => unsubscribe();
   }, [roomId]);
-  console.log(messages);
+
   return (
     <>
       <div>

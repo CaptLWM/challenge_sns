@@ -37,6 +37,9 @@ import {
 } from "@/queries/queries";
 import Link from "next/link";
 import { TbMessage } from "react-icons/tb";
+import { useRouter } from "next/navigation";
+import { firestore, getUser } from "@/firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 export default function BoardItemCard({
   props,
@@ -45,8 +48,13 @@ export default function BoardItemCard({
   props: Board;
   id: string;
 }) {
+  const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(String(props.image));
+  const [nickname, setNickname] = useState<string>(""); // 로그인 중인 사용자닉네임
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const deleteModal = useDisclosure();
   const modifyModal = useDisclosure();
   const replyDrawer = useDisclosure();
@@ -67,6 +75,23 @@ export default function BoardItemCard({
   // DB저장된 사용자 정보 가져오기
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : ""; // 로그인한 사용자의 uid
+
+  useEffect(() => {
+    if (uid) {
+      getUser(uid)
+        .then((data) => {
+          setNickname(data?.nickname);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setError(err);
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  }, [uid]);
 
   const deleteBoard = useDeleteBoard(props);
   const modifyBoard = useModifyBoard(uid);
@@ -122,6 +147,7 @@ export default function BoardItemCard({
   };
   const test = props?.likeUserList?.includes(uid);
   // await deleteDoc(doc(db, "cities", "DC"));
+
   return (
     <>
       <Card
@@ -151,9 +177,29 @@ export default function BoardItemCard({
               </Link>
               {props.id !== uid ? (
                 // TODO 채팅방 아이디를 여기서는 안보내줌
-                <Link href={`/messages/${props.nickname}`}>
+                <Button
+                  onClick={async () => {
+                    try {
+                      const q = query(
+                        collection(firestore, "ChatRooms"),
+                        where("participants", "array-contains", props.nickname)
+                      );
+                      const querySnapshot = await getDocs(q); // await를 사용하여 비동기 작업 완료를 기다림
+                      querySnapshot.forEach((doc) => {
+                        if (doc.data().participants.includes(nickname)) {
+                          router.push(
+                            `/messages/${props.nickname}?roomId=${doc.id}`
+                          );
+                        }
+                      });
+                      // 여기에 쿼리 결과를 처리하는 코드를 추가하면 됩니다.
+                    } catch (error) {
+                      console.error("채팅 방 쿼리 중 오류:", error);
+                    }
+                  }}
+                >
                   <TbMessage size="30px" />
-                </Link>
+                </Button>
               ) : null}
               {props.id === uid ? (
                 <div>
