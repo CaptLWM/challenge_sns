@@ -57,8 +57,6 @@ export default function BoardCreateCard() {
   } = useForm<Board>();
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("target", e.target.files);
-    console.log("selected", selectedFile);
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFile(e.target.files);
     }
@@ -134,8 +132,6 @@ export default function BoardCreateCard() {
       },
     }); // Mutation을 통해 데이터 등록 요청
   };
-
-  console.log("preview", preview);
 
   return (
     <Card

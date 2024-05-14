@@ -14,7 +14,6 @@ export default function Main() {
 
   return (
     <div>
-      <Text>처음화면</Text>
       <BoardCreateCard />
       <InfiniteScroll
         dataLength={boardList.data?.pages.flat().length ?? 0}

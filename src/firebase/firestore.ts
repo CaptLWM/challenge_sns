@@ -266,10 +266,11 @@ export const createBoardItemReply = async (
 export const modifyBoardItemReply = async (
   data: Reply,
   uid: string,
-  id: string
+  id: string,
+  replyId: string
 ) => {
   console.log("uid!!!", id, uid);
-  const userDocRef = doc(firestore, "BoardItemReply", id);
+  const userDocRef = doc(firestore, "BoardItemReply", replyId);
   await updateDoc(userDocRef, {
     userId: uid,
     content: data.content,
@@ -277,10 +278,10 @@ export const modifyBoardItemReply = async (
   });
 };
 
-export const deleteBoardItemReply = async (uid: string) => {
-  const userDocRef = doc(firestore, "BoardItemReply", uid);
+export const deleteBoardItemReply = async (replyId: string) => {
+  console.log("replyId", replyId);
+  const userDocRef = doc(firestore, "BoardItemReply", replyId);
   await deleteDoc(userDocRef);
-  console.log("성공");
 };
 
 export const followUser = async (
