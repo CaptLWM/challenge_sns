@@ -26,6 +26,7 @@ import {
 import { set } from "react-hook-form";
 import { profile } from "console";
 import useAuthStore from "@/store/store";
+
 import { useRouter, useSearchParams } from "next/navigation";
 
 // 채팅방
@@ -95,6 +96,7 @@ export default function Main({ params }: { params: { id: string } }) {
         where("participants", "in", [nickname, params.id])
       );
       const querySnapshot = await getDocs(q);
+
       console.log(querySnapshot);
       if (querySnapshot.empty) {
         // 채팅방 없으니 생성
@@ -132,7 +134,6 @@ export default function Main({ params }: { params: { id: string } }) {
       }
     }
   };
-
   // 채팅 메시지 불러오기
   useEffect(() => {
     if (!roomId) return;
@@ -156,11 +157,12 @@ export default function Main({ params }: { params: { id: string } }) {
           return dateA.getTime() - dateB.getTime();
         })
       );
+      console.log("msgs", msgs);
     });
+
 
     return () => unsubscribe();
   }, [roomId]);
-
   return (
     <>
       <div>
@@ -180,13 +182,13 @@ export default function Main({ params }: { params: { id: string } }) {
         {messages.map((msg) => {
           if (msg.sender === nickname) {
             return (
-              <HStack key={msg.id} justify="flex-end" marginBottom={5}>
+              <HStack key={msg.sender} justify="flex-end" marginBottom={5}>
                 <Text>{msg.text}</Text>
               </HStack>
             );
           } else {
             return (
-              <HStack key={msg.id} align="flex-start" marginBottom={5}>
+              <HStack key={msg.sender} align="flex-start" marginBottom={5}>
                 <Image
                   src={profileImg}
                   alt="프로필 이미지"

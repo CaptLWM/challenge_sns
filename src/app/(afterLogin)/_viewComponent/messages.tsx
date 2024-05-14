@@ -72,6 +72,7 @@ export default function Main() {
         if (chat.participants.includes(nickname)) {
           const temp = chat.participants.filter((item) => item !== nickname);
           // eslint-disable-next-line react/jsx-key
+
           return <Chatitem key={chat.id} nick={temp[0]} roomId={chat.id} />;
         } else return null;
       })}
