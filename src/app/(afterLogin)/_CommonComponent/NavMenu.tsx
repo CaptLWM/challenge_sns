@@ -4,7 +4,7 @@ import { User } from "@/firebase/firebase.type";
 import { logout } from "@/firebase/firebaseAuth";
 import { getUser } from "@/firebase/firestore";
 import useAuthStore, { initAuthState } from "@/store/store";
-import { Button, Text } from "@chakra-ui/react";
+import { Button, Center, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSelectedLayoutSegment } from "next/navigation";
@@ -88,55 +88,57 @@ export default function NavMenu() {
 
   return (
     <>
-      <li className="flex justify-center items-center mb-3">
-        <Link href="/home">
-          <div>
-            <TbHome size="40px" />
-          </div>
-        </Link>
-      </li>
-      <li className="flex justify-center items-center mb-3">
-        <Link href="/search">
-          <div>
-            <TbSearch size="40px" />
-          </div>
-        </Link>
-      </li>
-      <li className="flex justify-center items-center mb-3">
-        <Link href="/messages">
-          <div>
-            <TbMessageDots size="40px" />
-          </div>
-        </Link>
-      </li>
-      <li className="flex justify-center items-center mb-3">
-        <Link href="/challenge">
-          <div>
-            <TbTargetArrow size="40px" />
-          </div>
-        </Link>
-      </li>
-      <li className="flex justify-center items-center mb-3">
-        {userInfo ? (
-          <Link href="/myPage">
+      <VStack>
+        <li className="flex justify-center items-center mb-3">
+          <Link href="/home">
             <div>
-              <Text>{userInfo.nickname}</Text>
-              <Image
-                loading="lazy"
-                src={userInfo.profileImage}
-                alt="미리보기"
-                width={50}
-                height={50}
-              />
+              <TbHome size="40px" />
             </div>
           </Link>
-        ) : (
-          <Text>No user info</Text>
-        )}
-      </li>
-      <li className="flex justify-center items-center mb-3">
-        <Button onClick={doLogout}>로그아웃</Button>
-      </li>
+        </li>
+        <li className="flex justify-center items-center mb-3">
+          <Link href="/search">
+            <div>
+              <TbSearch size="40px" />
+            </div>
+          </Link>
+        </li>
+        <li className="flex justify-center items-center mb-3">
+          <Link href="/messages">
+            <div>
+              <TbMessageDots size="40px" />
+            </div>
+          </Link>
+        </li>
+        <li className="flex justify-center items-center mb-3">
+          <Link href="/challenge">
+            <div>
+              <TbTargetArrow size="40px" />
+            </div>
+          </Link>
+        </li>
+        <li className="flex justify-center items-center mb-3">
+          {userInfo ? (
+            <Link href="/myPage">
+              <VStack>
+                <Text>{userInfo.nickname}</Text>
+                <Image
+                  loading="lazy"
+                  src={userInfo.profileImage}
+                  alt="미리보기"
+                  width={50}
+                  height={50}
+                />
+              </VStack>
+            </Link>
+          ) : (
+            <Text>No user info</Text>
+          )}
+        </li>
+        <li className="flex justify-center items-center mb-3">
+          <Button onClick={doLogout}>로그아웃</Button>
+        </li>
+      </VStack>
     </>
   );
 }

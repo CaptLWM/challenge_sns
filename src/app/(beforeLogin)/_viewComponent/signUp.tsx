@@ -21,21 +21,6 @@ import {
 import Image from "next/image";
 import { SignUp } from "@/firebase/firebase.type";
 
-// const signUpSchema = z.object({
-
-//   password: z
-//     .string()
-//     .regex(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/)
-//     .min(8, "비밀번호 길이"),
-//   confirmPassword: z
-//     .string()
-//     .regex(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/)
-//     .min(8, "비밀번호 길이"),
-//   bio: z.string(),
-//   nickname: z.string(),
-//   image: z.string(),
-// });
-
 // TODO : 회원가입할때 이메일 중복확인(알아서 걸러주긴 함), 닉네임 중복확인, 비밀번호 확인 필요
 export default function Main() {
   const router = useRouter();

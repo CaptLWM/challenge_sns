@@ -5,6 +5,8 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  HStack,
+  Image,
   Input,
   Tab,
   TabList,
@@ -17,7 +19,12 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useAuthStore from "@/store/store";
-import { getUser, updateUser } from "@/firebase/firestore";
+import {
+  getUser,
+  getUserEmail,
+  getUserNick,
+  updateUser,
+} from "@/firebase/firestore";
 import { useRouter } from "next/navigation";
 import {
   useBoardListNickNameQuery,
@@ -30,32 +37,29 @@ import BoardItemCard from "../_CommonComponent/BoardItemCard";
 import { useQueryClient } from "@tanstack/react-query";
 import { BOARD_LIST } from "@/queries/queryKeys";
 
-const signUpSchema = z.object({
-  email: z
-    .string()
-    .email("유효하지 않은 이메일 형식입니다.")
-    .min(1, "이메일을 입력해주세요"),
-  password: z
-    .string()
-    .regex(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/)
-    .min(8, "비밀번호 길이"),
-  bio: z.string(),
-  nickname: z.string(),
-});
-
 export default function Main() {
   const router = useRouter();
   const queryClient = useQueryClient();
   // 상태를 추가하여 사용자 정보를 저장
   const [userInfo, setUserInfo] = useState<User | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [nicknameCheck, setNicknameCheck] = useState<boolean | undefined>(
+    false
+  );
+  const [idCheck, setIdCheck] = useState<boolean | undefined>(false);
+
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [err, setErr] = useState(null);
   const {
     handleSubmit,
     register,
+    watch,
+    setError,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<UserSignin>({
-    resolver: zodResolver(signUpSchema),
+    mode: "onBlur",
   });
 
   // 로그인한 유저정보 가져오기
@@ -81,7 +85,7 @@ export default function Main() {
           setLoading(false);
         })
         .catch((err) => {
-          setError(err);
+          setErr(err);
           setLoading(false);
         });
     } else {
@@ -89,11 +93,114 @@ export default function Main() {
     }
   }, [uid]);
 
+  console.log("userInfo", userInfo);
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedFile) {
+      const fileURL = URL.createObjectURL(selectedFile);
+      setPreview(fileURL);
+    }
+  }, [selectedFile]);
+
   const user_uid: string = uid ? uid : "";
   const modifyUser = useModifyUser(user_uid);
   const boardList = useBoardListNickNameQuery(
     userInfo?.nickname ? userInfo.nickname : ""
   );
+
+  // 이메일 중복확인
+  const emailCheck = async (value: string) => {
+    const response = await getUserEmail(value);
+    if (response.length > 0) {
+      console.log("이메일 사용 불가");
+      return false;
+    } else {
+      console.log("이메일 사용가능");
+      return true;
+    }
+  };
+
+  const handleCheckEmail = async () => {
+    const check = watch("email");
+    if (!check) {
+      setError("email", {
+        type: "manual",
+        message: "이메일을 먼저 입력하세요.",
+      });
+      return;
+    }
+    const regExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!regExp.test(check)) {
+      setError("email", {
+        type: "manual",
+        message: "이메일 양식을 확인해 주세요",
+      });
+    } else {
+      setIdCheck(true);
+
+      const isAvailable = await emailCheck(check);
+
+      setIdCheck(false);
+
+      if (isAvailable) {
+        clearErrors("email");
+        alert("이메일 사용가능합니다");
+        return;
+      } else {
+        setError("email", {
+          type: "manual",
+          message: "이메일이 이미 사용 중입니다.",
+        });
+      }
+    }
+  };
+
+  // 닉네임 중복확인
+  const nickCheck = async (value: string) => {
+    const response = await getUserNick(value);
+    if (response.length > 0) {
+      console.log("닉네임 사용 불가");
+      return false;
+    } else {
+      console.log("닉네임 사용가능");
+      return true;
+    }
+  };
+
+  const handleCheckNickName = async () => {
+    const check = watch("nickname");
+    if (!check) {
+      setError("nickname", {
+        type: "manual",
+        message: "닉네임을 먼저 입력하세요.",
+      });
+      return;
+    }
+    setNicknameCheck(true);
+
+    const isAvailable = await nickCheck(check);
+
+    setNicknameCheck(false);
+
+    if (isAvailable) {
+      clearErrors("nickname");
+      alert("닉네임 사용가능합니다");
+      return;
+    } else {
+      setError("nickname", {
+        type: "manual",
+        message: "이름이 이미 사용 중입니다.",
+      });
+    }
+  };
+
+  const password = watch("password");
 
   // 쿼리키로 할것
   const test = useMemo(() => {
@@ -151,14 +258,34 @@ export default function Main() {
           </TabPanel>
           <TabPanel>
             <form onSubmit={handleSubmit(onSubmitModify)} autoComplete="off">
+              {/* 자동완성 막기 위한 가짜 태그 */}
+              <input
+                type="text"
+                name="fakeField1"
+                style={{ display: "none" }}
+                autoComplete="off"
+              />
+              <input
+                type="password"
+                name="fakeField2"
+                style={{ display: "none" }}
+                autoComplete="new-password"
+              />
+              {/* 자동완성 막기 위한 가짜 태그 */}
               <FormControl isInvalid={!!errors.email}>
                 <FormLabel htmlFor="email">이메일</FormLabel>
-                <Input
-                  id="email"
-                  placeholder="Email"
-                  defaultValue={userInfo?.email}
-                  {...register("email")}
-                />
+                <HStack>
+                  <Input
+                    id="email"
+                    placeholder="Email"
+                    defaultValue={userInfo?.email}
+                    {...register("email", {
+                      required: "필수 입력 항목입니다.",
+                      validate: (value) => emailCheck(value),
+                    })}
+                  />
+                </HStack>
+                <Button onClick={handleCheckEmail}>중복확인</Button>
                 <FormErrorMessage>
                   {typeof errors.email?.message === "string"
                     ? errors.email.message
@@ -171,7 +298,18 @@ export default function Main() {
                   id="password"
                   placeholder="password"
                   type="password"
-                  {...register("password")}
+                  {...register("password", {
+                    required: "필수 입력 항목입니다.",
+                    minLength: {
+                      value: 8,
+                      message: "비밀번호는 8자 이상이어야 합니다.",
+                    },
+                    pattern: {
+                      value:
+                        /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$/,
+                      message: "비밀번호는 숫자와 문자를 포함해야 합니다.",
+                    },
+                  })}
                   defaultValue=""
                 />
                 <FormErrorMessage>
@@ -180,14 +318,37 @@ export default function Main() {
                     : ""}
                 </FormErrorMessage>
               </FormControl>
+              <FormControl isInvalid={!!errors.confirmPassword}>
+                <FormLabel htmlFor="confirmPassword">비밀번호 확인</FormLabel>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="비밀번호 확인"
+                  {...register("confirmPassword", {
+                    required: true,
+                    validate: (value) =>
+                      value === password || "비밀번호가 일치하지 않습니다.",
+                  })}
+                />
+                <FormErrorMessage>
+                  {typeof errors.confirmPassword?.message === "string"
+                    ? errors.confirmPassword.message
+                    : ""}
+                </FormErrorMessage>
+              </FormControl>
               <FormControl isInvalid={!!errors.bio}>
                 <FormLabel htmlFor="bio">자기소개</FormLabel>
-                <Input
-                  id="bio"
-                  placeholder="bio"
-                  {...register("bio")}
-                  defaultValue={userInfo?.bio}
-                />
+                <HStack>
+                  <Input
+                    id="nickname"
+                    placeholder="nickname"
+                    {...register("nickname", {
+                      required: true,
+                      validate: (value) => nickCheck(value),
+                    })}
+                  />
+                  <Button onClick={handleCheckNickName}>중복확인</Button>
+                </HStack>
                 <FormErrorMessage>
                   {typeof errors.bio?.message === "string"
                     ? errors.bio.message
@@ -208,6 +369,35 @@ export default function Main() {
                     : ""}
                 </FormErrorMessage>
               </FormControl>
+              <FormControl isInvalid={!!errors.profileImage}>
+                <FormLabel htmlFor="image">프로필이미지</FormLabel>
+                <Input
+                  id="image"
+                  placeholder="이미지"
+                  type="file"
+                  accept="image/*"
+                  variant="unstyled"
+                  {...register("profileImage", {
+                    onChange: onFileChange,
+                  })}
+                />
+                <FormErrorMessage>
+                  {typeof errors.profileImage?.message === "string"
+                    ? errors.profileImage.message
+                    : ""}
+                </FormErrorMessage>
+              </FormControl>
+              {preview && (
+                <div>
+                  <Image
+                    loading="lazy"
+                    src={preview}
+                    alt="미리보기"
+                    width={200}
+                    height={200}
+                  />
+                </div>
+              )}
               <Button
                 colorScheme="teal"
                 isLoading={isSubmitting}

@@ -29,7 +29,7 @@ export default function AfterLoginlayout({
             </section>
           </header>
 
-          <div className="mt-10 mb-2 flex items-start flex-col flex-grow">
+          <div className="mt-16 mb-2 flex items-start flex-col flex-grow">
             <div className="w-full h-full flex justify-between">
               <main className="w-full ">{children}</main>
             </div>
