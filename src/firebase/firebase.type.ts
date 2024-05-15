@@ -12,6 +12,7 @@ export interface User {
 
 export interface UserSignin extends User {
   password: string;
+  confirmPassword?: string; // 비밀번호 체크용
 }
 
 export interface Board {
