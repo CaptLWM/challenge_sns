@@ -99,13 +99,30 @@
 ## 주요 기능
 
 [워크플로우][Figmaworkflow-url](사용tool : figma)
+
+![login](/public/for_readme/work_flow/login_signup.png)
+
 - 회원가입/로그인
-  - ㅁㄴㅇㄹ
-- 팔로우
+
+![home](/public/for_readme/work_flow/home.png)
+
+- 메인화면
+
+![message](/public/for_readme/work_flow/chat.png)
+
 - 1:1채팅
-- 게시물 등록/수정/삭제
-  - 무한 스크롤
+
+![mypage](/public/for_readme/work_flow/mypage.png)
+
+- 마이페이지
+
+![challenge](/public/for_readme/work_flow/challenge.png)
+
 - 챌린지 등록/수정/삭제(~5/29)
+
+![search_user](/public/for_readme/work_flow/search_user.png)
+
+- 유저 검색(~5/29)
 ## 트러블 슈팅
 ### 기능개발
 ### 최적화
