@@ -111,7 +111,6 @@ export default function Main() {
   const boardList = useBoardListNickNameQuery(
     userInfo?.nickname ? userInfo.nickname : ""
   );
-
   // 닉네임 중복확인
   const nickCheck = async (value: string) => {
     const response = await getUserNick(value);
@@ -236,6 +235,7 @@ export default function Main() {
                     disabled
                   />
                 </HStack>
+
                 <FormErrorMessage>
                   {typeof errors.email?.message === "string"
                     ? errors.email.message
@@ -288,11 +288,34 @@ export default function Main() {
               <FormControl isInvalid={!!errors.bio}>
                 <FormLabel htmlFor="bio">자기소개</FormLabel>
                 <Input
-                  id="bio"
-                  placeholder="bio"
-                  {...register("bio")}
-                  defaultValue={userInfo?.bio}
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="비밀번호 확인"
+                  {...register("confirmPassword", {
+                    required: true,
+                    validate: (value) =>
+                      value === password || "비밀번호가 일치하지 않습니다.",
+                  })}
                 />
+                <FormErrorMessage>
+                  {typeof errors.confirmPassword?.message === "string"
+                    ? errors.confirmPassword.message
+                    : ""}
+                </FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={!!errors.bio}>
+                <FormLabel htmlFor="bio">자기소개</FormLabel>
+                <HStack>
+                  <Input
+                    id="nickname"
+                    placeholder="nickname"
+                    {...register("nickname", {
+                      required: true,
+                      validate: (value) => nickCheck(value),
+                    })}
+                  />
+                  <Button onClick={handleCheckNickName}>중복확인</Button>
+                </HStack>
                 <FormErrorMessage>
                   {typeof errors.bio?.message === "string"
                     ? errors.bio.message

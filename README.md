@@ -1,36 +1,138 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Just Do It!(챌린지 지원 웹 사이트 / readme ver.1.0)
+- 프로젝트 소개
+## 개발기간(2024.4.17. ~ 5.31.)
+## 기술 스택
+* [![Next][Next.js]][Next-url]
+* [![React][React.js]][React-url]
+* [![Typescript][TypeScript]][TypeScript-url]
+* [![reactquery][reactQuery]][reactquery-url]
+* [![zustand][zustand]][zustand-url]
+* [![reacthookform][reacthookform]][reacthookform-url]
+* [![chakra][chakra]][chakra-url]
 
-## Getting Started
+#### 선정이유
+- next는 13버전 사용 : 14버전의 경우 아직 stable 하지 못함 / 13대비 큰 변화 없음(node 버전 업이 주 이유였기 때문)
+- zustand
+- chakra-ui
+## 아키텍처
+<details>
+<summary>파일구조도</summary>
+<div markdown='1'>
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+📦src
+ ┣ 📂app
+ ┃ ┣ 📂(afterLogin)
+ ┃ ┃ ┣ 📂_CommonComponent
+ ┃ ┃ ┃ ┣ 📜BoardCreateCard.tsx
+ ┃ ┃ ┃ ┣ 📜BoardItemCard.tsx
+ ┃ ┃ ┃ ┣ 📜Chatitem.tsx
+ ┃ ┃ ┃ ┣ 📜NavMenu.tsx
+ ┃ ┃ ┃ ┣ 📜RQProvider.tsx
+ ┃ ┃ ┃ ┣ 📜ReplyDrawer.tsx
+ ┃ ┃ ┃ ┗ 📜component.type.ts
+ ┃ ┃ ┣ 📂_viewComponent
+ ┃ ┃ ┃ ┣ 📜challenge.tsx
+ ┃ ┃ ┃ ┣ 📜chat.tsx
+ ┃ ┃ ┃ ┣ 📜component.type.ts
+ ┃ ┃ ┃ ┣ 📜home.tsx
+ ┃ ┃ ┃ ┣ 📜messages.tsx
+ ┃ ┃ ┃ ┣ 📜myPage.tsx
+ ┃ ┃ ┃ ┣ 📜search.tsx
+ ┃ ┃ ┃ ┗ 📜user.tsx
+ ┃ ┃ ┣ 📂challenge
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┣ 📂home
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┣ 📂messages
+ ┃ ┃ ┃ ┣ 📂[id]
+ ┃ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┣ 📂myPage
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┣ 📂search
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┣ 📂user
+ ┃ ┃ ┃ ┗ 📂[id]
+ ┃ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┗ 📜layout.tsx
+ ┃ ┣ 📂(beforeLogin)
+ ┃ ┃ ┣ 📂_commonComponent
+ ┃ ┃ ┃ ┣ 📜CommonButtonForm.tsx
+ ┃ ┃ ┃ ┣ 📜CommonInputForm.tsx
+ ┃ ┃ ┃ ┗ 📜component.type.ts
+ ┃ ┃ ┣ 📂_viewComponent
+ ┃ ┃ ┃ ┣ 📜login.tsx
+ ┃ ┃ ┃ ┗ 📜signUp.tsx
+ ┃ ┃ ┣ 📂login
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┣ 📂signUp
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┣ 📜layout.tsx
+ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┣ 📜favicon.ico
+ ┃ ┣ 📜globals.css
+ ┃ ┣ 📜layout.tsx
+ ┃ ┗ 📜providers.tsx
+ ┣ 📂firebase
+ ┃ ┣ 📜firebase.ts
+ ┃ ┣ 📜firebase.type.ts
+ ┃ ┣ 📜firebaseAuth.ts
+ ┃ ┣ 📜firestorage.ts
+ ┃ ┗ 📜firestore.ts
+ ┣ 📂model
+ ┣ 📂queries
+ ┃ ┣ 📜queries.ts
+ ┃ ┗ 📜queryKeys.ts
+ ┗ 📂store
+ ┃ ┗ 📜store.ts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+</div>
+</details>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 화면 구성
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+[Wireframe][Figmawireframe-url]
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+## 주요 기능
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+[워크플로우][Figmaworkflow-url](사용tool : figma)
+- 회원가입/로그인
+  - ㅁㄴㅇㄹ
+- 팔로우
+- 1:1채팅
+- 게시물 등록/수정/삭제
+  - 무한 스크롤
+- 챌린지 등록/수정/삭제(~5/29)
+## 트러블 슈팅
+### 기능개발
+### 최적화
+## 향후계획
+- 1차 최적화 및 리팩토링(~ 5/24)
+- 챌린지 등록/수정/삭제 기능 추가(5/25 ~ 5/29)
+- 2차 리팩토링(5/29 ~ 5/31)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## 회고
+- 회고쓰자
+- 회고쓰자
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[Figmawireframe-url]: https://www.figma.com/design/AGnVbLaZXx1790EdNHmVSD/spartan-wireframe?t=yWDZfzc9NXlIUOhI-0
+[Figmaworkflow-url]: https://www.figma.com/board/ht5cRT6XmFJkd7nxjgnRhJ/spartan-workflow?node-id=0-1&t=yWDZfzc9NXlIUOhI-0
+[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Next-url]: https://nextjs.org/
+[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-url]: https://reactjs.org/
+[Typescript]: https://shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=FFF&style=flat-square
+[Typescript-url]: https://www.typescriptlang.org/
+[reactquery]: https://img.shields.io/badge/-React%20Query-FF4154?style=plastic&logo=react%20query&logoColor=white
+[reactquery-url]: https://tanstack.com/query/latest/docs/framework/react/overview
+[zustand]: https://img.shields.io/badge/zustand-black
+[zustand-url]: https://docs.pmnd.rs/zustand/getting-started/introduction
+[reacthookform]: https://img.shields.io/badge/react--hook--form-EC5990?style=flat&logo=reacthookform&logoColor=white
+[reacthookform-url]: https://react-hook-form.com/get-started
+[chakra]: https://shields.io/badge/chakra--ui-black?logo=chakraui&style=for-the-badge%22
+[chakra-url]: https://v2.chakra-ui.com/getting-started
