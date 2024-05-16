@@ -142,18 +142,11 @@
 </div>
 </details>
 
-
-
 ## 향후계획
 - 1차 최적화 및 리팩토링(~ 5/24)
 - 챌린지 등록/수정/삭제 기능 추가(5/25 ~ 5/29)
 - 2차 리팩토링(5/29 ~ 5/31)
 
-
-
-## 회고
-- 회고쓰자
-- 회고쓰자
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
