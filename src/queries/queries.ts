@@ -42,6 +42,7 @@ import { ReplyType } from "@/app/(afterLogin)/_CommonComponent/component.type";
 export const useModifyUser = (uid: string) => {
   return useMutation({
     mutationFn: async (data: User) => {
+      console.log("data-quries", data);
       await updateUser(uid, data);
     },
   });
