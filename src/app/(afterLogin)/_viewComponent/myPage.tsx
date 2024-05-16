@@ -160,8 +160,10 @@ export default function Main() {
   }, [boardList.data?.pages]);
 
   const onSubmitModify = (data: User) => {
-    console.log("data", data);
-    modifyUser.mutate(data),
+    const temp = {
+      ...data,
+    };
+    modifyUser.mutate(temp),
       {
         onSuccess: () => {
           router.replace("/home");
@@ -247,7 +249,6 @@ export default function Main() {
                   placeholder="password"
                   type="password"
                   {...register("password", {
-                    required: "필수 입력 항목입니다.",
                     minLength: {
                       value: 8,
                       message: "비밀번호는 8자 이상이어야 합니다.",

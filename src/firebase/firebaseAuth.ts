@@ -35,7 +35,13 @@ export const loginWithEmailAndPassword = async (
 
 export const userPasswordUpdate = async (newPassword: string) => {
   const user = auth.currentUser;
-  updatePassword(user, newPassword).then(() => {});
+  if (user) {
+    updatePassword(user, newPassword)
+      .then(() => {})
+      .catch();
+  } else {
+    console.error("User is not logged in / 유저정보가 없습니다.");
+  }
 };
 
 // 로그아웃
