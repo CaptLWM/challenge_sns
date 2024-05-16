@@ -93,8 +93,6 @@ export default function Main() {
     }
   }, [uid]);
 
-  console.log("userInfo", userInfo);
-
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFile(e.target.files[0]);
@@ -113,53 +111,6 @@ export default function Main() {
   const boardList = useBoardListNickNameQuery(
     userInfo?.nickname ? userInfo.nickname : ""
   );
-
-  // 이메일 중복확인
-  const emailCheck = async (value: string) => {
-    const response = await getUserEmail(value);
-    if (response.length > 0) {
-      console.log("이메일 사용 불가");
-      return false;
-    } else {
-      console.log("이메일 사용가능");
-      return true;
-    }
-  };
-
-  const handleCheckEmail = async () => {
-    const check = watch("email");
-    if (!check) {
-      setError("email", {
-        type: "manual",
-        message: "이메일을 먼저 입력하세요.",
-      });
-      return;
-    }
-    const regExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!regExp.test(check)) {
-      setError("email", {
-        type: "manual",
-        message: "이메일 양식을 확인해 주세요",
-      });
-    } else {
-      setIdCheck(true);
-
-      const isAvailable = await emailCheck(check);
-
-      setIdCheck(false);
-
-      if (isAvailable) {
-        clearErrors("email");
-        alert("이메일 사용가능합니다");
-        return;
-      } else {
-        setError("email", {
-          type: "manual",
-          message: "이메일이 이미 사용 중입니다.",
-        });
-      }
-    }
-  };
 
   // 닉네임 중복확인
   const nickCheck = async (value: string) => {
@@ -209,6 +160,7 @@ export default function Main() {
   }, [boardList.data?.pages]);
 
   const onSubmitModify = (data: User) => {
+    console.log("data", data);
     modifyUser.mutate(data),
       {
         onSuccess: () => {
@@ -279,13 +231,9 @@ export default function Main() {
                     id="email"
                     placeholder="Email"
                     defaultValue={userInfo?.email}
-                    {...register("email", {
-                      required: "필수 입력 항목입니다.",
-                      validate: (value) => emailCheck(value),
-                    })}
+                    disabled
                   />
                 </HStack>
-                <Button onClick={handleCheckEmail}>중복확인</Button>
                 <FormErrorMessage>
                   {typeof errors.email?.message === "string"
                     ? errors.email.message
@@ -338,17 +286,12 @@ export default function Main() {
               </FormControl>
               <FormControl isInvalid={!!errors.bio}>
                 <FormLabel htmlFor="bio">자기소개</FormLabel>
-                <HStack>
-                  <Input
-                    id="nickname"
-                    placeholder="nickname"
-                    {...register("nickname", {
-                      required: true,
-                      validate: (value) => nickCheck(value),
-                    })}
-                  />
-                  <Button onClick={handleCheckNickName}>중복확인</Button>
-                </HStack>
+                <Input
+                  id="bio"
+                  placeholder="bio"
+                  {...register("bio")}
+                  defaultValue={userInfo?.bio}
+                />
                 <FormErrorMessage>
                   {typeof errors.bio?.message === "string"
                     ? errors.bio.message
@@ -357,12 +300,15 @@ export default function Main() {
               </FormControl>
               <FormControl isInvalid={!!errors.nickname}>
                 <FormLabel htmlFor="nickname">닉네임</FormLabel>
-                <Input
-                  id="nickname"
-                  placeholder="nickname"
-                  {...register("nickname")}
-                  defaultValue={userInfo?.nickname}
-                />
+                <HStack>
+                  <Input
+                    id="nickname"
+                    placeholder="nickname"
+                    {...register("nickname")}
+                    defaultValue={userInfo?.nickname}
+                  />
+                  <Button onClick={handleCheckNickName}>중복확인</Button>
+                </HStack>
                 <FormErrorMessage>
                   {typeof errors.nickname?.message === "string"
                     ? errors.nickname.message

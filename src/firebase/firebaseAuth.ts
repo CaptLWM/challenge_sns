@@ -7,6 +7,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  updatePassword,
 } from "firebase/auth";
 import firebasedb from "./firebase";
 
@@ -28,6 +29,13 @@ export const loginWithEmailAndPassword = async (
     console.error("Error signing in:", error);
     return null;
   }
+};
+
+// 비밀번호 변경
+
+export const userPasswordUpdate = async (newPassword: string) => {
+  const user = auth.currentUser;
+  updatePassword(user, newPassword).then(() => {});
 };
 
 // 로그아웃
