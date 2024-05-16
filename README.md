@@ -135,6 +135,7 @@
 </details>
 
 ## 트러블 슈팅
+[velog](https://velog.io/@suhoshin23/posts?tag=%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8)
 ### 기능개발
 - 채팅방 메세지로만 DB 구성 -> 채팅방 목록 생성 문제 -> DB구조 변경(이유 써야함)
 - zod => react-hook-form으로 변경(이유 써야함)
