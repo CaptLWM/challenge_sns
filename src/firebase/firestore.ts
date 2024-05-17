@@ -107,7 +107,7 @@ export const getUserEmail = async (email: string) => {
   return userSnap.docs.map((doc) => doc.data());
 };
 // 닉네임
-export const getUserNick = async (nickname: string) => {
+export const getUserNick = async (nickname: string | undefined) => {
   const nicknameRef = query(
     collection(firestore, "User"),
     where("nickname", "==", nickname)

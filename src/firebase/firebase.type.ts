@@ -1,13 +1,13 @@
 export interface User {
-  bio: string;
-  uid: string;
-  email: string;
-  nickname: string;
-  createdAt: string;
-  updatedAt: string;
-  followingUserList: string[];
-  followUserList: string[];
-  profileImage: string;
+  bio?: string;
+  uid?: string;
+  email?: string;
+  nickname?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  followingUserList?: string[];
+  followUserList?: string[];
+  profileImage?: string;
 }
 
 export interface UserSignin extends User {
