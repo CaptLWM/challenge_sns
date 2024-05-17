@@ -36,6 +36,9 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import BoardItemCard from "../_CommonComponent/BoardItemCard";
 import { useQueryClient } from "@tanstack/react-query";
 import { BOARD_LIST } from "@/queries/queryKeys";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "@/firebase/firestorage";
+import { profile } from "console";
 
 export default function Main() {
   const router = useRouter();
@@ -81,7 +84,7 @@ export default function Main() {
             followingUserList: data?.followingUserList,
             followUserList: data?.followUserList,
           });
-
+          setPreview(data?.profileImage);
           setLoading(false);
         })
         .catch((err) => {
@@ -112,7 +115,7 @@ export default function Main() {
     userInfo?.nickname ? userInfo.nickname : ""
   );
   // 닉네임 중복확인
-  const nickCheck = async (value: string) => {
+  const nickCheck = async (value: string | undefined) => {
     const response = await getUserNick(value);
     if (response.length > 0) {
       console.log("닉네임 사용 불가");
@@ -158,10 +161,48 @@ export default function Main() {
     return boardList.data?.pages;
   }, [boardList.data?.pages]);
 
-  const onSubmitModify = (data: User) => {
-    const temp = {
-      ...data,
+  const onSubmitModify = async (data: User) => {
+    console.log("selected", selectedFile);
+    let temp: User | null = {
+      bio: "",
+      uid: "",
+      email: "",
+      nickname: "",
+      createdAt: "",
+      updatedAt: "",
+      followingUserList: [],
+      followUserList: [],
+      profileImage: "",
     };
+    if (selectedFile) {
+      const imageRef = ref(storage, `${uid}/${selectedFile.name}`);
+      await uploadBytes(imageRef, selectedFile);
+      const downloadURL = await getDownloadURL(imageRef);
+      temp = {
+        ...data,
+        uid: userInfo?.uid,
+        email: userInfo?.email,
+        createdAt: userInfo?.createdAt,
+        updatedAt: new Date().toISOString(),
+        followingUserList: userInfo?.followingUserList,
+        followUserList: userInfo?.followUserList,
+        profileImage: downloadURL,
+      };
+    } else {
+      temp = {
+        ...data,
+        uid: userInfo?.uid,
+        email: userInfo?.email,
+        createdAt: userInfo?.createdAt,
+        updatedAt: new Date().toISOString(),
+        followingUserList: userInfo?.followingUserList,
+        followUserList: userInfo?.followUserList,
+        profileImage: userInfo?.profileImage,
+      };
+    }
+
+    console.log("temp", temp);
+
     modifyUser.mutate(temp),
       {
         onSuccess: () => {
@@ -242,8 +283,8 @@ export default function Main() {
                     : ""}
                 </FormErrorMessage>
               </FormControl>
-              <FormControl isInvalid={!!errors.password}>
-                <FormLabel htmlFor="비밀번호">비밀번호</FormLabel>
+              {/* <FormControl isInvalid={!!errors.password}>
+                <FormLabel htmlFor="password">비밀번호</FormLabel>
                 <Input
                   id="password"
                   placeholder="password"
@@ -284,37 +325,18 @@ export default function Main() {
                     ? errors.confirmPassword.message
                     : ""}
                 </FormErrorMessage>
-              </FormControl>
-              <FormControl isInvalid={!!errors.bio}>
-                <FormLabel htmlFor="bio">자기소개</FormLabel>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="비밀번호 확인"
-                  {...register("confirmPassword", {
-                    required: true,
-                    validate: (value) =>
-                      value === password || "비밀번호가 일치하지 않습니다.",
-                  })}
-                />
-                <FormErrorMessage>
-                  {typeof errors.confirmPassword?.message === "string"
-                    ? errors.confirmPassword.message
-                    : ""}
-                </FormErrorMessage>
-              </FormControl>
+              </FormControl> */}
               <FormControl isInvalid={!!errors.bio}>
                 <FormLabel htmlFor="bio">자기소개</FormLabel>
                 <HStack>
                   <Input
-                    id="nickname"
-                    placeholder="nickname"
-                    {...register("nickname", {
+                    id="bio"
+                    placeholder="bio"
+                    {...register("bio", {
                       required: true,
-                      validate: (value) => nickCheck(value),
                     })}
+                    defaultValue={userInfo?.bio}
                   />
-                  <Button onClick={handleCheckNickName}>중복확인</Button>
                 </HStack>
                 <FormErrorMessage>
                   {typeof errors.bio?.message === "string"
@@ -328,7 +350,15 @@ export default function Main() {
                   <Input
                     id="nickname"
                     placeholder="nickname"
-                    {...register("nickname")}
+                    {...register("nickname", {
+                      required: true,
+                      validate: (value) => {
+                        if (value !== userInfo?.nickname) {
+                          nickCheck(value);
+                        }
+                        return true;
+                      },
+                    })}
                     defaultValue={userInfo?.nickname}
                   />
                   <Button onClick={handleCheckNickName}>중복확인</Button>
@@ -339,24 +369,7 @@ export default function Main() {
                     : ""}
                 </FormErrorMessage>
               </FormControl>
-              <FormControl isInvalid={!!errors.profileImage}>
-                <FormLabel htmlFor="image">프로필이미지</FormLabel>
-                <Input
-                  id="image"
-                  placeholder="이미지"
-                  type="file"
-                  accept="image/*"
-                  variant="unstyled"
-                  {...register("profileImage", {
-                    onChange: onFileChange,
-                  })}
-                />
-                <FormErrorMessage>
-                  {typeof errors.profileImage?.message === "string"
-                    ? errors.profileImage.message
-                    : ""}
-                </FormErrorMessage>
-              </FormControl>
+
               {preview && (
                 <div>
                   <Image
@@ -368,6 +381,33 @@ export default function Main() {
                   />
                 </div>
               )}
+              <FormControl marginTop={4}>
+                <FormLabel htmlFor="image">
+                  <Button
+                    onClick={() =>
+                      document.getElementById("profileImage")?.click()
+                    }
+                  >
+                    이미지추가
+                  </Button>
+                  <Input
+                    id="profileImage"
+                    placeholder="이미지"
+                    type="file"
+                    accept="image/*"
+                    variant="unstyled"
+                    hidden
+                    {...register("profileImage", {
+                      onChange: (event) => {
+                        const file = event.target.files[0];
+                        if (file) {
+                          onFileChange(event);
+                        }
+                      },
+                    })}
+                  />
+                </FormLabel>
+              </FormControl>
               <Button
                 colorScheme="teal"
                 isLoading={isSubmitting}
