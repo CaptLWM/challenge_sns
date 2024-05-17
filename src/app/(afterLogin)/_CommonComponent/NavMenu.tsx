@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@/firebase/firebase.type";
+import { User, User_type } from "@/firebase/firebase.type";
 import { logout } from "@/firebase/firebaseAuth";
 import { getUser } from "@/firebase/firestore";
 import useAuthStore, { initAuthState } from "@/store/store";
@@ -17,7 +17,7 @@ import { TbMessageDots } from "react-icons/tb"; // message
 export default function NavMenu() {
   const router = useRouter();
   // 상태를 추가하여 사용자 정보를 저장
-  const [userInfo, setUserInfo] = useState<User | null>();
+  const [userInfo, setUserInfo] = useState<User_type | null>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // 즉 주소를 가지고 올 수 있음
@@ -124,7 +124,7 @@ export default function NavMenu() {
                 <Text>{userInfo.nickname}</Text>
                 <Image
                   loading="lazy"
-                  src={userInfo.profileImage}
+                  src={userInfo?.profileImage}
                   alt="미리보기"
                   width={50}
                   height={50}
