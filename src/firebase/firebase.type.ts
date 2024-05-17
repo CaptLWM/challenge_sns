@@ -10,6 +10,18 @@ export interface User {
   profileImage?: string;
 }
 
+export interface User_type {
+  bio: string;
+  uid: string;
+  email: string;
+  nickname: string;
+  createdAt: string;
+  updatedAt: string;
+  followingUserList: string[];
+  followUserList: string[];
+  profileImage: string;
+}
+
 export interface UserSignin extends User {
   password: string;
   confirmPassword?: string; // 비밀번호 체크용
