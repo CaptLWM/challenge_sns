@@ -367,7 +367,10 @@ export default function Main() {
                     {...register("nickname", {
                       required: true,
                       validate: (value) => {
+<<<<<<< HEAD
                         console.log(value, "vlaue");
+=======
+>>>>>>> 4ebe813f71723ea49432e221bc558a327bf36faf
                         if (value !== userInfo?.nickname) {
                           nickCheck(value);
                         }

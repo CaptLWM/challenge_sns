@@ -1,6 +1,12 @@
-## Just Do It!(챌린지 지원 웹 사이트 / readme ver.1.0)
-- 프로젝트 소개
-## 개발기간(2024.4.17. ~ 5.31.)
+## Just Do It!(readme ver.2.0)
+- 사람들의 목표를 달성하기 위한 도움을 주기 위한 동기부여 공유 SNS 입니다.
+- 개발기간 : 2024.4.17. ~ 2024.5.31.
+- https://challenge-sns.vercel.app/
+
+```
+id : test12@test.com
+password : test12!@
+```
 ## 기술 스택
 * [![Next][Next.js]][Next-url]
 * [![React][React.js]][React-url]
@@ -11,9 +17,28 @@
 * [![chakra][chakra]][chakra-url]
 
 #### 선정이유
-- next는 13버전 사용 : 14버전의 경우 아직 stable 하지 못함 / 13대비 큰 변화 없음(node 버전 업이 주 이유였기 때문)
+- next.js 13
+  - 14버전의 경우 아직 stable 하지 못함
+  - 13대비 큰 변화 없음(node 버전 업이 주 이유였기 때문)
+
 - zustand
+  - 다른 상태관리 도구에 비해 빠른시간 내에 익히기 쉬움
+  - store와 action이 합쳐져 있어 사용이 간단함
+
 - chakra-ui
+  - props를 사용하여 스타일링
+## 트러블 슈팅
+[트러블슈팅 모음](https://deserted-pamphlet-acb.notion.site/5-0031bf7d1a924c07bd123839c62f4f01?pvs=4)
+### 기능개발
+- 1:1 채팅방 구현 후 목록 구성 관련 문제 발생 => 채팅메시지 필드에 채팅방id 추가 및 채팅방 생성 조건 재정의
+  - [Firebase로 채팅 구현](https://velog.io/@suhoshin23/Next.js-Firebase%EB%A1%9C-11-%EC%B1%84%ED%8C%85-%EA%B5%AC%ED%98%84-2)
+    
+- '선택된 파일이 없습니다' 문구 남아 있음 => 브라우저 자체 소스라 수정 불가 => label로 감싸서 해결
+  - [브라우저 기본 제공문구('선택된 파일이 없습니다.') 제거하기](https://velog.io/@suhoshin23/JS-Next.js-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80-%EA%B8%B0%EB%B3%B8-%EC%A0%9C%EA%B3%B5%EB%AC%B8%EA%B5%AC%EC%84%A0%ED%83%9D%EB%90%9C-%ED%8C%8C%EC%9D%BC%EC%9D%B4-%EC%97%86%EC%8A%B5%EB%8B%88%EB%8B%A4.-%EC%A0%9C%EA%B1%B0%ED%95%98%EA%B8%B0)
+
+### 최적화
+- 최적화 작업 후 업데이트
+
 ## 아키텍처
 <details>
 <summary>파일구조도</summary>
@@ -95,11 +120,12 @@
 
 [Wireframe][Figmawireframe-url]
 
+## Work Flow
+#### [Link][Figmaworkflow-url] (tool : figma)
 
-## 주요 기능
-
-[워크플로우][Figmaworkflow-url](사용tool : figma)
-
+<details>
+<summary>Work-flow</summary>
+<div markdown='1'>
 ![login](/public/for_readme/work_flow/login_signup.png)
 
 - 회원가입/로그인
@@ -123,17 +149,14 @@
 ![search_user](/public/for_readme/work_flow/search_user.png)
 
 - 유저 검색(~5/29)
-## 트러블 슈팅
-### 기능개발
-### 최적화
+</div>
+</details>
+
 ## 향후계획
 - 1차 최적화 및 리팩토링(~ 5/24)
 - 챌린지 등록/수정/삭제 기능 추가(5/25 ~ 5/29)
 - 2차 리팩토링(5/29 ~ 5/31)
 
-## 회고
-- 회고쓰자
-- 회고쓰자
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
