@@ -8,11 +8,19 @@ import {
   HStack,
   Image,
   Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
+  useDisclosure,
 } from "@chakra-ui/react";
 import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -53,7 +61,9 @@ export default function Main() {
   const [idCheck, setIdCheck] = useState<boolean | undefined>(false);
 
   const [loading, setLoading] = useState(true);
+
   const [err, setErr] = useState(null);
+  const passwordModal = useDisclosure();
   const {
     handleSubmit,
     register,
@@ -206,7 +216,8 @@ export default function Main() {
     modifyUser.mutate(temp),
       {
         onSuccess: () => {
-          router.replace("/home");
+          alert("수정되었습니다.");
+          queryClient.invalidateQueries();
         },
         onError: (error: any) => {
           const errorMessage = error.message;
@@ -222,6 +233,7 @@ export default function Main() {
           <Tab>내정보수정</Tab>
         </TabList>
         <TabPanels>
+          {/* 내글목록 */}
           <TabPanel>
             <InfiniteScroll
               dataLength={boardList.data?.pages.flat().length ?? 0}
@@ -250,7 +262,9 @@ export default function Main() {
               })} */}
             </InfiniteScroll>
           </TabPanel>
+          {/* 내정보 수정 */}
           <TabPanel>
+            <Button onClick={passwordModal.onOpen}>비밀번호 변경</Button>
             <form onSubmit={handleSubmit(onSubmitModify)} autoComplete="off">
               {/* 자동완성 막기 위한 가짜 태그 */}
               <input
@@ -417,6 +431,33 @@ export default function Main() {
                 내정보 수정
               </Button>
             </form>
+            <Modal
+              id="delete"
+              isCentered
+              blockScrollOnMount={false}
+              isOpen={passwordModal.isOpen}
+              onClose={passwordModal.onClose}
+            >
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>비밀번호 변경</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>비밀번호 변경 form</ModalBody>
+
+                <ModalFooter>
+                  <Button variant="ghost" onClick={passwordModal.onClose}>
+                    취소
+                  </Button>
+                  <Button
+                    colorScheme="blue"
+                    mr={3}
+                    onClick={() => passwordModal.onClose()}
+                  >
+                    삭제
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </TabPanel>
         </TabPanels>
       </Tabs>
