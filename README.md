@@ -1,6 +1,12 @@
 ## Just Do It!(readme ver.2.0)
 - 사람들의 목표를 달성하기 위한 도움을 주기 위한 동기부여 공유 SNS 입니다.
 - 개발기간 : 2024.4.17. ~ 2024.5.31.
+- https://challenge-sns.vercel.app/
+
+```
+id : test12@test.com
+password : test12!@
+```
 ## 기술 스택
 * [![Next][Next.js]][Next-url]
 * [![React][React.js]][React-url]
@@ -25,6 +31,7 @@
 [트러블슈팅 모음](https://velog.io/@suhoshin23/posts?tag=%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8)
 ### 기능개발
 - 1:1 채팅방 구현 후 목록 구성 관련 문제 발생 => 채팅메시지 필드에 채팅방id 추가 및 채팅방 생성 조건 재정의
+- 
 
 ### 최적화
 - 최적화 작업 후 업데이트
