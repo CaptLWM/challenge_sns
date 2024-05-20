@@ -27,6 +27,7 @@ export default function Main() {
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : null;
 
+
   useEffect(() => {
     if (uid) {
       getUser(uid)
@@ -45,8 +46,8 @@ export default function Main() {
   }, [uid]);
 
   const boardList = useBoardListQuery();
+  // console.log("followingUser", followList);
   const followBoardList = useFollowBoardListQuery(followList);
-  console.log("followingUser", followList);
   console.log("board", boardList.data);
   console.log("followBoard", followBoardList.data);
   return (
@@ -78,15 +79,15 @@ export default function Main() {
             </InfiniteScroll>
           </TabPanel>
           <TabPanel>
-            <Text>팔로우</Text>
+
             <InfiniteScroll
-              dataLength={boardList.data?.pages.flat().length ?? 0}
-              next={boardList.fetchNextPage}
-              hasMore={boardList.hasNextPage}
+              dataLength={followBoardList.data?.pages.flat().length ?? 0}
+              next={followBoardList.fetchNextPage}
+              hasMore={followBoardList.hasNextPage}
               loader={<div>Loading</div>}
               scrollThreshold={0.8}
             >
-              {boardList.data?.pages.map((page, pageIndex) => {
+              {followBoardList.data?.pages.map((page, pageIndex) => {
                 return (
                   <div key={pageIndex}>
                     {page.data.map((v, i) => (

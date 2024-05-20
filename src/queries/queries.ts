@@ -107,7 +107,6 @@ export const useFollowBoardListQuery = (
   follow: string[],
   initialPageParam?: QueryDocumentSnapshot<DocumentData>
 ) => {
-  console.log("follow", follow);
   const fetchData = async ({
     pageParam,
   }: {
@@ -119,7 +118,8 @@ export const useFollowBoardListQuery = (
         collection(firestore, "BoardItem"),
         where("id", "in", follow),
         orderBy("id", "desc"),
-        orderBy("createdAt", "desc"),
+
+        // orderBy("createdAt", "desc"),
         limit(2),
         startAfter(pageParam)
       );
@@ -128,10 +128,12 @@ export const useFollowBoardListQuery = (
         collection(firestore, "BoardItem"),
         where("id", "in", follow),
         orderBy("id", "desc"),
-        orderBy("createdAt", "desc"),
+
+        // orderBy("createdAt", "desc"),
         limit(2)
       );
     }
+    console.log("follow!!!!!!", follow);
     // collection 이름이 todos인 collection의 모든 document를 가져옵니다.
     const querySnapshot: QuerySnapshot = await getDocs(q);
     // document의 id와 데이터를 initialTodos에 저장합니다.
@@ -156,7 +158,7 @@ export const useFollowBoardListQuery = (
     };
   };
   return useInfiniteQuery({
-    queryKey: [BOARD_LIST],
+    queryKey: [BOARD_LIST, follow],
     queryFn: fetchData,
     getNextPageParam: (lastPage) => lastPage.nextPageParam, // 다음 페이지를 위한 기준
     initialPageParam, // 첫 페이지의 기준 설정
