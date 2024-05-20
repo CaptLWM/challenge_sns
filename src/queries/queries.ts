@@ -118,10 +118,7 @@ export const useFollowBoardListQuery = (
         collection(firestore, "BoardItem"),
         where("id", "in", follow),
         orderBy("id", "desc"),
-<<<<<<< HEAD
-=======
 
->>>>>>> 18a0f80d4871729d2bb88c339113babc040b6915
         // orderBy("createdAt", "desc"),
         limit(2),
         startAfter(pageParam)
@@ -131,10 +128,7 @@ export const useFollowBoardListQuery = (
         collection(firestore, "BoardItem"),
         where("id", "in", follow),
         orderBy("id", "desc"),
-<<<<<<< HEAD
-=======
 
->>>>>>> 18a0f80d4871729d2bb88c339113babc040b6915
         // orderBy("createdAt", "desc"),
         limit(2)
       );
