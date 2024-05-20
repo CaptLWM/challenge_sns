@@ -27,6 +27,7 @@ export default function Main() {
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : null;
 
+
   useEffect(() => {
     if (uid) {
       getUser(uid)
@@ -47,7 +48,6 @@ export default function Main() {
   const boardList = useBoardListQuery();
   // console.log("followingUser", followList);
   const followBoardList = useFollowBoardListQuery(followList);
-
   console.log("board", boardList.data);
   console.log("followBoard", followBoardList.data);
   return (
@@ -79,6 +79,7 @@ export default function Main() {
             </InfiniteScroll>
           </TabPanel>
           <TabPanel>
+
             <InfiniteScroll
               dataLength={followBoardList.data?.pages.flat().length ?? 0}
               next={followBoardList.fetchNextPage}
