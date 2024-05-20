@@ -27,7 +27,6 @@ export default function Main() {
   const user = useAuthStore((state) => state.user);
   const uid = user ? user.uid : null;
 
-
   useEffect(() => {
     if (uid) {
       getUser(uid)
@@ -79,7 +78,6 @@ export default function Main() {
             </InfiniteScroll>
           </TabPanel>
           <TabPanel>
-
             <InfiniteScroll
               dataLength={followBoardList.data?.pages.flat().length ?? 0}
               next={followBoardList.fetchNextPage}
