@@ -23,9 +23,6 @@ export default function AfterLoginlayout({
                   </ul>
                 </nav>
               </div>
-              {/* <div className="mt-10 mb-1 bg-slate-950 w-1 ">
-                <Divider orientation="vertical" />
-              </div> */}
             </section>
           </header>
 

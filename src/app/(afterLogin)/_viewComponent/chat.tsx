@@ -46,7 +46,7 @@ export default function Main({ params }: { params: { id: string } }) {
 
   const user = useAuthStore((state) => state.user);
   const currentUid = user ? user.uid : ""; // 로그인한 사용자의 uid
-  console.log("uid", currentUid);
+
   useEffect(() => {
     if (currentUid) {
       getUser(currentUid)
@@ -97,7 +97,6 @@ export default function Main({ params }: { params: { id: string } }) {
       );
       const querySnapshot = await getDocs(q);
 
-      console.log(querySnapshot);
       if (querySnapshot.empty) {
         // 채팅방 없으니 생성
         const roomId = await createChatRoom();
@@ -157,9 +156,7 @@ export default function Main({ params }: { params: { id: string } }) {
           return dateA.getTime() - dateB.getTime();
         })
       );
-      console.log("msgs", msgs);
     });
-
 
     return () => unsubscribe();
   }, [roomId]);

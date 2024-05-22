@@ -32,7 +32,6 @@ export default function Main() {
     }
   }, [currentUid]); // uid가 변경될 때마다 effect 실행
 
-  console.log("niciname", nickname);
   // 채팅방 목록ID 가져오기
   useEffect(() => {
     if (nickname) {
@@ -61,8 +60,6 @@ export default function Main() {
       return () => unscribe();
     }
   }, [nickname]);
-
-  console.log(chatRoomId);
 
   return (
     <div>

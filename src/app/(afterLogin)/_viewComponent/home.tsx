@@ -47,8 +47,6 @@ export default function Main() {
   const boardList = useBoardListQuery();
   // console.log("followingUser", followList);
   const followBoardList = useFollowBoardListQuery(followList);
-  console.log("board", boardList.data);
-  console.log("followBoard", followBoardList.data);
   return (
     <div>
       <BoardCreateCard />
