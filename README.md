@@ -40,81 +40,9 @@ password : test12!@
 - 최적화 작업 후 업데이트
 
 ## 아키텍처
-<details>
-<summary>파일구조도</summary>
-<div markdown='1'>
-
-```
-📦src
- ┣ 📂app
- ┃ ┣ 📂(afterLogin)
- ┃ ┃ ┣ 📂_CommonComponent
- ┃ ┃ ┃ ┣ 📜BoardCreateCard.tsx
- ┃ ┃ ┃ ┣ 📜BoardItemCard.tsx
- ┃ ┃ ┃ ┣ 📜Chatitem.tsx
- ┃ ┃ ┃ ┣ 📜NavMenu.tsx
- ┃ ┃ ┃ ┣ 📜RQProvider.tsx
- ┃ ┃ ┃ ┣ 📜ReplyDrawer.tsx
- ┃ ┃ ┃ ┗ 📜component.type.ts
- ┃ ┃ ┣ 📂_viewComponent
- ┃ ┃ ┃ ┣ 📜challenge.tsx
- ┃ ┃ ┃ ┣ 📜chat.tsx
- ┃ ┃ ┃ ┣ 📜component.type.ts
- ┃ ┃ ┃ ┣ 📜home.tsx
- ┃ ┃ ┃ ┣ 📜messages.tsx
- ┃ ┃ ┃ ┣ 📜myPage.tsx
- ┃ ┃ ┃ ┣ 📜search.tsx
- ┃ ┃ ┃ ┗ 📜user.tsx
- ┃ ┃ ┣ 📂challenge
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┣ 📂home
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┣ 📂messages
- ┃ ┃ ┃ ┣ 📂[id]
- ┃ ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┣ 📂myPage
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┣ 📂search
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┣ 📂user
- ┃ ┃ ┃ ┗ 📂[id]
- ┃ ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┗ 📜layout.tsx
- ┃ ┣ 📂(beforeLogin)
- ┃ ┃ ┣ 📂_commonComponent
- ┃ ┃ ┃ ┣ 📜CommonButtonForm.tsx
- ┃ ┃ ┃ ┣ 📜CommonInputForm.tsx
- ┃ ┃ ┃ ┗ 📜component.type.ts
- ┃ ┃ ┣ 📂_viewComponent
- ┃ ┃ ┃ ┣ 📜login.tsx
- ┃ ┃ ┃ ┗ 📜signUp.tsx
- ┃ ┃ ┣ 📂login
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┣ 📂signUp
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┣ 📜layout.tsx
- ┃ ┃ ┗ 📜page.tsx
- ┃ ┣ 📜favicon.ico
- ┃ ┣ 📜globals.css
- ┃ ┣ 📜layout.tsx
- ┃ ┗ 📜providers.tsx
- ┣ 📂firebase
- ┃ ┣ 📜firebase.ts
- ┃ ┣ 📜firebase.type.ts
- ┃ ┣ 📜firebaseAuth.ts
- ┃ ┣ 📜firestorage.ts
- ┃ ┗ 📜firestore.ts
- ┣ 📂model
- ┣ 📂queries
- ┃ ┣ 📜queries.ts
- ┃ ┗ 📜queryKeys.ts
- ┗ 📂store
- ┃ ┗ 📜store.ts
-```
-
-</div>
-</details>
+- 로그인 여부에 따라 (beforeLogin)/(afterLogin) 분리
+- 공통 컴포넌트와 뷰 컴포넌트 별도 생성
+- 각 메뉴별 폴더 생성하여 Dynamic route 적용
 
 ## 화면 구성
 
