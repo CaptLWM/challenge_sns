@@ -1,13 +1,13 @@
 "use client";
 
-import { User, User_type } from "@/firebase/firebase.type";
-import { logout } from "@/firebase/firebaseAuth";
-import { getUser } from "@/firebase/firestore";
-import useAuthStore, { initAuthState } from "@/store/store";
-import { Button, Center, Text, VStack } from "@chakra-ui/react";
+import { User_type } from "../../../firebase/firebase.type";
+import { logout } from "../../../firebase/firebaseAuth";
+import { getUser } from "../../../firebase/firestore";
+import useAuthStore, { initAuthState } from "../../../store/store";
+import { Button, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, useSelectedLayoutSegment } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { TbTargetArrow } from "react-icons/tb"; // challenge
 import { TbSearch } from "react-icons/tb"; // search
@@ -23,7 +23,7 @@ export default function NavMenu() {
   // 즉 주소를 가지고 올 수 있음
   // 이거 활용해서 그 페이지 방문 했을때 안했을때 아이콘 변경할 수 있음
   // 호출된 레이아웃보다 한 단계 아래에서 활성 경로 세그먼트를 읽을 수 있게 해줍니다.
-  const segment = useSelectedLayoutSegment();
+  // const segment = useSelectedLayoutSegment();
   const doLogout = async () => {
     try {
       await logout();
