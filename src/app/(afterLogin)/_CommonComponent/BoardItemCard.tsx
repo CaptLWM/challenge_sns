@@ -7,7 +7,7 @@ import {
   CardBody,
   FormControl,
   FormLabel,
-  Image,
+  // Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -40,6 +40,7 @@ import { TbMessage } from "react-icons/tb";
 import { useRouter } from "next/navigation";
 import { firestore, getUser } from "@/firebase/firestore";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import Image from "next/image";
 
 export default function BoardItemCard({
   props,
@@ -163,14 +164,6 @@ export default function BoardItemCard({
           <CardBody>
             <HStack justifyContent="flex-end" marginBottom={8}>
               <Link href={`/user/${props.nickname}`}>
-                {/* TODO 게시글 등록할때 작성자 이미지는 등록하지 않고 있음
-              <Image
-                loading="lazy"
-                src={props.}
-                alt="미리보기"
-                width={50}
-                height={50}
-              /> */}
                 <Heading size="md" marginRight={4}>
                   {props.nickname}
                 </Heading>
@@ -214,16 +207,10 @@ export default function BoardItemCard({
             </HStack>
             <Center>
               <Image
-                loading="lazy"
-                objectFit="cover"
-                // boxSize={{
-                //   base: "200px",
-                //   sm: "100px", // 작은 화면
-                //   md: "150px", // 중간 화면
-                // }}
-                // maxW={{ base: "100%", sm: "200px" }}
                 src={String(props.image)}
                 alt="Caffe Latte"
+                width={100}
+                height={100}
               />
             </Center>
             <HStack justifyContent="space-between">

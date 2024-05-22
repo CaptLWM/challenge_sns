@@ -42,7 +42,6 @@ import { ReplyType } from "@/app/(afterLogin)/_CommonComponent/component.type";
 export const useModifyUser = (uid: string) => {
   return useMutation({
     mutationFn: async (data: User) => {
-      console.log("data-quries", data);
       await updateUser(uid, data);
     },
   });
@@ -133,7 +132,6 @@ export const useFollowBoardListQuery = (
         limit(2)
       );
     }
-    console.log("follow!!!!!!", follow);
     // collection 이름이 todos인 collection의 모든 document를 가져옵니다.
     const querySnapshot: QuerySnapshot = await getDocs(q);
     // document의 id와 데이터를 initialTodos에 저장합니다.
@@ -374,7 +372,6 @@ export const useModifyReply = ({
 
 // 댓글 삭제
 export const useDeleteReply = (id: string) => {
-  console.log("id", id);
   return useMutation({
     mutationFn: async () => {
       await deleteBoardItemReply(id);

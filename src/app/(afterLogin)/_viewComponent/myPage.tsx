@@ -172,7 +172,6 @@ export default function Main() {
   }, [boardList.data?.pages]);
 
   const onSubmitModify = async (data: User) => {
-    console.log("selected", selectedFile);
     let temp: User | null = {
       bio: "",
       uid: "",
@@ -210,8 +209,6 @@ export default function Main() {
         profileImage: userInfo?.profileImage,
       };
     }
-
-    console.log("temp", temp);
 
     modifyUser.mutate(temp),
       {
