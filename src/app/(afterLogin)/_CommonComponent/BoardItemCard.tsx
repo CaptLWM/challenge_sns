@@ -7,7 +7,6 @@ import {
   CardBody,
   FormControl,
   FormLabel,
-  // Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -25,11 +24,10 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReplyDrawer from "./ReplyDrawer";
 import { Board } from "@/firebase/firebase.type";
-
 import {
   useBoardItemLike,
   useDeleteBoard,
@@ -55,6 +53,35 @@ export default function BoardItemCard({
   const [nickname, setNickname] = useState<string>(""); // 로그인 중인 사용자닉네임
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // 이미지가 뷰포트에 들어왔는지 확인하는 변수와 레퍼런스
+  const [isInView, setIsInView] = useState(false);
+  const imageRef = useRef<HTMLDivElement>(null);
+
+  // Intersection Observer를 사용하여 이미지가 뷰포트에 들어왔을 때 로드
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       entries.forEach((entry) => {
+  //         if (entry.isIntersecting) {
+  //           setIsInView(true);
+  //           observer.disconnect();
+  //         }
+  //       });
+  //     },
+  //     { threshold: 0.1 }
+  //   );
+
+  //   if (imageRef.current) {
+  //     observer.observe(imageRef.current);
+  //   }
+
+  //   return () => {
+  //     if (imageRef.current) {
+  //       observer.unobserve(imageRef.current);
+  //     }
+  //   };
+  // }, []);
 
   const deleteModal = useDisclosure();
   const modifyModal = useDisclosure();
@@ -209,8 +236,11 @@ export default function BoardItemCard({
               <Image
                 src={String(props.image)}
                 alt="Caffe Latte"
-                width={100}
-                height={100}
+                // width={100}
+                // height={100}
+                layout="fill"
+                style={{ width: "100px", height: "100px" }}
+                priority
               />
             </Center>
             <HStack justifyContent="space-between">
@@ -314,7 +344,6 @@ export default function BoardItemCard({
               {preview && (
                 <div>
                   <Image
-                    loading="lazy"
                     src={preview}
                     alt="미리보기"
                     width={200}

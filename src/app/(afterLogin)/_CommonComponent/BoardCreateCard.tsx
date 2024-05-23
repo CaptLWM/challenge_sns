@@ -15,7 +15,6 @@ import {
   FormLabel,
   HStack,
   Heading,
-  Image,
   Input,
   Stack,
   Text,
@@ -28,6 +27,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useCreateBoard } from "@/queries/queries";
+import Image from "next/image";
 
 export default function BoardCreateCard() {
   const router = useRouter();
@@ -172,13 +172,7 @@ export default function BoardCreateCard() {
             </FormControl>
             <HStack justifyContent="space-between">
               {preview && (
-                <Image
-                  src={preview}
-                  alt="미리보기"
-                  width={200}
-                  height={200}
-                  loading="lazy"
-                />
+                <Image src={preview} alt="미리보기" width={200} height={200} />
               )}
               <FormControl>
                 <FormLabel htmlFor="image">

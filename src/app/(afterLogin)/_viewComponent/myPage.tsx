@@ -6,7 +6,6 @@ import {
   FormErrorMessage,
   FormLabel,
   HStack,
-  Image,
   Input,
   Modal,
   ModalBody,
@@ -47,6 +46,7 @@ import { BOARD_LIST } from "@/queries/queryKeys";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "@/firebase/firestorage";
 import { profile } from "console";
+import Image from "next/image";
 
 export default function Main() {
   const router = useRouter();
@@ -384,7 +384,6 @@ export default function Main() {
               {preview && (
                 <div>
                   <Image
-                    loading="lazy"
                     src={preview}
                     alt="미리보기"
                     width={200}

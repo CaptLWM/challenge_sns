@@ -19,7 +19,6 @@ import {
   Divider,
   HStack,
   Heading,
-  Image,
   Input,
   Text,
 } from "@chakra-ui/react";
@@ -28,6 +27,7 @@ import { profile } from "console";
 import useAuthStore from "@/store/store";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 // 채팅방
 export default function Main({ params }: { params: { id: string } }) {
@@ -164,12 +164,7 @@ export default function Main({ params }: { params: { id: string } }) {
     <>
       <div>
         <HStack>
-          <Image
-            src={profileImg}
-            alt="프로필 이미지"
-            width={12}
-            loading="lazy"
-          />
+          <Image src={profileImg} alt="프로필 이미지" width={12} height={12} />
           <Heading size="md">{params.id}</Heading>
         </HStack>
       </div>
@@ -190,7 +185,7 @@ export default function Main({ params }: { params: { id: string } }) {
                   src={profileImg}
                   alt="프로필 이미지"
                   width={12}
-                  loading="lazy"
+                  height={12}
                 />
                 <Text>{msg.text}</Text>
                 <Text>{msg.sender}</Text>
