@@ -123,7 +123,6 @@ export default function NavMenu() {
               <VStack>
                 <Text>{userInfo.nickname}</Text>
                 <Image
-                  loading="lazy"
                   src={userInfo?.profileImage}
                   alt="미리보기"
                   width={50}
