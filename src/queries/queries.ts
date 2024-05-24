@@ -18,7 +18,6 @@ import {
   DocumentData,
   QueryDocumentSnapshot,
   QuerySnapshot,
-  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -29,12 +28,7 @@ import {
   startAfter,
   where,
 } from "firebase/firestore";
-import {
-  deleteObject,
-  getDownloadURL,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
+import { deleteObject, ref } from "firebase/storage";
 import { BOARD_ITEM_REPLY, BOARD_LIST } from "./queryKeys";
 import { ReplyType } from "@/app/(afterLogin)/_CommonComponent/component.type";
 

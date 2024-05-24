@@ -23,33 +23,18 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import useAuthStore from "@/store/store";
-import {
-  getUser,
-  getUserEmail,
-  getUserNick,
-  updateUser,
-} from "@/firebase/firestore";
-import { useRouter } from "next/navigation";
-import {
-  useBoardListNickNameQuery,
-  useBoardListQuery,
-  useModifyUser,
-} from "@/queries/queries";
+import { getUser, getUserNick } from "@/firebase/firestore";
+import { useBoardListNickNameQuery, useModifyUser } from "@/queries/queries";
 import { User, UserSignin } from "@/firebase/firebase.type";
 import InfiniteScroll from "react-infinite-scroll-component";
 import BoardItemCard from "../_CommonComponent/BoardItemCard";
 import { useQueryClient } from "@tanstack/react-query";
-import { BOARD_LIST } from "@/queries/queryKeys";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "@/firebase/firestorage";
-import { profile } from "console";
 import Image from "next/image";
 
 export default function Main() {
-  const router = useRouter();
   const queryClient = useQueryClient();
   // 상태를 추가하여 사용자 정보를 저장
   const [userInfo, setUserInfo] = useState<User | null>(null);
@@ -58,7 +43,6 @@ export default function Main() {
   const [nicknameCheck, setNicknameCheck] = useState<boolean | undefined>(
     false
   );
-  const [idCheck, setIdCheck] = useState<boolean | undefined>(false);
 
   const [loading, setLoading] = useState(true);
 
@@ -162,8 +146,6 @@ export default function Main() {
       });
     }
   };
-
-  const password = watch("password");
 
   // 쿼리키로 할것
   const test = useMemo(() => {

@@ -1,9 +1,8 @@
 "use client";
 
 import useAuthStore, { initAuthState } from "@/store/store";
-import { Button, Text } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React from "react";
 import Main from "../_viewComponent/myPage";
 
 export default function MyPage() {

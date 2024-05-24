@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 import Chatitem from "../_CommonComponent/Chatitem";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { firestore, getUser } from "@/firebase/firestore";
@@ -13,7 +13,6 @@ export default function Main() {
       participants: string[];
     }[]
   >([]);
-  const [chatRoom, setChatRoom] = React.useState<string[]>([]);
   const [nickname, setNickname] = React.useState<string>(""); // 로그인 중인 사용자닉네임
 
   const user = useAuthStore((state) => state.user);

@@ -1,27 +1,19 @@
 "use client";
 
-import firebasedb from "@/firebase/firebase";
 import { Board, User } from "@/firebase/firebase.type";
-import { createBoardItem, getUser } from "@/firebase/firestore";
+import { getUser } from "@/firebase/firestore";
 import useAuthStore from "@/store/store";
 import {
   Button,
   Card,
   CardBody,
-  CardFooter,
-  Flex,
   FormControl,
-  FormErrorMessage,
   FormLabel,
   HStack,
-  Heading,
   Input,
   Stack,
-  Text,
   Textarea,
 } from "@chakra-ui/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";

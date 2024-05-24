@@ -8,7 +8,6 @@ import {
   useModifyReply,
 } from "@/queries/queries";
 import useAuthStore from "@/store/store";
-// import { useBoardItemReplyQuery } from "@/queries/queries";
 import {
   Button,
   Drawer,
@@ -19,7 +18,6 @@ import {
   DrawerHeader,
   DrawerOverlay,
   FormControl,
-  FormLabel,
   HStack,
   Heading,
   Input,
@@ -44,12 +42,7 @@ export default function ReplyDrawer({
   const [modifyContent, setModifyContent] = useState("");
   const [replyId, setReplyId] = useState("");
   const queryClient = useQueryClient();
-  const {
-    handleSubmit,
-    register,
-    reset,
-    formState: { isSubmitting },
-  } = useForm<Reply>();
+  const { handleSubmit, register, reset } = useForm<Reply>();
 
   const user = useAuthStore((state) => state.user);
   const loginuid = user ? user.uid : "";

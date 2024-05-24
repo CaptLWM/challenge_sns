@@ -1,10 +1,6 @@
 import { create } from "zustand";
 import { User } from "firebase/auth";
-import {
-  checkAuthState,
-  loginWithEmailAndPassword,
-  logout,
-} from "@/firebase/firebaseAuth";
+import { checkAuthState } from "@/firebase/firebaseAuth";
 
 interface AuthStoreState {
   user: User | null;

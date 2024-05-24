@@ -6,16 +6,10 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import BoardItemCard from "../_CommonComponent/BoardItemCard";
 
 import { Button, Text } from "@chakra-ui/react";
-import {
-  firestore,
-  followUser,
-  getUser,
-  getUserNick,
-} from "@/firebase/firestore";
+import { getUser, getUserNick } from "@/firebase/firestore";
 import { useQueryClient } from "@tanstack/react-query";
 
-import useAuthStore, { initAuthState } from "@/store/store";
-import { set } from "react-hook-form";
+import useAuthStore from "@/store/store";
 import { User } from "@/firebase/firebase.type";
 
 export default function Main({ nickname }: { nickname: string }) {

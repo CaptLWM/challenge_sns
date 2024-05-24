@@ -233,15 +233,20 @@ export default function BoardItemCard({
               ) : null}
             </HStack>
             <Center>
-              <Image
-                src={String(props.image)}
-                alt="Caffe Latte"
-                // width={100}
-                // height={100}
-                layout="fill"
-                style={{ width: "100px", height: "100px" }}
-                priority
-              />
+              <div
+                style={{
+                  position: "relative",
+                  width: "300px",
+                  height: "300px",
+                }}
+              >
+                <Image
+                  src={String(props.image)}
+                  alt="Caffe Latte"
+                  sizes="300px"
+                  fill
+                />
+              </div>
             </Center>
             <HStack justifyContent="space-between">
               <Text py="2">{props.content}</Text>

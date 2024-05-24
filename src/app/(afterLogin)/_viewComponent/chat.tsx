@@ -1,14 +1,11 @@
 "use client";
 
-import firebasedb from "@/firebase/firebase";
 import { firestore, getUser, getUserNick } from "@/firebase/firestore";
 import {
-  QuerySnapshot,
   addDoc,
   collection,
   getDocs,
   onSnapshot,
-  orderBy,
   query,
   where,
 } from "firebase/firestore";
@@ -22,8 +19,6 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import { set } from "react-hook-form";
-import { profile } from "console";
 import useAuthStore from "@/store/store";
 
 import { useRouter, useSearchParams } from "next/navigation";
@@ -31,7 +26,6 @@ import Image from "next/image";
 
 // 채팅방
 export default function Main({ params }: { params: { id: string } }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   // 초기 roomId 설정
   const initRoomId = searchParams.get("roomId") || undefined;

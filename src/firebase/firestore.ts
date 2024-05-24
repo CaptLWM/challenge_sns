@@ -22,7 +22,6 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { storage } from "./firestorage";
-import { create } from "domain";
 
 export const firestore = getFirestore(firebasedb);
 
